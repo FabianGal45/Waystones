@@ -6,15 +6,20 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.sql.Connection;
+
 public final class Waystones extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
-
         //Configuration File
         getConfig().options().copyDefaults();
         saveDefaultConfig();
+
+        //SQLiteJDBC
+        SQLiteJDBC jdbc = new SQLiteJDBC();
+        Connection con = jdbc.getCon();
+        jdbc.createTables(con);
 
         //Events
         getServer().getPluginManager().registerEvents(new WaystonePlace(), this);
