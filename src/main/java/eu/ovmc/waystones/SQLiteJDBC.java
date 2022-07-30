@@ -20,19 +20,30 @@ public class SQLiteJDBC {
         Statement stmt;
         try {
             stmt = c.createStatement();
-            String sqlPublic = "CREATE TABLE IF NOT EXISTS public_waystones " +  //Creates the public_waystones table
+            String sql = "CREATE TABLE IF NOT EXISTS users " + //Creates the users table
+                    "(uuid varchar(255)," +
+                    " user_name VARCHAR(255)," +
+                    " private_waystones INT(255)," +
+                    " public_waystones INT(255)," +
+                    " PRIMARY KEY(uuid))";
+            stmt.executeUpdate(sql);
+            sql = "CREATE TABLE IF NOT EXISTS private_waystones " + //Creates the private_waystones table
+                    "(location varchar(255)," +
+                    " owner VARCHAR(255)," +
+                    " PRIMARY KEY(location)" +
+                    " FOREIGN KEY (owner)" +
+                    "  REFERENCES users(uuid))";
+            stmt.executeUpdate(sql);
+            sql = "CREATE TABLE IF NOT EXISTS public_waystones " +  //Creates the public_waystones table
                     "(location varchar(255)," +
                     " owner VARCHAR(255)," +
                     " name VARCHAR(255)," +
                     " cost DOUBLE(40, 2)," +
                     " rating DOUBLE(40, 2)," +
-                    " PRIMARY KEY(location))";
-            stmt.executeUpdate(sqlPublic);
-            String sqlPrivate = "CREATE TABLE IF NOT EXISTS private_waystones " + //Creates the private_waystones table
-                    "(location varchar(255)," +
-                    " owner VARCHAR(255)," +
-                    " PRIMARY KEY(location))";
-            stmt.executeUpdate(sqlPrivate);
+                    " PRIMARY KEY(location)" +
+                    " FOREIGN KEY (owner)" +
+                    "  REFERENCES users(uuid))";
+            stmt.executeUpdate(sql);
             stmt.close();
 
             //Prints the table names to console to check if they exist
@@ -51,7 +62,39 @@ public class SQLiteJDBC {
         }
     }
 
+    public void regWaystone(Connection c, Waystone ws){
 
+        try{
+            c.setAutoCommit(false);
+            //Query to insert data into tutorials_data table
+            String query = "insert into private_waystones ("
+                    + "location, "
+                    + "owner) values(?, ?)";
+
+            //Creating the preparedStatement object
+            PreparedStatement pstmt = c.prepareStatement(query);
+            String location = ws.getLocation().toString();
+            String owner = ws.getOwner().toString();
+
+            pstmt.setString(1, location);
+            pstmt.setString(2, owner);
+            pstmt.execute();
+
+            c.close();
+        }catch (Exception e){
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+            System.out.println(e +"Could not register waystone.");
+        }
+    }
+
+    public void createUser(Connection c){
+
+    }
+
+    public void getUserData(Connection c){ //get only the user's data
+
+    }
 
 
 

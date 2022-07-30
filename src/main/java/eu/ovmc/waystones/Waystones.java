@@ -1,5 +1,6 @@
 package eu.ovmc.waystones;
 
+import eu.ovmc.waystones.events.WaystoneInteract;
 import eu.ovmc.waystones.events.WaystonePlace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,6 +24,7 @@ public final class Waystones extends JavaPlugin implements Listener {
 
         //Events
         getServer().getPluginManager().registerEvents(new WaystonePlace(), this);
+        getServer().getPluginManager().registerEvents(new WaystoneInteract(), this);
         getServer().getPluginManager().registerEvents(this, this);
     }
 
