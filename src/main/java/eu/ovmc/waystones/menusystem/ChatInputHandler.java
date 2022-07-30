@@ -5,32 +5,34 @@ import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.menusystem.menu.EditMenu;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import javax.swing.plaf.synth.SynthOptionPaneUI;
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 
 public class ChatInputHandler {
     //This class will be handling all utility classes for all chat request-response needs
 
-    private static final HashMap<Player, PrivateWaystone> chatInputMap = new HashMap<>();
+    private static final HashMap<Player, PrivateWaystone> TEXT_INPUT_MAP = new HashMap<>();
+    private static final HashMap<Player, PrivateWaystone> CHAT_CLICK_MAP = new HashMap<>();
+
     PlayerMenuUtility playerMenuUtility;
 
-    public void addPlayerToList(PlayerMenuUtility playerMenuUtility, Player player, PrivateWaystone selected){
-        chatInputMap.put(player, selected);
+    public void addPlayerToTextMap(PlayerMenuUtility playerMenuUtility, Player player, PrivateWaystone selected){
+        TEXT_INPUT_MAP.put(player, selected);
         this.playerMenuUtility = playerMenuUtility;
+    }
+
+    public void addPlayerToChatClickMap(Player player, PrivateWaystone selected){
+        CHAT_CLICK_MAP.put(player, selected);
     }
 
     public void handleChatInput(AsyncPlayerChatEvent e){
         //Rename the waystone
-        PrivateWaystone selected = chatInputMap.get(e.getPlayer());
+        PrivateWaystone selected = TEXT_INPUT_MAP.get(e.getPlayer());
         SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
 
         //Set the name of the waystone with the input from player
@@ -41,19 +43,26 @@ public class ChatInputHandler {
             //Update the name in the database
             jdbc.updateWaystone(selected);
 
-//            e.getPlayer().sendMessage("The name has ben set to: "+selected.getName());
-
             e.getPlayer().sendMessage(Component.text("Name set to: ", NamedTextColor.GRAY)
                     .append(Component.text(selected.getName(), NamedTextColor.WHITE)));
 
             openPreviousEditMenu(e.getPlayer());
             e.setCancelled(true);
         }
-        chatInputMap.remove(e.getPlayer());
+        TEXT_INPUT_MAP.remove(e.getPlayer());
+    }
+
+    public void handleRemoveWs(Player player){
+        PrivateWaystone selected = CHAT_CLICK_MAP.get(player);
+        SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
+
+        jdbc.remWs(selected);
+        CHAT_CLICK_MAP.remove(player);
+        System.out.println("REMOVED WS");
     }
 
     private void openPreviousEditMenu(Player player){
-        PrivateWaystone selected = chatInputMap.get(player);
+        PrivateWaystone selected = TEXT_INPUT_MAP.get(player);
 
         if(Bukkit.isPrimaryThread()){
             System.out.println("PRIMARY THREAD!!");
@@ -86,13 +95,22 @@ public class ChatInputHandler {
 
     }
 
-    public void removePlayerFromList(Player player){
+    public void removePlayerFromTextMap(Player player){
         openPreviousEditMenu(player);
-        chatInputMap.remove(player);
+        TEXT_INPUT_MAP.remove(player);
     }
 
-    public HashMap<Player, PrivateWaystone> getChatInputMap(){//Get the map when needed
-        return chatInputMap;
+    public void removePlayerFromChatClickMap(Player player){
+        openPreviousEditMenu(player);
+        CHAT_CLICK_MAP.remove(player);
+    }
+
+    public HashMap<Player, PrivateWaystone> getTextInputMap(){//Get the map when needed
+        return TEXT_INPUT_MAP;
+    }
+
+    public HashMap<Player, PrivateWaystone> getChatClickMap(){
+        return CHAT_CLICK_MAP;
     }
 
 

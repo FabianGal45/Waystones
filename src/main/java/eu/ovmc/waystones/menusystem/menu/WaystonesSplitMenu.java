@@ -36,7 +36,9 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
     @Override
     public Component getMenuName() {
-        return Component.text(playerMenuUtility.getOwner().getName()+ "'s Waystone"); //todo fix this with openAs
+        String ownerUUID = playerMenuUtility.getClickedOnWs().getOwner();
+        User user = WaystonesPlugin.getPlugin().getJdbc().getUserFromDB(ownerUUID);
+        return Component.text( user.getUserName()+ "'s Waystone"); //todo fix this with openAs
     }
 
     @Override
@@ -196,8 +198,8 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             player.playSound(player.getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 1, 2);
 
             User user = playerMenuUtility.getUser();
-            System.out.println(">>>> "+ (user.getAllowedPrivWs())+ " < "+ (maxPrivateWs * (page + 1)));
-            if(user.getAllowedPrivWs() < (maxPrivateWs * (page + 1))){ //get allowed < page max
+            System.out.println(">>>> "+ (user.getAllowedPrivWs())+ " < "+ (MAX_PRIVATE * (page + 1)));
+            if(user.getAllowedPrivWs() < (MAX_PRIVATE * (page + 1))){ //get allowed < page max
                 if(adminOpenedMenu == null){ //if this menu has no admin assigned that might have oppened it then run it for the player
                     page = page + 1;
                     new PublicWaystonesMenu(playerMenuUtility, page, indexPubWs).open();
@@ -249,34 +251,34 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
         ArrayList<PublicWaystone> publicWaystones = playerMenuUtility.getPublicWaystones();
 
         //loop for each slot available to private waystones (7)
-        for(int i = 0; i < getMaxPrivateWs(); i++) {
-            indexPrivWs = getMaxPrivateWs() * page + i;
+        for(int i = 0; i < MAX_PRIVATE; i++) {
+            indexPrivWs = MAX_PRIVATE * page + i;//7*0+1= 1 | 7*0+2= 2 | ... | 7*1+1= 8 | 7*1+2= 9
 
-            //If finished placing the existing waystones before running out of space start placing the dyes
+            //If finished placing the existing waystones, before running out of space start placing the dyes
             if(indexPrivWs >= privateWaystones.size()){
                 User user = playerMenuUtility.getUser();
                 int pu = user.getAllowedPrivWs()-privateWaystones.size();//the amount of purchased and unused waystones
 
                 //loop 7 times
-                for(int j=0;j<getMaxPrivateWs();j++){
+                for(int j = 0; j< MAX_PRIVATE; j++){
 
                     //the position at which the dye to be placed
-                    int pos = indexPrivWs-(getMaxPrivateWs()*page)+10;
+                    int dyePos = indexPrivWs-(MAX_PRIVATE * page)+10;// If there are 5 waystones in the first menu: 5-(7*0)+10 = 15
 
-                    //if green dye have reached the pu AND the pos <= 16
-//                    System.out.println(">>>>> ( "+ indexPrivWs +" +1 ) - " + privateWaystones.size() +" <= pu: "+pu);
-                    if( (indexPrivWs+1) - privateWaystones.size() <= pu && pos <= getMaxPrivateWs()+9){
+                    //if green dye have reached the pu AND the dyePos <= 16 (16 being the last available position in the GUI)
+//                    System.out.println(">>>>>  "+ indexPrivWs +" - " + privateWaystones.size() +" < pu: "+pu);
+                    if(indexPrivWs - privateWaystones.size() < pu && dyePos <= 16){
                         ItemStack limeDye = new ItemStack(Material.LIME_DYE);
                         ItemMeta limeMeta = limeDye.getItemMeta();
                         limeMeta.displayName(Component.text("Available").color(TextColor.fromCSSHexString("#93cf98")).decoration(TextDecoration.ITALIC, false));
                         limeDye.setItemMeta(limeMeta);
 
-                        inventory.setItem(pos ,limeDye);
+                        inventory.setItem(dyePos ,limeDye);
                     }
                     else{
                         //if there is still space, add a grey dye
 //                        System.out.println("indexPrivWs: "+ indexPrivWs + " size: "+ privateWaystones.size() + " PU: "+ pu + " allowed: "+user.getAllowedPrivWs());
-                        if(indexPrivWs<getMaxPrivateWs()*(page+1) && user.getAllowedPrivWs() == indexPrivWs){
+                        if(indexPrivWs < MAX_PRIVATE*(page+1) && user.getAllowedPrivWs() == indexPrivWs){
                             Economy econ = WaystonesPlugin.getEcon();
                             DecimalFormat formatter = new DecimalFormat("#,###");
 
@@ -309,12 +311,12 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                             inventory.addItem(grayDye);
                             indexPrivWs--;
                         }
-                        System.out.println("INDEX>>> "+ indexPrivWs);
+//                        System.out.println("INDEX>>> "+ indexPrivWs);
                         break;
                     }
                     indexPrivWs++;
                 }
-                System.out.println("INDEX>>> "+ indexPrivWs);
+//                System.out.println("INDEX>>> "+ indexPrivWs);
                 break; //If the index has reached the number of waystones.
             }
 
@@ -381,10 +383,10 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             }
         }
 
-        for(int i = 0; i < getMaxPublicWs(); i++) {
-            System.out.println("INDEX>>> "+ indexPrivWs);
-            indexPubWs = getMaxPublicWs() * page + i;
-            System.out.println("Index PUB: "+indexPubWs + " Page: "+ page);
+        for(int i = 0; i < MAX_PUBLIC; i++) {
+//            System.out.println("INDEX>>> "+ indexPrivWs);
+            indexPubWs = MAX_PUBLIC * page + i;
+//            System.out.println("Index PUB: "+indexPubWs + " Page: "+ page);
             if(indexPubWs >= publicWaystones.size()){
                 indexPubWs--;
                 break;

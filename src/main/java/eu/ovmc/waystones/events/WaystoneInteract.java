@@ -80,7 +80,7 @@ public class WaystoneInteract implements Listener {
                     }
 
                 }else{
-                  player.sendMessage(ChatColor.RED + "This waystone does not exist in the database!");
+                  player.sendMessage(ChatColor.RED + "This waystone is inactive. Replace the Lodestone to activate.");
                 }
 
 

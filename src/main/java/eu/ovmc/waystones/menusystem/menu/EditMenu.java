@@ -45,12 +45,28 @@ public class EditMenu extends Menu {
 
         if(currentItem.equals(Material.NAME_TAG)){ // Change name of waystone
             ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
-            chatInputHandler.addPlayerToList(playerMenuUtility, player, selected); //pass the player to be added to the list and the menu to be oppened later
+            chatInputHandler.addPlayerToTextMap(playerMenuUtility, player, selected); //pass the player to be added to the list and the menu to be oppened later
 
             player.sendMessage(Component.text("Enter new name: ", NamedTextColor.GRAY)
                     .append(Component.text(" [X]", NamedTextColor.DARK_RED).decorate(TextDecoration.BOLD)
                             .hoverEvent(HoverEvent.showText(Component.text("Or type \"cancel\"")))
                             .clickEvent(ClickEvent.runCommand("/ws cancelNameChange"))));
+
+            inventory.close();
+        }
+        else if(currentItem.equals(Material.REDSTONE_BLOCK)){
+            ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
+            chatInputHandler.addPlayerToChatClickMap(player, selected);
+
+            player.sendMessage(Component.text("You or anyone else will not be able to teleport or use this waystone.", NamedTextColor.RED));
+
+            player.sendMessage(Component.text("Are you sure? ", NamedTextColor.RED)
+                    .append(Component.text(" [✔] ", NamedTextColor.GREEN).decorate(TextDecoration.BOLD)
+                            .hoverEvent(HoverEvent.showText(Component.text("Accept")))
+                            .clickEvent(ClickEvent.runCommand("/ws confirmWsRemoval")))
+                    .append(Component.text(" [X]", NamedTextColor.DARK_RED).decorate(TextDecoration.BOLD)
+                            .hoverEvent(HoverEvent.showText(Component.text("Cancel")))
+                            .clickEvent(ClickEvent.runCommand("/ws cancelWsRemoval"))));
 
             inventory.close();
         }
@@ -91,7 +107,7 @@ public class EditMenu extends Menu {
 
             ItemStack redstpmeBlock = new ItemStack(Material.REDSTONE_BLOCK);
             ItemMeta rbMeta = redstpmeBlock.getItemMeta();
-            TextComponent rbName = Component.text("Delete");
+            TextComponent rbName = Component.text("Remove");
             rbMeta.displayName(rbName);
             redstpmeBlock.setItemMeta(rbMeta);
             inventory.setItem(16, redstpmeBlock);
@@ -103,21 +119,14 @@ public class EditMenu extends Menu {
             TextComponent ntName = Component.text("Rename");
             nameTagMeta.displayName(ntName);
             nameTag.setItemMeta(nameTagMeta);
-            inventory.setItem(11, nameTag);
-
-            ItemStack emeraldBlock = new ItemStack(Material.EMERALD_BLOCK);
-            ItemMeta ebMeta = emeraldBlock.getItemMeta();
-            TextComponent ebName = Component.text("Add to my list");
-            ebMeta.displayName(ebName);
-            emeraldBlock.setItemMeta(ebMeta);
-            inventory.setItem(13, emeraldBlock);
+            inventory.setItem(12, nameTag);
 
             ItemStack redstoneBlock = new ItemStack(Material.REDSTONE_BLOCK);
             ItemMeta rbMeta = redstoneBlock.getItemMeta();
-            TextComponent rbName = Component.text("Delete");
+            TextComponent rbName = Component.text("Remove");
             rbMeta.displayName(rbName);
             redstoneBlock.setItemMeta(rbMeta);
-            inventory.setItem(15, redstoneBlock);
+            inventory.setItem(14, redstoneBlock);
         }
 
     }

@@ -8,8 +8,6 @@ import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.menusystem.menu.WaystonesSplitMenu;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -18,8 +16,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.UUID;
 
 import static org.bukkit.Bukkit.getServer;
 
@@ -165,8 +161,20 @@ public class Ws implements CommandExecutor {
             }
             else if (args[0].equals("cancelNameChange")){
                 ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
-                if(chatInputHandler.getChatInputMap().containsKey(player)){
-                    chatInputHandler.removePlayerFromList(player);
+                if(chatInputHandler.getTextInputMap().containsKey(player)){
+                    chatInputHandler.removePlayerFromTextMap(player);
+                }
+            }
+            else if (args[0].equals("confirmWsRemoval")){
+                ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
+                if(chatInputHandler.getChatClickMap().containsKey(player)){
+                    chatInputHandler.handleRemoveWs(player);
+                }
+            }
+            else if(args[0].equals("cancelWsRemoval")){
+                ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
+                if(chatInputHandler.getChatClickMap().containsKey(player)){
+                    chatInputHandler.removePlayerFromChatClickMap(player);
                 }
             }
             else{

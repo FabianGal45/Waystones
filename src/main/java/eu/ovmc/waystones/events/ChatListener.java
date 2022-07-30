@@ -6,7 +6,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerChatEvent;
 
 
 public class ChatListener implements Listener {
@@ -16,13 +15,13 @@ public class ChatListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void asyncPlayerChat(AsyncPlayerChatEvent e){ //I have to use a deprecated method as the old plugins use it as the default and canceling a new event won't work
 
-        if(chatInputHandler.getChatInputMap().containsKey(e.getPlayer())){//If the player exists in the hash map, waiting to get an input
+        if(chatInputHandler.getTextInputMap().containsKey(e.getPlayer())){//If the player exists in the hash map, waiting to get an input
             if(!e.getMessage().equalsIgnoreCase("cancel")){
                 chatInputHandler.handleChatInput(e);
             }
             else{
                 e.setCancelled(true);
-                chatInputHandler.removePlayerFromList(e.getPlayer());
+                chatInputHandler.removePlayerFromTextMap(e.getPlayer());
             }
         }
     }

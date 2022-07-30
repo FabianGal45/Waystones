@@ -2,7 +2,6 @@ package eu.ovmc.waystones.menusystem;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -13,8 +12,8 @@ import java.util.Collections;
 public abstract class PaginatedSplitMenu extends Menu {
 
     protected int page;
-    protected int maxPrivateWs = 7;
-    protected int maxPublicWs = 14;
+    protected final int MAX_PRIVATE = 7;
+    protected final int MAX_PUBLIC = 14;
     protected int indexPrivWs = 0;
     protected int indexPubWs = 0;
     protected ArrayList<Integer> blankSlots;
@@ -48,7 +47,7 @@ public abstract class PaginatedSplitMenu extends Menu {
     }
 
     public void addMenuPageButtons(int pubWsSize){
-        if(indexPrivWs + 1 >= maxPrivateWs * (page+1) || pubWsSize > maxPublicWs * (page +1)){
+        if(indexPrivWs + 1 >= MAX_PRIVATE * (page+1) || pubWsSize > MAX_PUBLIC * (page +1)){
             inventory.setItem(50, makeItem(Material.ARROW, "Next Page"));
         }
         if(page != 0){
@@ -57,11 +56,6 @@ public abstract class PaginatedSplitMenu extends Menu {
 
     }
 
-    public int getMaxPrivateWs() {
-        return maxPrivateWs;
-    }
 
-    public int getMaxPublicWs() {
-        return maxPublicWs;
-    }
+
 }
