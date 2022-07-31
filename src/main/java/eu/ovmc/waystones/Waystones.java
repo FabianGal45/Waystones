@@ -21,7 +21,7 @@ public final class Waystones extends JavaPlugin implements Listener {
 
         //SQLiteJDBC
         SQLiteJDBC jdbc = new SQLiteJDBC();
-        con = jdbc.getCon();
+//        con = jdbc.getCon();
         jdbc.createTables();
 
         //Events

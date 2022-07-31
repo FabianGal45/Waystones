@@ -28,28 +28,35 @@ public class WaystonePlace implements Listener {
                 Player player = e.getPlayer();
                 Waystone ws = new Waystone(e.getBlock().getLocation(), e.getPlayer().getUniqueId());
 
-                SQLiteJDBC jdbc = new SQLiteJDBC();
+                //get user data from users table
                 System.out.println(">1> Getting user data for player");
-                ResultSet rs = jdbc.getDatafromUser(player);//get user data from users table
+                SQLiteJDBC jdbc = new SQLiteJDBC();
+                ResultSet rs = jdbc.getDatafromUser(player);
                 try{
+//                    System.out.println(rs.getString("uuid"));
+                    //if player exists
                     if(rs.next()){
                         System.out.println(">2> Player exists, calculating and adding 1 to the user data");
 
-                        //Increase the number of private waystones
+                        //+1 the number of private waystones in users data
                         int original = rs.getInt("private_ws");
                         int newTotal = original +1;
                         jdbc.addPrivateWS(newTotal, player.getUniqueId().toString());
                     }
-                    else {//if player does not exist in database, register him
-                        System.out.println(">3> Player does not exist, creating default info");
+                    else{
+                        //Register new player
+                        System.out.println(">3> Registering new payer");
                         jdbc.regPlayer(player);
                     }
+
+                    //register the waystone
                     System.out.println(">4> Registering Waystone");
-                    jdbc.regWaystone(ws);//register the waystone
+                    jdbc.regWaystone(ws);
+
 
                 }catch (Exception exception){
                     System.err.println(exception.getClass().getName() + ": " + exception.getMessage());
-                    System.out.println(exception +" Failed to retrieve user from users table.");
+                    System.out.println(exception +" Failed to eat beans");
                     System.exit(0);
                 }
 
