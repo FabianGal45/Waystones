@@ -14,20 +14,25 @@ import javax.swing.*;
 import java.sql.Connection;
 
 public class WaystoneInteract implements Listener {
-    @EventHandler
-    public void PlayerInteract(PlayerInteractEvent e){
-        Action action = e.getAction();
-        if(action.equals(Action.RIGHT_CLICK_BLOCK)&&e.getClickedBlock().getType().equals(Material.LODESTONE)){
-            Block blockUnder = e.getClickedBlock().getLocation().subtract(0.0,1.0,0.0).getBlock();
-
-            if(blockUnder.getType().equals(Material.EMERALD_BLOCK)) {
-                Player player = e.getPlayer();
-                player.sendMessage("Yes");
-
-            }
-        }
-
-
-    }
+//    @EventHandler
+//    public void PlayerInteract(PlayerInteractEvent e){
+//        Action action = e.getAction();
+//        if(e.getClickedBlock().getType().equals(Material.LODESTONE)&&action.equals(Action.RIGHT_CLICK_BLOCK)){
+//            Block blockUnder = e.getClickedBlock().getLocation().subtract(0.0,1.0,0.0).getBlock();
+//
+//            if(blockUnder.getType().equals(Material.EMERALD_BLOCK)) {
+//
+//                //TODO: Check if the waystone is registered in the dataabase
+//                Player player = e.getPlayer();
+//                player.sendMessage("Yes");
+//
+//                SQLiteJDBC jdbc = new SQLiteJDBC();
+////                jdbc.get
+//
+//            }
+//        }
+//
+//
+//    }
 
 }

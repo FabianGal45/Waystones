@@ -8,9 +8,11 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 public final class Waystones extends JavaPlugin implements Listener {
 
+    private Connection con;
     @Override
     public void onEnable() {
         //Configuration File
@@ -19,8 +21,8 @@ public final class Waystones extends JavaPlugin implements Listener {
 
         //SQLiteJDBC
         SQLiteJDBC jdbc = new SQLiteJDBC();
-        Connection con = jdbc.getCon();
-        jdbc.createTables(con);
+        con = jdbc.getCon();
+        jdbc.createTables();
 
         //Events
         getServer().getPluginManager().registerEvents(new WaystonePlace(), this);
@@ -36,5 +38,11 @@ public final class Waystones extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        try {
+            con.close();
+        } catch (SQLException e) {
+            System.out.println(e + " Couldn't close the connection.");
+        }
+
     }
 }

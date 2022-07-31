@@ -12,6 +12,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class WaystonePlace implements Listener {
 //    https://www.spigotmc.org/wiki/using-the-event-api/
@@ -27,8 +29,29 @@ public class WaystonePlace implements Listener {
                 Waystone ws = new Waystone(e.getBlock().getLocation(), e.getPlayer().getUniqueId());
 
                 SQLiteJDBC jdbc = new SQLiteJDBC();
-                Connection con = jdbc.getCon();
-                jdbc.regWaystone(con, ws);
+                System.out.println(">1> Getting user data for player");
+                ResultSet rs = jdbc.getDatafromUser(player);//get user data from users table
+                try{
+                    if(rs.next()){
+                        System.out.println(">2> Player exists, calculating and adding 1 to the user data");
+
+                        //Increase the number of private waystones
+                        int original = rs.getInt("private_ws");
+                        int newTotal = original +1;
+                        jdbc.addPrivateWS(newTotal, player.getUniqueId().toString());
+                    }
+                    else {//if player does not exist in database, register him
+                        System.out.println(">3> Player does not exist, creating default info");
+                        jdbc.regPlayer(player);
+                    }
+                    System.out.println(">4> Registering Waystone");
+                    jdbc.regWaystone(ws);//register the waystone
+
+                }catch (Exception exception){
+                    System.err.println(exception.getClass().getName() + ": " + exception.getMessage());
+                    System.out.println(exception +" Failed to retrieve user from users table.");
+                    System.exit(0);
+                }
 
                 player.sendMessage("This is a waystone!");
 

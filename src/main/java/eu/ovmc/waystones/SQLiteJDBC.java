@@ -1,5 +1,8 @@
 package eu.ovmc.waystones;
+import org.bukkit.entity.Player;
+
 import java.sql.*;
+import java.util.UUID;
 
 public class SQLiteJDBC {
     public Connection getCon(){
@@ -7,7 +10,6 @@ public class SQLiteJDBC {
         try{
             Class.forName("org.sqlite.JDBC");
             con = DriverManager.getConnection("jdbc:sqlite:plugins/Waystones/waystones.sqlite.db");
-            System.out.println("Connected to the waystones database.");
 
         }catch(ClassNotFoundException | SQLException e){
             System.out.println(e +" Database Connection FAILED!");
@@ -16,15 +18,15 @@ public class SQLiteJDBC {
         return con;
     }
 
-    public void createTables(Connection c){
+    public void createTables(){
         Statement stmt;
         try {
-            stmt = c.createStatement();
+            stmt = getCon().createStatement();
             String sql = "CREATE TABLE IF NOT EXISTS users " + //Creates the users table
                     "(uuid varchar(255)," +
                     " user_name VARCHAR(255)," +
-                    " private_waystones INT(255)," +
-                    " public_waystones INT(255)," +
+                    " private_ws INT(255)," +
+                    " public_ws INT(255)," +
                     " PRIMARY KEY(uuid))";
             stmt.executeUpdate(sql);
             sql = "CREATE TABLE IF NOT EXISTS private_waystones " + //Creates the private_waystones table
@@ -47,32 +49,100 @@ public class SQLiteJDBC {
             stmt.close();
 
             //Prints the table names to console to check if they exist
-            DatabaseMetaData meta = c.getMetaData();
+            DatabaseMetaData meta = getCon().getMetaData();
             ResultSet resultSet = meta.getTables(null, null, null, new String[]{"TABLE"});
             while(resultSet.next()){
                 String tableName = resultSet.getString("TABLE_NAME");
                 System.out.println("JDBC> This table exists: "+ tableName);
             }
 
-            c.close();
+            
         }catch (Exception e){
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.out.println(e +" Database Failed to Create tables");
             System.exit(0);
-            System.out.println(e +" Database Failed to Create table");
         }
     }
 
-    public void regWaystone(Connection c, Waystone ws){
-
+    public ResultSet getDatafromUser(Player p){
+        Statement stmt;
+        ResultSet rs = null;
+        String uuid = p.getUniqueId().toString();
         try{
-            c.setAutoCommit(false);
+            stmt = getCon().createStatement();
+            System.out.println("uuid: "+ uuid);
+            String sql = "SELECT * FROM users WHERE uuid = "+ "\'" +uuid +"\'";
+            System.out.println(sql);
+            rs = stmt.executeQuery(sql);
+
+            //Todo: Somehow it does not recognize the fact that there is already a player in the database
+
+            stmt.close();
+
+        }catch (Exception e){
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.out.println(e +" Failed to retrieve user from users table.");
+            System.exit(0);
+        }
+        return rs;
+    }
+
+    public void regPlayer(Player p){
+        try{
             //Query to insert data into tutorials_data table
-            String query = "insert into private_waystones ("
-                    + "location, "
-                    + "owner) values(?, ?)";
+            String query = "INSERT INTO users (" +
+                    " uuid," +
+                    " user_name," +
+                    " private_ws," +
+                    " public_ws)" +
+                    " VALUES(?, ?, ?, ?)";
 
             //Creating the preparedStatement object
-            PreparedStatement pstmt = c.prepareStatement(query);
+            PreparedStatement pstmt = getCon().prepareStatement(query);
+
+            pstmt.setString(1, p.getUniqueId().toString());
+            pstmt.setString(2, p.getName());
+            pstmt.setInt(3, 1);//A player must have placed a private waystone to be registered
+            pstmt.setInt(4, 0);
+            pstmt.execute();
+
+            
+        }catch (Exception e){
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.out.println(e +" Could not register waystone.");
+            System.exit(0);
+        }
+    }
+
+    public void addPrivateWS(int newTotal, String uuid){
+        Statement stmt;
+        try{
+            stmt = getCon().createStatement();
+            String sql = "UPDATE users" +
+                    " SET private_ws = " + newTotal +
+                    " WHERE uuid = "+ "\'" +uuid +"\'";
+            stmt.executeQuery(sql);
+            stmt.close();
+            
+        }catch (Exception e){
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.out.println(e +" Failed to update the update the private waystone number to the user.");
+            System.exit(0);
+        }
+
+
+    }
+
+    public void regWaystone(Waystone ws){
+
+        try{
+            //Query to insert data into tutorials_data table
+            String query = "INSERT INTO private_waystones ("
+                    + "location, "
+                    + "owner) VALUES(?, ?)";
+
+            //Creating the preparedStatement object
+            PreparedStatement pstmt = getCon().prepareStatement(query);
             String location = ws.getLocation().toString();
             String owner = ws.getOwner().toString();
 
@@ -80,21 +150,15 @@ public class SQLiteJDBC {
             pstmt.setString(2, owner);
             pstmt.execute();
 
-            c.close();
+
         }catch (Exception e){
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-            System.exit(0);
             System.out.println(e +"Could not register waystone.");
+            System.exit(0);
         }
     }
 
-    public void createUser(Connection c){
 
-    }
-
-    public void getUserData(Connection c){ //get only the user's data
-
-    }
 
 
 
