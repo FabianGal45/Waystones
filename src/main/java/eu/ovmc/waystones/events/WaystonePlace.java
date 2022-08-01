@@ -1,6 +1,7 @@
 package eu.ovmc.waystones.events;
 
 import eu.ovmc.waystones.SQLiteJDBC;
+import eu.ovmc.waystones.User;
 import eu.ovmc.waystones.Waystone;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -31,17 +32,15 @@ public class WaystonePlace implements Listener {
                 //get user data from users table
                 System.out.println(">1> Getting user data for player");
                 SQLiteJDBC jdbc = new SQLiteJDBC();
-                ResultSet rs = jdbc.getDatafromUser(player);
+                User user = jdbc.getDatafromUser(player);
                 try{
-//                    System.out.println(rs.getString("uuid"));
                     //if player exists
-                    if(rs.next()){
-                        System.out.println(">2> Player exists, calculating and adding 1 to the user data");
-
+                    if(user != null){
                         //+1 the number of private waystones in users data
-                        int original = rs.getInt("private_ws");
+                        int original = user.getPrivateWs();
                         int newTotal = original +1;
-                        jdbc.addPrivateWS(newTotal, player.getUniqueId().toString());
+                        user.setPrivateWs(newTotal);
+                        jdbc.updateUser(user);
                     }
                     else{
                         //Register new player

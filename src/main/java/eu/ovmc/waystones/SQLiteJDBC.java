@@ -65,15 +65,17 @@ public class SQLiteJDBC {
         }
     }
 
-    public ResultSet getDatafromUser(Player p) {
+    public User getDatafromUser(Player p) {
         Statement stmt;
-        ResultSet rs = null;
         String uuid = p.getUniqueId().toString();
+        User user = null;
         try{
             stmt = con.createStatement();
             String sql = "SELECT * FROM users WHERE uuid = '"+uuid +"'";
+
             try {
-                rs = stmt.executeQuery(sql);
+                ResultSet rs = stmt.executeQuery(sql);
+                user = new User(rs.getString("uuid"), rs.getString("user_name"), rs.getInt("private_ws"), rs.getInt("public_ws"));
             }catch (SQLException e){
                 System.err.println( e.getClass().getName() + ": " + e.getMessage() );
                 System.out.println(e +" No users in the database.");
@@ -90,7 +92,7 @@ public class SQLiteJDBC {
             System.exit(0);
         }
 
-        return rs;
+        return user;
     }
 
     public void regPlayer(Player p){
@@ -120,13 +122,13 @@ public class SQLiteJDBC {
         }
     }
 
-    public void addPrivateWS(int newTotal, String uuid){
+    public void updateUser(User user){
         Statement stmt;
         try{
             stmt = con.createStatement();
             String sql = "UPDATE users" +
-                    " SET private_ws = " + newTotal +
-                    " WHERE uuid = '" +uuid +"'";
+                    " SET private_ws = " + user.getPrivateWs() +
+                    " WHERE uuid = '" + user.getUuid() +"'";
             stmt.executeUpdate(sql);
 //            stmt.close();
             con.close();
