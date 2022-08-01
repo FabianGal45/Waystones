@@ -2,7 +2,6 @@ package eu.ovmc.waystones;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
-import java.util.UUID;
 
 public class SQLiteJDBC {
     private Connection con = getCon();
@@ -65,27 +64,22 @@ public class SQLiteJDBC {
         }
     }
 
-    public User getDatafromUser(Player p) {
+    public User getUserFromDB(Player p) {
         Statement stmt;
         String uuid = p.getUniqueId().toString();
         User user = null;
         try{
             stmt = con.createStatement();
             String sql = "SELECT * FROM users WHERE uuid = '"+uuid +"'";
-
-            try {
-                ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()){
                 user = new User(rs.getString("uuid"), rs.getString("user_name"), rs.getInt("private_ws"), rs.getInt("public_ws"));
-            }catch (SQLException e){
-                System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-                System.out.println(e +" No users in the database.");
             }
-//            System.out.println(rs.getString("uuid"));
 
             //Todo: Somehow it does not recognize the fact that there is already a player in the database
+            //SQL Querry does not retrieve any data. It has nothing to do with the code. ResultSet is empty.
+            //TODO: Fetch the data that fixes the closing and opening of the statements.
 
-//            stmt.close();
-            con.close();
         }catch (Exception e){
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.out.println(e +" Failed to retrieve user from users table.");

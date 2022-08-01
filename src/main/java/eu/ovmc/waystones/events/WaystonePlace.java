@@ -3,18 +3,12 @@ package eu.ovmc.waystones.events;
 import eu.ovmc.waystones.SQLiteJDBC;
 import eu.ovmc.waystones.User;
 import eu.ovmc.waystones.Waystone;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
-
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class WaystonePlace implements Listener {
 //    https://www.spigotmc.org/wiki/using-the-event-api/
@@ -32,7 +26,7 @@ public class WaystonePlace implements Listener {
                 //get user data from users table
                 System.out.println(">1> Getting user data for player");
                 SQLiteJDBC jdbc = new SQLiteJDBC();
-                User user = jdbc.getDatafromUser(player);
+                User user = jdbc.getUserFromDB(player);
                 try{
                     //if player exists
                     if(user != null){
