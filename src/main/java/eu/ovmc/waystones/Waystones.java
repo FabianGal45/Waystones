@@ -19,9 +19,8 @@ public final class Waystones extends JavaPlugin implements Listener {
         getConfig().options().copyDefaults();
         saveDefaultConfig();
 
-        //SQLiteJDBC
+        //SQLiteJDBC - Connect and create the tables.
         SQLiteJDBC jdbc = new SQLiteJDBC();
-//        con = jdbc.getCon();
         jdbc.createTables();
 
         //Events

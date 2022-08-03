@@ -31,6 +31,7 @@ public class WaystonePlace implements Listener {
                     //if player exists
                     if(user != null){
                         //+1 the number of private waystones in users data
+                        System.out.println("User exists, +1 waystone");
                         int original = user.getPrivateWs();
                         int newTotal = original +1;
                         user.setPrivateWs(newTotal);
