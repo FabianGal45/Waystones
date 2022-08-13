@@ -33,7 +33,7 @@ public class WaystonePlace implements Listener {
                         //Register new player
                         System.out.println(">3> Registering new payer");
                         jdbc.regPlayer(player);
-
+                        user = jdbc.getUserFromDB(player);//once registered, store the user object so that it doesn't satay null and crash when trying to update the user.
                     }
                     //register the waystone
                     System.out.println(">4> Registering Waystone");
@@ -43,9 +43,6 @@ public class WaystonePlace implements Listener {
                     //Update the number of waystones that the user has
                     System.out.println("User exists, +1 waystone");
                     jdbc.updateUser(user);
-
-
-
 
 
                 }catch (Exception exception){

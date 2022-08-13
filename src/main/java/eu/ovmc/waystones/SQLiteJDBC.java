@@ -128,12 +128,13 @@ public class SQLiteJDBC {
         Statement stmt;
 
         //Count the number of waystones a user has
-        int newWsCount = countPrivateWs(user);
+        int privateCount = countPrivateWs(user);
+        int publicCount = countPublicWs(user);
 
         try{
             stmt = getCon().createStatement();
             String sql = "UPDATE users" +
-                    " SET private_ws = " + newWsCount +
+                    " SET private_ws = " + privateCount + ", public_ws = "+ publicCount +
                     " WHERE uuid = '" + user.getUuid() +"'";
             stmt.executeUpdate(sql);
             stmt.close();
@@ -164,6 +165,29 @@ public class SQLiteJDBC {
         }catch (Exception e){
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
             System.out.println(e +" Failed to count the number of private waystones.");
+            System.exit(0);
+        }
+
+        return num;
+    }
+    int countPublicWs(User user){
+        int num = 0;
+        Statement stmt;
+        try{
+            stmt = getCon().createStatement();
+            String sql = "SELECT COUNT(location) AS recordCount" +
+                    " FROM public_waystones " +
+                    " WHERE owner = '" + user.getUuid() +"'";
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()){
+                num = rs.getInt("recordCount");
+                System.out.println("aaaaa? " + num);
+            }
+
+            stmt.close();
+        }catch (Exception e){
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.out.println(e +" Failed to count the number of public waystones.");
             System.exit(0);
         }
 
@@ -211,7 +235,7 @@ public class SQLiteJDBC {
 
         }catch (Exception e){
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-            System.out.println(e +" Failed to retrieve user from users table.");
+            System.out.println(e +" Failed to retrieve Waystone from private_waystones table.");
             System.exit(0);
         }
 
@@ -219,6 +243,21 @@ public class SQLiteJDBC {
     }
 
 
+    public void remPrivateWs(Waystone ws){
+        Statement stmt;
+        try{
+            stmt = getCon().createStatement();
+            String sql = "DELETE FROM private_waystones WHERE location = '"+ ws.getLocation() +"'";
+            stmt.executeUpdate(sql);
+            stmt.close();
+            System.out.println("Waystone removed.");
+
+        }catch (Exception e){
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.out.println(e +" Failed to delete wasytone.");
+            System.exit(0);
+        }
+    }
 
 
 
