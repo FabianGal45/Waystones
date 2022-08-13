@@ -1,19 +1,14 @@
 package eu.ovmc.waystones.events;
 
 import eu.ovmc.waystones.SQLiteJDBC;
+import eu.ovmc.waystones.User;
 import eu.ovmc.waystones.Waystone;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
-
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class WaystonePlace implements Listener {
 //    https://www.spigotmc.org/wiki/using-the-event-api/
@@ -26,32 +21,28 @@ public class WaystonePlace implements Listener {
 
             if(blockUnder.getType().equals(Material.EMERALD_BLOCK)){
                 Player player = e.getPlayer();
-                Waystone ws = new Waystone(e.getBlock().getLocation(), e.getPlayer().getUniqueId());
+                Waystone ws = new Waystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString());
 
                 //get user data from users table
                 System.out.println(">1> Getting user data for player");
                 SQLiteJDBC jdbc = new SQLiteJDBC();
-                ResultSet rs = jdbc.getDatafromUser(player);
+                User user = jdbc.getUserFromDB(player);
                 try{
-//                    System.out.println(rs.getString("uuid"));
-                    //if player exists
-                    if(rs.next()){
-                        System.out.println(">2> Player exists, calculating and adding 1 to the user data");
-
-                        //+1 the number of private waystones in users data
-                        int original = rs.getInt("private_ws");
-                        int newTotal = original +1;
-                        jdbc.addPrivateWS(newTotal, player.getUniqueId().toString());
-                    }
-                    else{
+                    //if player does not exists
+                    if(user == null){
                         //Register new player
                         System.out.println(">3> Registering new payer");
                         jdbc.regPlayer(player);
+                        user = jdbc.getUserFromDB(player);//once registered, store the user object so that it doesn't satay null and crash when trying to update the user.
                     }
-
                     //register the waystone
                     System.out.println(">4> Registering Waystone");
                     jdbc.regWaystone(ws);
+
+
+                    //Update the number of waystones that the user has
+                    System.out.println("User exists, +1 waystone");
+                    jdbc.updateUser(user);
 
 
                 }catch (Exception exception){
