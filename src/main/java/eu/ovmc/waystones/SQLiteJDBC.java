@@ -167,6 +167,29 @@ public class SQLiteJDBC {
         }
     }
 
+    public Waystone getWaystone(String location){
+        Waystone ws = null;
+
+        Statement stmt;
+        try{
+            stmt = getCon().createStatement();
+            String sql = "SELECT * FROM private_waystones WHERE location = '"+ location +"'";
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()){
+                ws = new Waystone(rs.getString("location"), rs.getString("owner"));
+            }
+
+            stmt.close();
+
+        }catch (Exception e){
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.out.println(e +" Failed to retrieve user from users table.");
+            System.exit(0);
+        }
+
+        return ws;
+    }
+
 
 
 

@@ -21,7 +21,7 @@ public class WaystonePlace implements Listener {
 
             if(blockUnder.getType().equals(Material.EMERALD_BLOCK)){
                 Player player = e.getPlayer();
-                Waystone ws = new Waystone(e.getBlock().getLocation(), e.getPlayer().getUniqueId());
+                Waystone ws = new Waystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString());
 
                 //get user data from users table
                 System.out.println(">1> Getting user data for player");
