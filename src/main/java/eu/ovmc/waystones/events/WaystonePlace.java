@@ -28,24 +28,24 @@ public class WaystonePlace implements Listener {
                 SQLiteJDBC jdbc = new SQLiteJDBC();
                 User user = jdbc.getUserFromDB(player);
                 try{
-                    //if player exists
-                    if(user != null){
-                        //+1 the number of private waystones in users data
-                        System.out.println("User exists, +1 waystone");
-                        int original = user.getPrivateWs();
-                        int newTotal = original +1;
-                        user.setPrivateWs(newTotal);
-                        jdbc.updateUser(user);
-                    }
-                    else{
+                    //if player does not exists
+                    if(user == null){
                         //Register new player
                         System.out.println(">3> Registering new payer");
                         jdbc.regPlayer(player);
-                    }
 
+                    }
                     //register the waystone
                     System.out.println(">4> Registering Waystone");
                     jdbc.regWaystone(ws);
+
+
+                    //Update the number of waystones that the user has
+                    System.out.println("User exists, +1 waystone");
+                    jdbc.updateUser(user);
+
+
+
 
 
                 }catch (Exception exception){

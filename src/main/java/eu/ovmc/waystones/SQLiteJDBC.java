@@ -112,7 +112,7 @@ public class SQLiteJDBC {
 
             pstmt.setString(1, p.getUniqueId().toString());
             pstmt.setString(2, p.getName());
-            pstmt.setInt(3, 1);//A player must have placed a private waystone to be registered
+            pstmt.setInt(3, 0);
             pstmt.setInt(4, 0);
             pstmt.execute();
             pstmt.close();
@@ -126,10 +126,14 @@ public class SQLiteJDBC {
 
     public void updateUser(User user){
         Statement stmt;
+
+        //Count the number of waystones a user has
+        int newWsCount = countPrivateWs(user);
+
         try{
             stmt = getCon().createStatement();
             String sql = "UPDATE users" +
-                    " SET private_ws = " + user.getPrivateWs() +
+                    " SET private_ws = " + newWsCount +
                     " WHERE uuid = '" + user.getUuid() +"'";
             stmt.executeUpdate(sql);
             stmt.close();
@@ -140,6 +144,30 @@ public class SQLiteJDBC {
         }
 
 
+    }
+
+     int countPrivateWs(User user){
+        int num = 0;
+        Statement stmt;
+        try{
+            stmt = getCon().createStatement();
+            String sql = "SELECT COUNT(location) AS recordCount" +
+                    " FROM private_waystones " +
+                    " WHERE owner = '" + user.getUuid() +"'";
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()){
+                num = rs.getInt("recordCount");
+                System.out.println("aaaaa? " + num);
+            }
+
+            stmt.close();
+        }catch (Exception e){
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.out.println(e +" Failed to count the number of private waystones.");
+            System.exit(0);
+        }
+
+        return num;
     }
 
     public void regWaystone(Waystone ws){
