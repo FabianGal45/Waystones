@@ -24,36 +24,19 @@ public class WaystonePlace implements Listener {
                 Waystone ws = new Waystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString());
 
                 //get user data from users table
-                System.out.println(">1> Getting user data for player");
                 SQLiteJDBC jdbc = new SQLiteJDBC();
                 User user = jdbc.getUserFromDB(player.getUniqueId().toString());
-                try{
-                    //if player does not exists
-                    if(user == null){
-                        //Register new player
-                        System.out.println(">3> Registering new payer");
-                        jdbc.regPlayer(player);
-                        user = jdbc.getUserFromDB(player.getUniqueId().toString());//once registered, store the user object so that it doesn't satay null and crash when trying to update the user.
-                    }
-                    //register the waystone
-                    System.out.println(">4> Registering Waystone");
-                    jdbc.regWaystone(ws);
 
-                    //Todo: should happen automatically when calling the method
-                    //Update the number of waystones that the user has
-                    System.out.println("User exists, +1 waystone");
-                    jdbc.updateUser(user);
-
-
-                }catch (Exception exception){
-                    System.err.println(exception.getClass().getName() + ": " + exception.getMessage());
-                    System.out.println(exception +" Failed to eat beans");
-                    System.exit(0);
+                //if player does not exists
+                if(user == null){
+                    //Register new player
+                    jdbc.regPlayer(player);
+                    user = jdbc.getUserFromDB(player.getUniqueId().toString());//once registered, store the user object so that it doesn't satay null and crash when trying to update the user.
                 }
 
-                player.sendMessage("This is a waystone!");
-
-
+                //register the waystone
+                jdbc.regWaystone(ws, user);
+                player.sendMessage("Waystone registered!");
 
             }
         }

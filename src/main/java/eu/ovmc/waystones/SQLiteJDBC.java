@@ -10,7 +10,6 @@ public class SQLiteJDBC {
 
         //If there is a connection created then return that connection.
         if(con != null){
-            System.out.println("Returned previous connection");
             return con;
         }
         else{
@@ -19,7 +18,6 @@ public class SQLiteJDBC {
                 Class.forName("org.sqlite.JDBC");
                 Connection con = DriverManager.getConnection("jdbc:sqlite:plugins/Waystones/waystones.sqlite.db");
                 this.con = con;
-                System.out.println("Created connection");
 
             }catch(ClassNotFoundException | SQLException e){
                 System.out.println(e +" Database Connection FAILED!");
@@ -75,6 +73,62 @@ public class SQLiteJDBC {
         }
     }
 
+    public void regPlayer(Player p){
+        try{
+            //Query to insert data into tutorials_data table
+            String query = "INSERT INTO users (" +
+                    " uuid," +
+                    " user_name," +
+                    " private_ws," +
+                    " public_ws)" +
+                    " VALUES(?, ?, ?, ?)";
+
+            //Creating the preparedStatement object
+            PreparedStatement pstmt = getCon().prepareStatement(query);
+
+            pstmt.setString(1, p.getUniqueId().toString());
+            pstmt.setString(2, p.getName());
+            pstmt.setInt(3, 0);
+            pstmt.setInt(4, 0);
+            pstmt.execute();
+            pstmt.close();
+
+        }catch (Exception e){
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.out.println(e +" Could not register player.");
+            System.exit(0);
+        }
+    }
+
+    public void regWaystone(Waystone ws, User user){
+
+        try{
+            //Query to insert data into tutorials_data table
+            String query = "INSERT INTO private_waystones ("
+                    + "location, "
+                    + "owner) VALUES(?, ?)";
+
+            //Creating the preparedStatement object
+            PreparedStatement pstmt = getCon().prepareStatement(query);
+            String location = ws.getLocation().toString();
+            String owner = ws.getOwner().toString();
+
+            pstmt.setString(1, location);
+            pstmt.setString(2, owner);
+            pstmt.execute();
+            pstmt.close();
+
+            //Update the user data.
+            updateUser(user);
+
+        }catch (Exception e){
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.out.println(e +"Could not register waystone.");
+            System.exit(0);
+        }
+    }
+
+
     public User getUserFromDB(String uuid) {
         Statement stmt;
 //        String uuid = p.getUniqueId().toString();
@@ -98,31 +152,27 @@ public class SQLiteJDBC {
         return user;
     }
 
-    public void regPlayer(Player p){
+    public Waystone getWaystone(String location){
+        Waystone ws = null;
+
+        Statement stmt;
         try{
-            //Query to insert data into tutorials_data table
-            String query = "INSERT INTO users (" +
-                    " uuid," +
-                    " user_name," +
-                    " private_ws," +
-                    " public_ws)" +
-                    " VALUES(?, ?, ?, ?)";
+            stmt = getCon().createStatement();
+            String sql = "SELECT * FROM private_waystones WHERE location = '"+ location +"'";
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()){
+                ws = new Waystone(rs.getString("location"), rs.getString("owner"));
+            }
 
-            //Creating the preparedStatement object
-            PreparedStatement pstmt = getCon().prepareStatement(query);
+            stmt.close();
 
-            pstmt.setString(1, p.getUniqueId().toString());
-            pstmt.setString(2, p.getName());
-            pstmt.setInt(3, 0);
-            pstmt.setInt(4, 0);
-            pstmt.execute();
-            pstmt.close();
-            
         }catch (Exception e){
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-            System.out.println(e +" Could not register player.");
+            System.out.println(e +" Failed to retrieve Waystone from private_waystones table.");
             System.exit(0);
         }
+
+        return ws;
     }
 
     public void updateUser(User user){
@@ -182,7 +232,6 @@ public class SQLiteJDBC {
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
                 num = rs.getInt("recordCount");
-                System.out.println("aaaaa? " + num);
             }
 
             stmt.close();
@@ -195,58 +244,10 @@ public class SQLiteJDBC {
         return num;
     }
 
-    public void regWaystone(Waystone ws){
-
-        try{
-            //Query to insert data into tutorials_data table
-            String query = "INSERT INTO private_waystones ("
-                    + "location, "
-                    + "owner) VALUES(?, ?)";
-
-            //Creating the preparedStatement object
-            PreparedStatement pstmt = getCon().prepareStatement(query);
-            String location = ws.getLocation().toString();
-            String owner = ws.getOwner().toString();
-
-            pstmt.setString(1, location);
-            pstmt.setString(2, owner);
-            pstmt.execute();
-            pstmt.close();
-
-        }catch (Exception e){
-            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-            System.out.println(e +"Could not register waystone.");
-            System.exit(0);
-        }
-    }
-
-    public Waystone getWaystone(String location){
-        Waystone ws = null;
-
-        Statement stmt;
-        try{
-            stmt = getCon().createStatement();
-            String sql = "SELECT * FROM private_waystones WHERE location = '"+ location +"'";
-            ResultSet rs = stmt.executeQuery(sql);
-            while(rs.next()){
-                ws = new Waystone(rs.getString("location"), rs.getString("owner"));
-            }
-
-            stmt.close();
-
-        }catch (Exception e){
-            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-            System.out.println(e +" Failed to retrieve Waystone from private_waystones table.");
-            System.exit(0);
-        }
-
-        return ws;
-    }
-
     public void remPrivateWs(Waystone ws){
         Statement stmt;
 
-        try{
+        try{ //get the values from the broken waystone
             stmt = getCon().createStatement();
             String sql = "SELECT * FROM private_waystones WHERE location = '"+ ws.getLocation() +"'";
             ResultSet rs = stmt.executeQuery(sql);
@@ -263,14 +264,12 @@ public class SQLiteJDBC {
             sql = "DELETE FROM private_waystones WHERE location = '"+ loc +"'";
             stmt.executeUpdate(sql);
             System.out.println("Waystone removed.");
-            stmt.close();
-
 
             //update the owner of the waystone with the new number of waystones
             User user = getUserFromDB(owner);
             updateUser(user);
-            System.out.println("User should have been updated");
 
+            stmt.close();
 
         }catch (Exception e){
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -278,8 +277,6 @@ public class SQLiteJDBC {
             System.exit(0);
         }
     }
-
-
 
 
 }
