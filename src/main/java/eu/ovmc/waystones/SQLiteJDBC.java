@@ -2,6 +2,7 @@ package eu.ovmc.waystones;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
+import java.util.UUID;
 
 public class SQLiteJDBC {
     private Connection con;
@@ -74,13 +75,13 @@ public class SQLiteJDBC {
         }
     }
 
-    public User getUserFromDB(Player p) {
+    public User getUserFromDB(String uuid) {
         Statement stmt;
-        String uuid = p.getUniqueId().toString();
+//        String uuid = p.getUniqueId().toString();
         User user = null;
         try{
             stmt = getCon().createStatement();
-            String sql = "SELECT * FROM users WHERE uuid = '"+uuid +"'";
+            String sql = "SELECT * FROM users WHERE uuid = '"+ uuid +"'";
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
                 user = new User(rs.getString("uuid"), rs.getString("user_name"), rs.getInt("private_ws"), rs.getInt("public_ws"));
@@ -137,6 +138,7 @@ public class SQLiteJDBC {
                     " SET private_ws = " + privateCount + ", public_ws = "+ publicCount +
                     " WHERE uuid = '" + user.getUuid() +"'";
             stmt.executeUpdate(sql);
+            System.out.println("User "+ user.getUuid() +" updated!");
             stmt.close();
         }catch (Exception e){
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -158,7 +160,6 @@ public class SQLiteJDBC {
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
                 num = rs.getInt("recordCount");
-                System.out.println("aaaaa? " + num);
             }
 
             stmt.close();
@@ -242,15 +243,34 @@ public class SQLiteJDBC {
         return ws;
     }
 
-
     public void remPrivateWs(Waystone ws){
         Statement stmt;
+
         try{
             stmt = getCon().createStatement();
-            String sql = "DELETE FROM private_waystones WHERE location = '"+ ws.getLocation() +"'";
+            String sql = "SELECT * FROM private_waystones WHERE location = '"+ ws.getLocation() +"'";
+            ResultSet rs = stmt.executeQuery(sql);
+
+            //Store the values so that I can update the user after removing a waystone.
+            String owner = null;
+            String loc = null;
+            while(rs.next()){
+                owner = rs.getString("owner");
+                loc = rs.getString("location");
+            }
+
+            //Delete the waystone
+            sql = "DELETE FROM private_waystones WHERE location = '"+ loc +"'";
             stmt.executeUpdate(sql);
-            stmt.close();
             System.out.println("Waystone removed.");
+            stmt.close();
+
+
+            //update the owner of the waystone with the new number of waystones
+            User user = getUserFromDB(owner);
+            updateUser(user);
+            System.out.println("User should have been updated");
+
 
         }catch (Exception e){
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -258,7 +278,6 @@ public class SQLiteJDBC {
             System.exit(0);
         }
     }
-
 
 
 

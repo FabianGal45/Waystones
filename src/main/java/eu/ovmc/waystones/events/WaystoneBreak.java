@@ -1,5 +1,6 @@
 package eu.ovmc.waystones.events;
 import eu.ovmc.waystones.SQLiteJDBC;
+import eu.ovmc.waystones.User;
 import eu.ovmc.waystones.Waystone;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -16,17 +17,28 @@ public class WaystoneBreak implements Listener {
         Player player = e.getPlayer();
         Block block = e.getBlock();
         Block blockUnder = e.getBlock().getLocation().subtract(0.0,1.0,0.0).getBlock();
+        Block blockAbove = e.getBlock().getLocation().add(0.0, 1.0,0.0).getBlock();
 
-        System.out.println("Broken: "+ block.getType() + " Under: "+ blockUnder.getType());
+        SQLiteJDBC jdbc = new SQLiteJDBC();
 
         if(block.getType().equals(Material.LODESTONE) && blockUnder.getType().equals(Material.EMERALD_BLOCK)){
-            System.out.println("you broke a waystone");
-            SQLiteJDBC jdbc = new SQLiteJDBC();
-            System.out.println("Location: "+ block.getLocation());
-            Waystone ws = jdbc.getWaystone(block.getLocation().toString());
-            System.out.println("Loc2: "+ ws.getLocation());
-            jdbc.remPrivateWs(ws);
 
+            //if the waystone exists in the database
+            if(jdbc.getWaystone(block.getLocation().toString()) != null){
+                player.sendMessage("you broke a waystone");
+                Waystone ws = jdbc.getWaystone(block.getLocation().toString());
+                jdbc.remPrivateWs(ws);
+            }
+        }
+
+        if(block.getType().equals(Material.EMERALD_BLOCK) && blockAbove.getType().equals(Material.LODESTONE)){
+            //if the waystone exists in the database
+            if(jdbc.getWaystone(blockAbove.getLocation().toString()) != null){
+                player.sendMessage("You broke the base of a waystone. Disabling...");
+                System.out.println("Location: "+ blockAbove.getLocation());
+                Waystone ws = jdbc.getWaystone(blockAbove.getLocation().toString());
+                jdbc.remPrivateWs(ws);
+            }
         }
 
     }

@@ -2,6 +2,7 @@ package eu.ovmc.waystones.events;
 
 import eu.ovmc.waystones.SQLiteJDBC;
 import eu.ovmc.waystones.Waystone;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -26,21 +27,30 @@ public class WaystoneInteract implements Listener {
         // Ignoring this event if player does not click on a block https://www.spigotmc.org/threads/errors-with-playerinteractevent-and-nameable.390258/
         if (e.getClickedBlock() == null) return;
 
+        //If right clicked a LODESTONE
         if(e.getClickedBlock().getType().equals(Material.LODESTONE) && action.equals(Action.RIGHT_CLICK_BLOCK)){
             Block blockUnder = e.getClickedBlock().getLocation().subtract(0.0,1.0,0.0).getBlock();
 
+            //if block under is EMERALD_BLOCK
             if(blockUnder.getType().equals(Material.EMERALD_BLOCK)) {
-                Player player = e.getPlayer();
-                player.sendMessage("You right clicked a private waystone!");
-
-                //Get the location of the lodestone and grab the object from the database.
                 SQLiteJDBC jdbc = new SQLiteJDBC();
                 String loc = e.getClickedBlock().getLocation().toString();
-                Waystone ws = jdbc.getWaystone(loc);
+                Player player = e.getPlayer();
 
-                System.out.println("Object loc: "+ ws.getParsedLocation().toString());
+                //if waystone exists in the database
+                if(jdbc.getWaystone(loc) != null){
+                    player.sendMessage("You right clicked a private waystone!");
 
-                //TODO: Open the GUI
+                    //Get the location of the lodestone and grab the object from the database.
+                    Waystone ws = jdbc.getWaystone(loc);
+                    System.out.println("Object loc: "+ ws.getParsedLocation().toString());
+
+                    //TODO: Open the GUI
+
+                }else{
+                  player.sendMessage(ChatColor.RED + "This waystone does not exist in the database!");
+                }
+
 
             }
         }
