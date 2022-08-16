@@ -1,9 +1,9 @@
 package eu.ovmc.waystones.events;
 
+import eu.ovmc.waystones.PublicWaystone;
 import eu.ovmc.waystones.SQLiteJDBC;
-import eu.ovmc.waystones.Waystone;
+import eu.ovmc.waystones.PrivateWaystone;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -12,9 +12,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
-
-import javax.swing.*;
-import java.sql.Connection;
 
 public class WaystoneInteract implements Listener {
     @EventHandler
@@ -31,19 +28,21 @@ public class WaystoneInteract implements Listener {
         if(e.getClickedBlock().getType().equals(Material.LODESTONE) && action.equals(Action.RIGHT_CLICK_BLOCK)){
             Block blockUnder = e.getClickedBlock().getLocation().subtract(0.0,1.0,0.0).getBlock();
 
-            //if block under is EMERALD_BLOCK
-            if(blockUnder.getType().equals(Material.EMERALD_BLOCK)) {
+            //if block under is EMERALD_BLOCK or NETHERITE_BLOCK
+            if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || blockUnder.getType().equals(Material.NETHERITE_BLOCK)) {
                 SQLiteJDBC jdbc = new SQLiteJDBC();
                 String loc = e.getClickedBlock().getLocation().toString();
+                PrivateWaystone ws = jdbc.getWaystone(loc);
                 Player player = e.getPlayer();
 
                 //if waystone exists in the database
-                if(jdbc.getWaystone(loc) != null){
-                    player.sendMessage("You right clicked a private waystone!");
-
-                    //Get the location of the lodestone and grab the object from the database.
-                    Waystone ws = jdbc.getWaystone(loc);
-                    System.out.println("Object loc: "+ ws.getParsedLocation().toString());
+                if(ws != null){
+                    if(ws instanceof PublicWaystone){
+                        player.sendMessage("This is a public waystone.");
+                    }
+                    else{
+                        player.sendMessage("This is a private waystone.");
+                    }
 
                     //TODO: Open the GUI
 

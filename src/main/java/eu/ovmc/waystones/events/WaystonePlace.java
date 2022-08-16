@@ -1,8 +1,10 @@
 package eu.ovmc.waystones.events;
 
+import eu.ovmc.waystones.PublicWaystone;
 import eu.ovmc.waystones.SQLiteJDBC;
 import eu.ovmc.waystones.User;
-import eu.ovmc.waystones.Waystone;
+import eu.ovmc.waystones.PrivateWaystone;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -18,11 +20,9 @@ public class WaystonePlace implements Listener {
         if(e.getBlock().getType().equals(Material.LODESTONE)){
             //Get the block underneath the lodestone
             Block blockUnder = e.getBlock().getLocation().subtract(0.0,1.0,0.0).getBlock();
+            Player player = e.getPlayer();
 
-            if(blockUnder.getType().equals(Material.EMERALD_BLOCK)){
-                Player player = e.getPlayer();
-                Waystone ws = new Waystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString());
-
+            if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || blockUnder.getType().equals(Material.NETHERITE_BLOCK)){
                 //get user data from users table
                 SQLiteJDBC jdbc = new SQLiteJDBC();
                 User user = jdbc.getUserFromDB(player.getUniqueId().toString());
@@ -35,10 +35,28 @@ public class WaystonePlace implements Listener {
                 }
 
                 //register the waystone
-                jdbc.regWaystone(ws, user);
-                player.sendMessage("Waystone registered!");
+                if(blockUnder.getType().equals(Material.EMERALD_BLOCK)){
+                    PrivateWaystone ws = new PrivateWaystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString(), null);
+                    jdbc.regWaystone(ws, user);
+                    player.sendMessage("Private waystone registered!");
+
+                }
+                else if(blockUnder.getType().equals(Material.NETHERITE_BLOCK)){
+                    PublicWaystone ws = new PublicWaystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString(), null, 0.1, 1.0, "shop");
+                    jdbc.regWaystone(ws, user);
+                    player.sendMessage("Public waystone registered!");
+                }
+                else{
+                    player.sendMessage(ChatColor.RED + "Something went wrong when registering the waystone.");//This message should never get triggered
+                }
 
             }
+
+
+
+
+
+
         }
     }
 

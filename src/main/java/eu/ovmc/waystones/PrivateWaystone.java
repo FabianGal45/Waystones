@@ -4,13 +4,22 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-public class Waystone {
+public class PrivateWaystone {
     private String location;
     private String owner;
 
-    public Waystone(String location, String owner) {
+    private String name;
+
+    public PrivateWaystone() {
+        location = null;
+        owner = null;
+        name = null;
+    }
+
+    public PrivateWaystone(String location, String owner, String name) {
         this.location = location;
         this.owner = owner;
+        this.name = name;
     }
 
     public String getLocation() {
@@ -48,5 +57,13 @@ public class Waystone {
 
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

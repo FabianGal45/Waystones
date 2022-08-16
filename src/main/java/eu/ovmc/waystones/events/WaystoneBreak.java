@@ -1,7 +1,7 @@
 package eu.ovmc.waystones.events;
+import eu.ovmc.waystones.PublicWaystone;
 import eu.ovmc.waystones.SQLiteJDBC;
-import eu.ovmc.waystones.User;
-import eu.ovmc.waystones.Waystone;
+import eu.ovmc.waystones.PrivateWaystone;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -21,23 +21,32 @@ public class WaystoneBreak implements Listener {
 
         SQLiteJDBC jdbc = new SQLiteJDBC();
 
-        if(block.getType().equals(Material.LODESTONE) && blockUnder.getType().equals(Material.EMERALD_BLOCK)){
+        if(block.getType().equals(Material.LODESTONE)){
+            if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || blockUnder.getType().equals(Material.NETHERITE_BLOCK)){
 
-            //if the waystone exists in the database
-            if(jdbc.getWaystone(block.getLocation().toString()) != null){
-                player.sendMessage("you broke a waystone");
-                Waystone ws = jdbc.getWaystone(block.getLocation().toString());
-                jdbc.remPrivateWs(ws);
+                //if the waystone exists in the database
+                PrivateWaystone ws = jdbc.getWaystone(block.getLocation().toString());
+                if(ws != null){
+
+                    if(ws instanceof PublicWaystone){
+                        player.sendMessage("you broke a public waystone");
+                    }else{
+                        player.sendMessage("you broke a private waystone");
+                    }
+                    jdbc.remWs(ws);
+
+                }
             }
         }
 
-        if(block.getType().equals(Material.EMERALD_BLOCK) && blockAbove.getType().equals(Material.LODESTONE)){
+        if(block.getType().equals(Material.EMERALD_BLOCK) || block.getType().equals(Material.NETHERITE_BLOCK) && blockAbove.getType().equals(Material.LODESTONE)){
+
             //if the waystone exists in the database
             if(jdbc.getWaystone(blockAbove.getLocation().toString()) != null){
                 player.sendMessage("You broke the base of a waystone. Disabling...");
                 System.out.println("Location: "+ blockAbove.getLocation());
-                Waystone ws = jdbc.getWaystone(blockAbove.getLocation().toString());
-                jdbc.remPrivateWs(ws);
+                PrivateWaystone ws = jdbc.getWaystone(blockAbove.getLocation().toString());
+                jdbc.remWs(ws);
             }
         }
 

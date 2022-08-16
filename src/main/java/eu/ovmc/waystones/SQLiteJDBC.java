@@ -2,7 +2,6 @@ package eu.ovmc.waystones;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
-import java.util.UUID;
 
 public class SQLiteJDBC {
     private Connection con;
@@ -41,6 +40,7 @@ public class SQLiteJDBC {
             sql = "CREATE TABLE IF NOT EXISTS private_waystones " + //Creates the private_waystones table
                     "(location varchar(255)," +
                     " owner VARCHAR(255)," +
+                    " name VARCHAR(255)," +
                     " PRIMARY KEY(location)" +
                     " FOREIGN KEY (owner)" +
                     "  REFERENCES users(uuid))";
@@ -100,31 +100,62 @@ public class SQLiteJDBC {
         }
     }
 
-    public void regWaystone(Waystone ws, User user){
+    public void regWaystone(PrivateWaystone ws, User user){
 
-        try{
-            //Query to insert data into tutorials_data table
-            String query = "INSERT INTO private_waystones ("
-                    + "location, "
-                    + "owner) VALUES(?, ?)";
+        if(ws instanceof PublicWaystone){
+            System.out.println("PUBLIC!!!!!");
+            try{
+                //Query to insert data into tutorials_data table
+                String query = "INSERT INTO public_waystones (" +
+                        "location, " +
+                        "owner) VALUES(?, ?)";
 
-            //Creating the preparedStatement object
-            PreparedStatement pstmt = getCon().prepareStatement(query);
-            String location = ws.getLocation().toString();
-            String owner = ws.getOwner().toString();
+                //Creating the preparedStatement object
+                PreparedStatement pstmt = getCon().prepareStatement(query);
+                String location = ws.getLocation();
+                String owner = ws.getOwner();
 
-            pstmt.setString(1, location);
-            pstmt.setString(2, owner);
-            pstmt.execute();
-            pstmt.close();
+                pstmt.setString(1, location);
+                pstmt.setString(2, owner);
 
-            //Update the user data.
-            updateUser(user);
+                pstmt.execute();
+                pstmt.close();
 
-        }catch (Exception e){
-            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-            System.out.println(e +"Could not register waystone.");
-            System.exit(0);
+                //Update the user data.
+                updateUser(user);
+
+            }catch (Exception e){
+                System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+                System.out.println(e +"Could not register waystone.");
+                System.exit(0);
+            }
+
+        }
+        else{
+            try{
+                //Query to insert data into tutorials_data table
+                String query = "INSERT INTO private_waystones (" +
+                        "location, " +
+                        "owner) VALUES(?, ?)";
+
+                //Creating the preparedStatement object
+                PreparedStatement pstmt = getCon().prepareStatement(query);
+                String location = ws.getLocation();
+                String owner = ws.getOwner();
+
+                pstmt.setString(1, location);
+                pstmt.setString(2, owner);
+                pstmt.execute();
+                pstmt.close();
+
+                //Update the user data.
+                updateUser(user);
+
+            }catch (Exception e){
+                System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+                System.out.println(e +"Could not register waystone.");
+                System.exit(0);
+            }
         }
     }
 
@@ -152,8 +183,8 @@ public class SQLiteJDBC {
         return user;
     }
 
-    public Waystone getWaystone(String location){
-        Waystone ws = null;
+    public PrivateWaystone getWaystone(String location){
+        PrivateWaystone ws = null;
 
         Statement stmt;
         try{
@@ -161,8 +192,15 @@ public class SQLiteJDBC {
             String sql = "SELECT * FROM private_waystones WHERE location = '"+ location +"'";
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
-                ws = new Waystone(rs.getString("location"), rs.getString("owner"));
+                ws = new PrivateWaystone(rs.getString("location"), rs.getString("owner"), rs.getString("name"));
             }
+
+            sql = "SELECT * FROM public_waystones WHERE location = '"+ location +"'";
+            rs = stmt.executeQuery(sql);
+            while(rs.next()){
+                ws = new PublicWaystone(rs.getString("location"), rs.getString("owner"), rs.getString("name"));
+            }
+
 
             stmt.close();
 
@@ -199,7 +237,7 @@ public class SQLiteJDBC {
 
     }
 
-     int countPrivateWs(User user){
+     private int countPrivateWs(User user){
         int num = 0;
         Statement stmt;
         try{
@@ -221,7 +259,7 @@ public class SQLiteJDBC {
 
         return num;
     }
-    int countPublicWs(User user){
+    private int countPublicWs(User user){
         int num = 0;
         Statement stmt;
         try{
@@ -244,26 +282,40 @@ public class SQLiteJDBC {
         return num;
     }
 
-    public void remPrivateWs(Waystone ws){
+    public void remWs(PrivateWaystone ws){
         Statement stmt;
 
         try{ //get the values from the broken waystone
             stmt = getCon().createStatement();
             String sql = "SELECT * FROM private_waystones WHERE location = '"+ ws.getLocation() +"'";
             ResultSet rs = stmt.executeQuery(sql);
-
-            //Store the values so that I can update the user after removing a waystone.
             String owner = null;
             String loc = null;
+
+            //Store the values so that I can update the user after removing a waystone.
             while(rs.next()){
                 owner = rs.getString("owner");
                 loc = rs.getString("location");
+
+                //Delete the waystone
+                sql = "DELETE FROM private_waystones WHERE location = '"+ loc +"'";
+                stmt.executeUpdate(sql);
+                System.out.println("Waystone removed.");
             }
 
-            //Delete the waystone
-            sql = "DELETE FROM private_waystones WHERE location = '"+ loc +"'";
-            stmt.executeUpdate(sql);
-            System.out.println("Waystone removed.");
+            sql = "SELECT * FROM public_waystones WHERE location = '"+ ws.getLocation() +"'";
+            rs = stmt.executeQuery(sql);
+            while(rs.next()){
+                owner = rs.getString("owner");
+                loc = rs.getString("location");
+
+                //Delete the waystone
+                sql = "DELETE FROM public_waystones WHERE location = '"+ loc +"'";
+                stmt.executeUpdate(sql);
+                System.out.println("Waystone removed.");
+            }
+
+
 
             //update the owner of the waystone with the new number of waystones
             User user = getUserFromDB(owner);
