@@ -3,6 +3,7 @@ package eu.ovmc.waystones.events;
 import eu.ovmc.waystones.PublicWaystone;
 import eu.ovmc.waystones.SQLiteJDBC;
 import eu.ovmc.waystones.PrivateWaystone;
+import eu.ovmc.waystones.Waystones;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -14,6 +15,14 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 public class WaystoneInteract implements Listener {
+
+    Waystones plugin;
+
+    public WaystoneInteract(Waystones plugin){
+        this.plugin = plugin;
+    }
+
+
     @EventHandler
     public void PlayerInteract(PlayerInteractEvent e){
         Action action = e.getAction();
@@ -45,6 +54,7 @@ public class WaystoneInteract implements Listener {
                     }
 
                     //TODO: Open the GUI
+                    plugin.openMainMenu(player);
 
                 }else{
                   player.sendMessage(ChatColor.RED + "This waystone does not exist in the database!");
