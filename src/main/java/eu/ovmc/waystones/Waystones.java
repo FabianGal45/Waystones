@@ -24,10 +24,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public final class Waystones extends JavaPlugin implements Listener {
 
+    ArrayList<PrivateWaystone> privateWaystones;
 
     @Override
     public void onEnable() {
@@ -40,7 +42,7 @@ public final class Waystones extends JavaPlugin implements Listener {
         jdbc.createTables();
 
         //Events
-        getServer().getPluginManager().registerEvents(new MenuHandler(), this);
+        getServer().getPluginManager().registerEvents(new MenuHandler(this), this);
         getServer().getPluginManager().registerEvents(new WaystonePlace(), this);
         getServer().getPluginManager().registerEvents(new WaystoneInteract(this), this);
         getServer().getPluginManager().registerEvents(new WaystoneBreak(), this);
@@ -48,14 +50,53 @@ public final class Waystones extends JavaPlugin implements Listener {
     }
 
     public void openMainMenu(Player player){
-        Inventory gui = Bukkit.createInventory(player, 54, ChatColor.AQUA + "Main GUI");
 
-        ItemStack privateWs = new ItemStack(Material.EMERALD_BLOCK);
-        ItemMeta ptivateWsMeta = privateWs.getItemMeta();
-        ptivateWsMeta.displayName(Component.text("Private Waystone").decoration(TextDecoration.ITALIC, false));
-        privateWs.setItemMeta(ptivateWsMeta);
+        //Slots that are available for Private Waystones
+        ArrayList<Integer> privateSlots = new ArrayList<>();
+        Collections.addAll(privateSlots, 10, 11, 12, 13, 14, 15, 16);
+
+        //Creating the GUI
+        Inventory gui = Bukkit.createInventory(player, 54, Component.text("Main GUI"));
+
+        //Get the array with All private waystones
+        SQLiteJDBC jdbc = new SQLiteJDBC();
+        ArrayList<PrivateWaystone> arrAllPrivateWaystones;
+        arrAllPrivateWaystones = jdbc.getAllPrivateWaystones(player.getUniqueId().toString());
 
 
+        //Todo: continue with the getall public wasytones
+        //Creates an item for the first 7 waystones in the array.
+        for(int i = 0; i<privateSlots.size(); i++){
+            PrivateWaystone ws = arrAllPrivateWaystones.get(i);
+
+            //Creates the Emerald block item
+            ItemStack privateWs = new ItemStack(Material.EMERALD_BLOCK);
+            ItemMeta ptivateWsMeta = privateWs.getItemMeta();
+
+            //Sets the name
+            ptivateWsMeta.displayName(Component.text("Private Waystone").decoration(TextDecoration.ITALIC, false));
+
+            //Creates the lore of the item
+            List<Component> loreArray = new ArrayList<>();
+            loreArray.add(Component.text("Location: "+ ws.getParsedLocation().getBlockX()+", "+ ws.getParsedLocation().getBlockY()+", "+ws.getParsedLocation().getBlockZ()));
+            ptivateWsMeta.lore(loreArray);
+
+            //Upates the meta with the provided one
+            privateWs.setItemMeta(ptivateWsMeta);
+            privateWaystones = arrAllPrivateWaystones;
+
+            //Places the block in the GUI
+            gui.setItem(privateSlots.get(i), privateWs);
+        }
+
+        //If the arrAllPrivateWaystones => 7 then display a duplicate of the main menu Otherwise display the large menu (split menu) (large menu)
+
+        //If the arrAllPrivateWaystones or PublicWaystones is larger than the size of privateSlots or pubWaystoneSlots generate another gui and the next button
+
+
+
+
+        //Netherite block | WAITING FEATURE
         ItemStack publicWs = new ItemStack(Material.NETHERITE_BLOCK);
         ItemMeta pbUsMeta = publicWs.getItemMeta();
         //Item Name
@@ -72,17 +113,24 @@ public final class Waystones extends JavaPlugin implements Listener {
         publicWs.setItemMeta(pbUsMeta);
 
 
-
+        //Black Panel | WAITING FEATURE
         ItemStack blackPanel = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
 
+//        ItemStack[] menuItems = {privateWs, publicWs, blackPanel};
 
-        ItemStack[] menuItems = {privateWs, publicWs, blackPanel};
-        gui.setContents(menuItems);
+        gui.setItem(28, publicWs);
+        gui.setItem(19, blackPanel);
+//        gui.setContents(menuItems);
 
         //Send the gui to the event handler
         System.out.println("set gui");
 
         player.openInventory(gui);
+    }
+
+
+    public ArrayList<PrivateWaystone> getPrivWSs(){
+        return this.privateWaystones;
     }
 
     @Override

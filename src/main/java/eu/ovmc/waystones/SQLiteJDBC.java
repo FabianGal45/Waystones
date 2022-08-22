@@ -2,6 +2,7 @@ package eu.ovmc.waystones;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class SQLiteJDBC {
     private Connection con;
@@ -211,6 +212,31 @@ public class SQLiteJDBC {
         }
 
         return ws;
+    }
+
+    public ArrayList<PrivateWaystone> getAllPrivateWaystones(String uuid){
+        ArrayList<PrivateWaystone> pubWs = new ArrayList<>();
+        PrivateWaystone ws = null;
+        Statement stmt;
+
+        try{
+            stmt = getCon().createStatement();
+            String sql = "SELECT * FROM private_waystones WHERE owner = '"+ uuid +"';";
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()){
+                ws = new PrivateWaystone(rs.getString("location"), rs.getString("owner"), rs.getString("name"));
+                pubWs.add(ws);
+            }
+
+            stmt.close();
+
+        }catch (Exception e){
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.out.println(e +" Failed to retrieve Waystone from private_waystones table.");
+            System.exit(0);
+        }
+
+        return pubWs;
     }
 
     public void updateUser(User user){
