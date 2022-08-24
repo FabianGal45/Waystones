@@ -1,5 +1,6 @@
 package eu.ovmc.waystones.events;
 
+import eu.ovmc.waystones.GIUs.SplitMenu;
 import eu.ovmc.waystones.PublicWaystone;
 import eu.ovmc.waystones.SQLiteJDBC;
 import eu.ovmc.waystones.PrivateWaystone;
@@ -13,6 +14,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+
+import java.util.ArrayList;
 
 public class WaystoneInteract implements Listener {
 
@@ -53,8 +56,10 @@ public class WaystoneInteract implements Listener {
                         player.sendMessage("This is a private waystone.");
                     }
 
-                    //TODO: Open the GUI
-                    plugin.openMainMenu(player);
+                    //Open the Menu (Split menu)
+                    SplitMenu sm = new SplitMenu();
+                    sm.openMainMenu(player);
+                    plugin.getMh().setSplitMenu(sm);//Gets the menu handler from the main class and then sets the split menu in the menu handler class.
 
                 }else{
                   player.sendMessage(ChatColor.RED + "This waystone does not exist in the database!");
