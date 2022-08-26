@@ -1,5 +1,6 @@
 package eu.ovmc.waystones.events;
 
+import eu.ovmc.waystones.menusystem.menu.WaystonesSplitMenu;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
@@ -17,13 +18,6 @@ import org.bukkit.inventory.EquipmentSlot;
 import java.util.ArrayList;
 
 public class WaystoneInteract implements Listener {
-
-    WaystonesPlugin plugin;
-
-    public WaystoneInteract(WaystonesPlugin plugin){
-        this.plugin = plugin;
-    }
-
 
     @EventHandler
     public void PlayerInteract(PlayerInteractEvent e){
@@ -57,8 +51,11 @@ public class WaystoneInteract implements Listener {
 
                     ArrayList<PrivateWaystone> arrPrivateWaystones;
                     arrPrivateWaystones = jdbc.getAllPrivateWaystones(player.getUniqueId().toString());
-                    plugin.setPrivateWaystones(arrPrivateWaystones);
-                    plugin.openGUI(player);
+
+                    new WaystonesSplitMenu(WaystonesPlugin.getPlayerMenuUtility(player)).open();
+
+//                    plugin.setPrivateWaystones(arrPrivateWaystones);
+//                    plugin.openGUI(player);
 
 //                    //Open the Menu (Split menu)
 //                    SplitMenu sm = new SplitMenu();

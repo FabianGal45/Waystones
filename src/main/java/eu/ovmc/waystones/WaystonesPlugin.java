@@ -1,6 +1,7 @@
 package eu.ovmc.waystones;
 
 import eu.ovmc.waystones.database.SQLiteJDBC;
+import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.menusystem.SplitMenu;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.events.MenuHandler;
@@ -12,29 +13,61 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public final class WaystonesPlugin extends JavaPlugin implements Listener {
+    private static WaystonesPlugin plugin;
+    private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
 
+/*
     ArrayList<PrivateWaystone> privateWaystones;
     ArrayList<SplitMenu> arrGUIs;
+*/
+
+
     @Override
     public void onEnable() {
         //Configuration File
         getConfig().options().copyDefaults();
         saveDefaultConfig();
 
+        plugin = this;
+
         //SQLiteJDBC - Connect and create the tables.
         SQLiteJDBC jdbc = new SQLiteJDBC();
         jdbc.createTables();
 
         //Events
-        getServer().getPluginManager().registerEvents(new MenuHandler(this), this);
+        getServer().getPluginManager().registerEvents(new MenuHandler(), this);
         getServer().getPluginManager().registerEvents(new WaystonePlace(), this);
-        getServer().getPluginManager().registerEvents(new WaystoneInteract(this), this);
+        getServer().getPluginManager().registerEvents(new WaystoneInteract(), this);
         getServer().getPluginManager().registerEvents(new WaystoneBreak(), this);
         getServer().getPluginManager().registerEvents(this, this);
     }
 
+
+    public static PlayerMenuUtility getPlayerMenuUtility(Player player){
+        PlayerMenuUtility playerMenuUtility;
+
+        //if player is already registered in the map then return it's playerMenuUtility var.
+        if(playerMenuUtilityMap.containsKey(player)){
+            return playerMenuUtilityMap.get(player);
+        }
+        else {//Register the player and return it's newly generated playerMenuUtility var.
+            playerMenuUtility = new PlayerMenuUtility(player);
+            playerMenuUtilityMap.put(player,playerMenuUtility);
+
+            return playerMenuUtility;
+        }
+    }
+
+    public static WaystonesPlugin getPlugin(){
+        return plugin;
+    }
+
+
+
+/*////////
     public void openGUI(Player player){
         //Select the waystones that get in the splitMenu object
         ArrayList<PrivateWaystone> selection = new ArrayList<>();
@@ -84,6 +117,7 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
     public ArrayList<SplitMenu> getArrGUIs() {
         return arrGUIs;
     }
+//////////*/
 
     @Override
     public void onDisable() {}

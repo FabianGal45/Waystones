@@ -1,5 +1,6 @@
 package eu.ovmc.waystones.events;
 
+import eu.ovmc.waystones.menusystem.Menu;
 import eu.ovmc.waystones.menusystem.SplitMenu;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.WaystonesPlugin;
@@ -16,19 +17,35 @@ import java.util.ArrayList;
 
 public class MenuHandler implements Listener {
 
-    WaystonesPlugin plugin;
-
-    public MenuHandler(WaystonesPlugin plugin){
-        this.plugin = plugin;
-    }
+//    WaystonesPlugin plugin;
+//
+//    public MenuHandler(WaystonesPlugin plugin){
+//        this.plugin = plugin;
+//    }
 
     @EventHandler
     public void onMenuClick(InventoryClickEvent e){
+
+        InventoryHolder holder = e.getInventory().getHolder();
+
+        if (holder instanceof Menu) {
+            e.setCancelled(true); //stops player from moving the item.
+            if (e.getCurrentItem() == null) { //deal with null exceptions
+                return;
+            }
+
+            //Handle the menu withing the menu class.
+            Menu menu = (Menu) holder;
+            menu.handleMenu(e);
+        }
+
+
+/* ######################## Cancelled
         Player player = (Player) e.getWhoClicked();
 
         String title = PlainTextComponentSerializer.plainText().serialize(e.getView().title()); //converts the title Component into a string
 
-        InventoryHolder holder = e.getClickedInventory().getHolder();
+//        InventoryHolder holder = e.getClickedInventory().getHolder();
 
         System.out.println("Slot: "+e.getSlot() + " Clicked Inventory: "+ e.getClickedInventory().getType() + " Holder: "+ holder);
 
@@ -71,6 +88,8 @@ public class MenuHandler implements Listener {
                 }
             }
         }
+##############################*/
+
 
     }
 
