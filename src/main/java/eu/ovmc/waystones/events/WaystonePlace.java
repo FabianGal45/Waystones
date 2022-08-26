@@ -1,9 +1,9 @@
 package eu.ovmc.waystones.events;
 
-import eu.ovmc.waystones.PublicWaystone;
-import eu.ovmc.waystones.SQLiteJDBC;
-import eu.ovmc.waystones.User;
-import eu.ovmc.waystones.PrivateWaystone;
+import eu.ovmc.waystones.waystones.PublicWaystone;
+import eu.ovmc.waystones.database.SQLiteJDBC;
+import eu.ovmc.waystones.database.User;
+import eu.ovmc.waystones.waystones.PrivateWaystone;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

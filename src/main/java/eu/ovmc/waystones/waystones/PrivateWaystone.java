@@ -1,4 +1,4 @@
-package eu.ovmc.waystones;
+package eu.ovmc.waystones.waystones;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

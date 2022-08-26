@@ -1,4 +1,6 @@
-package eu.ovmc.waystones;
+package eu.ovmc.waystones.database;
+import eu.ovmc.waystones.waystones.PrivateWaystone;
+import eu.ovmc.waystones.waystones.PublicWaystone;
 import org.bukkit.entity.Player;
 
 import java.sql.*;

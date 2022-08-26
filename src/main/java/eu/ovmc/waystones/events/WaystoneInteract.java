@@ -1,10 +1,9 @@
 package eu.ovmc.waystones.events;
 
-import eu.ovmc.waystones.GIUs.SplitMenu;
-import eu.ovmc.waystones.PublicWaystone;
-import eu.ovmc.waystones.SQLiteJDBC;
-import eu.ovmc.waystones.PrivateWaystone;
-import eu.ovmc.waystones.Waystones;
+import eu.ovmc.waystones.waystones.PublicWaystone;
+import eu.ovmc.waystones.database.SQLiteJDBC;
+import eu.ovmc.waystones.waystones.PrivateWaystone;
+import eu.ovmc.waystones.WaystonesPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -19,9 +18,9 @@ import java.util.ArrayList;
 
 public class WaystoneInteract implements Listener {
 
-    Waystones plugin;
+    WaystonesPlugin plugin;
 
-    public WaystoneInteract(Waystones plugin){
+    public WaystoneInteract(WaystonesPlugin plugin){
         this.plugin = plugin;
     }
 
@@ -56,10 +55,15 @@ public class WaystoneInteract implements Listener {
                         player.sendMessage("This is a private waystone.");
                     }
 
-                    //Open the Menu (Split menu)
-                    SplitMenu sm = new SplitMenu();
-                    sm.openMainMenu(player);
-                    plugin.getMh().setSplitMenu(sm);//Gets the menu handler from the main class and then sets the split menu in the menu handler class.
+                    ArrayList<PrivateWaystone> arrPrivateWaystones;
+                    arrPrivateWaystones = jdbc.getAllPrivateWaystones(player.getUniqueId().toString());
+                    plugin.setPrivateWaystones(arrPrivateWaystones);
+                    plugin.openGUI(player);
+
+//                    //Open the Menu (Split menu)
+//                    SplitMenu sm = new SplitMenu();
+//                    sm.openMainMenu(player);
+//                    plugin.getMh().setSplitMenu(sm);//Gets the menu handler from the main class and then sets the split menu in the menu handler class.
 
                 }else{
                   player.sendMessage(ChatColor.RED + "This waystone does not exist in the database!");

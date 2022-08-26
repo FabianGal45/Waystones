@@ -1,6 +1,4 @@
-package eu.ovmc.waystones;
-
-import java.util.UUID;
+package eu.ovmc.waystones.database;
 
 public class User {
 

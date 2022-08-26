@@ -1,4 +1,4 @@
-package eu.ovmc.waystones;
+package eu.ovmc.waystones.waystones;
 
 public class PublicWaystone extends PrivateWaystone {
 
