@@ -1,5 +1,6 @@
 package eu.ovmc.waystones.events;
 
+import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.menusystem.menu.WaystonesSplitMenu;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import eu.ovmc.waystones.database.SQLiteJDBC;
@@ -52,7 +53,9 @@ public class WaystoneInteract implements Listener {
                     ArrayList<PrivateWaystone> arrPrivateWaystones;
                     arrPrivateWaystones = jdbc.getAllPrivateWaystones(player.getUniqueId().toString());
 
-                    new WaystonesSplitMenu(WaystonesPlugin.getPlayerMenuUtility(player)).open();
+                    PlayerMenuUtility pmu = WaystonesPlugin.getPlayerMenuUtility(player);
+                    pmu.setPrivateWaystones(jdbc.getAllPrivateWaystones(player.getUniqueId().toString()));
+                    new WaystonesSplitMenu(pmu).open();
 
 //                    plugin.setPrivateWaystones(arrPrivateWaystones);
 //                    plugin.openGUI(player);

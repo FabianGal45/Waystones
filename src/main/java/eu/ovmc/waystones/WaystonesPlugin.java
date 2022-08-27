@@ -2,8 +2,6 @@ package eu.ovmc.waystones;
 
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
-import eu.ovmc.waystones.menusystem.SplitMenu;
-import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.events.MenuHandler;
 import eu.ovmc.waystones.events.WaystoneBreak;
 import eu.ovmc.waystones.events.WaystoneInteract;
@@ -18,12 +16,6 @@ import java.util.HashMap;
 public final class WaystonesPlugin extends JavaPlugin implements Listener {
     private static WaystonesPlugin plugin;
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
-
-/*
-    ArrayList<PrivateWaystone> privateWaystones;
-    ArrayList<SplitMenu> arrGUIs;
-*/
-
 
     @Override
     public void onEnable() {
@@ -65,59 +57,6 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
         return plugin;
     }
 
-
-
-/*////////
-    public void openGUI(Player player){
-        //Select the waystones that get in the splitMenu object
-        ArrayList<PrivateWaystone> selection = new ArrayList<>();
-        SplitMenu sm;
-        arrGUIs = new ArrayList<>();
-
-        if(privateWaystones.size() >= 7){
-            sm = new SplitMenu();
-            arrGUIs.add(sm);
-
-            for(int i =0; i<7; i++){
-                selection.add(privateWaystones.get(0));
-                privateWaystones.remove(0);
-            }
-            sm.setPrivateWaystones(selection);
-            sm.openMainMenu(player);
-        }else if(privateWaystones.size()<7){
-            for(int i =0; i<privateWaystones.size(); i++){
-                selection.add(privateWaystones.get(0));
-                privateWaystones.remove(0);
-            }
-            sm = new SplitMenu();
-            arrGUIs.add(sm);
-
-            sm.setPrivateWaystones(selection);
-            sm.openMainMenu(player);
-        }
-
-
-
-        //Debug
-        System.out.println("ArrGUIs: "+arrGUIs);
-    }
-
-    public SplitMenu getLastOppenedMenu(){
-        return arrGUIs.get(arrGUIs.size()-1);
-    }
-
-    public void setPrivateWaystones(ArrayList<PrivateWaystone> privateWaystones) {
-        this.privateWaystones = privateWaystones;
-    }
-
-    public ArrayList<PrivateWaystone> getPrivateWaystones() {
-        return privateWaystones;
-    }
-
-    public ArrayList<SplitMenu> getArrGUIs() {
-        return arrGUIs;
-    }
-//////////*/
 
     @Override
     public void onDisable() {}

@@ -23,7 +23,7 @@ public abstract class PaginatedSplitMenu extends Menu {
     }
 
     public void addMenuBorder(){
-        inventory.setItem(48, makeItem(Material.DARK_OAK_BUTTON, ChatColor.GREEN + "Left"));
+        inventory.setItem(48, makeItem(Material.BARRIER, "Left"));
         inventory.setItem(49, makeItem(Material.RECOVERY_COMPASS, "Death location"));
         inventory.setItem(50, makeItem(Material.ARROW, "Right"));
 

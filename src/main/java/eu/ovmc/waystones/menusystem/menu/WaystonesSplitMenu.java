@@ -7,6 +7,7 @@ import eu.ovmc.waystones.waystones.PrivateWaystone;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -15,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import javax.xml.stream.events.Namespace;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,12 +43,33 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
         Player player = (Player) e.getWhoClicked();
 
-        PlayerMenuUtility playerMU = WaystonesPlugin.getPlayerMenuUtility(player);
-        ArrayList<PrivateWaystone> privateWaystones = playerMU.getPrivateWaystones();
-        for(PrivateWaystone privWs : privateWaystones){
-            System.out.println(privWs.getLocation());
+        ArrayList<PrivateWaystone> privateWaystones = playerMenuUtility.getPrivateWaystones();
+
+
+        if(e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)){
+            player.sendMessage("You clicked Emerald");
+
+            NamespacedKey namespacedKey = new NamespacedKey(WaystonesPlugin.getPlugin(), "index");
+            int index = e.getCurrentItem().getItemMeta().getPersistentDataContainer().get(namespacedKey,PersistentDataType.INTEGER);
+            PrivateWaystone selected = privateWaystones.get(index);
+
+            //Teleports player above the selected waystone
+            Location loc = selected.getParsedLocation().add(0.5,1.0,0.5);
+            player.teleport(loc);
 
         }
+        else if(e.getCurrentItem().getType().equals(Material.NETHERITE_BLOCK)){
+            player.sendMessage("You Clicked Netherite block!");
+        }
+        else if(e.getCurrentItem().getType().equals(Material.ARROW)){//Make it more precise player can click on any arrow including personal inventory.
+            System.out.println("Next page was selected");
+//            plugin.openGUI(player);
+        }
+        else if(e.getCurrentItem().getType().equals(Material.BARRIER)){
+//            ArrayList<SplitMenu> GUIs = plugin.getArrGUIs();
+
+        }
+
 
 
     }
@@ -63,7 +86,6 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                 if(indexPrivWs >= privateWaystones.size()) break; //If the index has reached the number of players.
                 PrivateWaystone ws = privateWaystones.get(indexPrivWs);
                 if ( ws != null){
-
                     //Creates the Emerald block item
                     ItemStack privateWs = new ItemStack(Material.EMERALD_BLOCK);
                     ItemMeta ptivateWsMeta = privateWs.getItemMeta();
@@ -76,6 +98,9 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                     List<Component> loreArray = new ArrayList<>();
                     loreArray.add(Component.text("Location: "+ ws.getParsedLocation().getBlockX()+", "+ ws.getParsedLocation().getBlockY()+", "+ws.getParsedLocation().getBlockZ()));
                     ptivateWsMeta.lore(loreArray);
+
+                    //Stores the index of the waystone from the waystones list into the NBT meta of that file so that it can be identified when clicked.
+                    ptivateWsMeta.getPersistentDataContainer().set(new NamespacedKey(WaystonesPlugin.getPlugin(), "index"), PersistentDataType.INTEGER, indexPrivWs);
 
                     //Upates the meta with the provided one
                     privateWs.setItemMeta(ptivateWsMeta);

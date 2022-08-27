@@ -1,13 +1,6 @@
 package eu.ovmc.waystones.events;
 
 import eu.ovmc.waystones.menusystem.Menu;
-import eu.ovmc.waystones.menusystem.SplitMenu;
-import eu.ovmc.waystones.waystones.PrivateWaystone;
-import eu.ovmc.waystones.WaystonesPlugin;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -17,12 +10,6 @@ import java.util.ArrayList;
 
 public class MenuHandler implements Listener {
 
-//    WaystonesPlugin plugin;
-//
-//    public MenuHandler(WaystonesPlugin plugin){
-//        this.plugin = plugin;
-//    }
-
     @EventHandler
     public void onMenuClick(InventoryClickEvent e){
 
@@ -30,13 +17,12 @@ public class MenuHandler implements Listener {
 
         if (holder instanceof Menu) {
             e.setCancelled(true); //stops player from moving the item.
-            if (e.getCurrentItem() == null) { //deal with null exceptions
-                return;
-            }
 
-            //Handle the menu withing the menu class.
-            Menu menu = (Menu) holder;
-            menu.handleMenu(e);
+            if(e.getCurrentItem() != null && e.getClickedInventory().getType().toString().equals("CHEST")){
+                //Handle the menu withing the menu class.
+                Menu menu = (Menu) holder;
+                menu.handleMenu(e);
+            }
         }
 
 
