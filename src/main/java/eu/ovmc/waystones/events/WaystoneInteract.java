@@ -55,15 +55,8 @@ public class WaystoneInteract implements Listener {
 
                     PlayerMenuUtility pmu = WaystonesPlugin.getPlayerMenuUtility(player);
                     pmu.setPrivateWaystones(jdbc.getAllPrivateWaystones(player.getUniqueId().toString()));
+                    pmu.setClickedOnWs(ws);
                     new WaystonesSplitMenu(pmu).open();
-
-//                    plugin.setPrivateWaystones(arrPrivateWaystones);
-//                    plugin.openGUI(player);
-
-//                    //Open the Menu (Split menu)
-//                    SplitMenu sm = new SplitMenu();
-//                    sm.openMainMenu(player);
-//                    plugin.getMh().setSplitMenu(sm);//Gets the menu handler from the main class and then sets the split menu in the menu handler class.
 
                 }else{
                   player.sendMessage(ChatColor.RED + "This waystone does not exist in the database!");

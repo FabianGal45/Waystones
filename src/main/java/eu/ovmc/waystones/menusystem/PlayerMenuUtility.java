@@ -11,10 +11,20 @@ public class PlayerMenuUtility {
     private Player owner;
     private ArrayList<PrivateWaystone> privateWaystones;
 
+    private PrivateWaystone clickedOnWs;
+
     public PlayerMenuUtility(Player owner) {
         this.owner = owner;
         SQLiteJDBC jdbc = new SQLiteJDBC();
         this.privateWaystones = jdbc.getAllPrivateWaystones(owner.getUniqueId().toString());
+    }
+
+    public PrivateWaystone getClickedOnWs() {
+        return clickedOnWs;
+    }
+
+    public void setClickedOnWs(PrivateWaystone clickedOnWs) {
+        this.clickedOnWs = clickedOnWs;
     }
 
     public ArrayList<PrivateWaystone> getPrivateWaystones() {

@@ -34,21 +34,27 @@ public class WaystonePlace implements Listener {
                     user = jdbc.getUserFromDB(player.getUniqueId().toString());//once registered, store the user object so that it doesn't satay null and crash when trying to update the user.
                 }
 
-                //register the waystone
-                if(blockUnder.getType().equals(Material.EMERALD_BLOCK)){
-                    PrivateWaystone ws = new PrivateWaystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString(), null);
-                    jdbc.regWaystone(ws, user);
-                    player.sendMessage("Private waystone registered!");
+                //If waystone does not already exists in the database at this location remove it.
+                PrivateWaystone waystone = jdbc.getWaystone(e.getBlock().getLocation().toString());
+                if(waystone == null){
+                    //register the waystone
+                    if(blockUnder.getType().equals(Material.EMERALD_BLOCK)){
+                        PrivateWaystone ws = new PrivateWaystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString(), null);
+                        jdbc.regWaystone(ws, user);
+                        player.sendMessage("Private waystone registered!");
 
+                    }
+                    else if(blockUnder.getType().equals(Material.NETHERITE_BLOCK)){
+                        PublicWaystone ws = new PublicWaystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString(), null, 0.1, 1.0, "shop");
+                        jdbc.regWaystone(ws, user);
+                        player.sendMessage("Public waystone registered!");
+                    }
+                    else{
+                        player.sendMessage(ChatColor.RED + "Something went wrong when registering the waystone.");//This message should never get triggered
+                    }
                 }
-                else if(blockUnder.getType().equals(Material.NETHERITE_BLOCK)){
-                    PublicWaystone ws = new PublicWaystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString(), null, 0.1, 1.0, "shop");
-                    jdbc.regWaystone(ws, user);
-                    player.sendMessage("Public waystone registered!");
-                }
-                else{
-                    player.sendMessage(ChatColor.RED + "Something went wrong when registering the waystone.");//This message should never get triggered
-                }
+
+
 
             }
 
