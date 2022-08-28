@@ -17,11 +17,11 @@ public class WaystonePlace implements Listener {
     
     @EventHandler
     public void waystonePlaced(BlockPlaceEvent e){
-        if(e.getBlock().getType().equals(Material.LODESTONE)){
-            //Get the block underneath the lodestone
-            Block blockUnder = e.getBlock().getLocation().subtract(0.0,1.0,0.0).getBlock();
-            Player player = e.getPlayer();
 
+        Player player = e.getPlayer();
+
+        if(e.getBlock().getType().equals(Material.LODESTONE)){
+            Block blockUnder = e.getBlock().getLocation().subtract(0.0,1.0,0.0).getBlock();
             if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || blockUnder.getType().equals(Material.NETHERITE_BLOCK)){
                 //get user data from users table
                 SQLiteJDBC jdbc = new SQLiteJDBC();
@@ -34,7 +34,7 @@ public class WaystonePlace implements Listener {
                     user = jdbc.getUserFromDB(player.getUniqueId().toString());//once registered, store the user object so that it doesn't satay null and crash when trying to update the user.
                 }
 
-                //If waystone does not already exists in the database at this location remove it.
+                //If waystone does not already exists in the database at this location register it. Otherwise just let it use the old data
                 PrivateWaystone waystone = jdbc.getWaystone(e.getBlock().getLocation().toString());
                 if(waystone == null){
                     //register the waystone
@@ -53,17 +53,59 @@ public class WaystonePlace implements Listener {
                         player.sendMessage(ChatColor.RED + "Something went wrong when registering the waystone.");//This message should never get triggered
                     }
                 }
+                else {
+                    player.sendMessage("Waystone Restored.");
+                }
+            }
+        }
 
+        if(e.getBlock().getType().equals(Material.EMERALD_BLOCK)|| e.getBlock().getType().equals(Material.NETHERITE_BLOCK)){
+            Block blockAbove = e.getBlock().getLocation().add(0.0 , 1.0, 0.0).getBlock();
+            SQLiteJDBC jdbc = new SQLiteJDBC();
+            PrivateWaystone waystone = jdbc.getWaystone(blockAbove.getLocation().toString());
+
+            if(blockAbove.getType().equals(Material.LODESTONE)){
+                //get user data from users table
+
+                User user = jdbc.getUserFromDB(player.getUniqueId().toString());
+
+                //if player does not exists
+                if(user == null){
+                    //Register new player
+                    jdbc.regPlayer(player);
+                    user = jdbc.getUserFromDB(player.getUniqueId().toString());//once registered, store the user object so that it doesn't satay null and crash when trying to update the user.
+                }
+
+                //If waystone does not already exists in the database at this location register it. Otherwise just let it use the old data
+                if(waystone == null){
+                    //register the waystone
+                    if(e.getBlock().getType().equals(Material.EMERALD_BLOCK)){
+                        PrivateWaystone ws = new PrivateWaystone(blockAbove.getLocation().toString(), e.getPlayer().getUniqueId().toString(), null);
+                        jdbc.regWaystone(ws, user);
+                        player.sendMessage("Private waystone registered!");
+
+                    }
+                    else if(e.getBlock().getType().equals(Material.NETHERITE_BLOCK)){
+                        PublicWaystone ws = new PublicWaystone(blockAbove.getLocation().toString(), e.getPlayer().getUniqueId().toString(), null, 0.1, 1.0, "shop");
+                        jdbc.regWaystone(ws, user);
+                        player.sendMessage("Public waystone registered!");
+                    }
+                    else{
+                        player.sendMessage(ChatColor.RED + "Something went wrong when registering the waystone.");//This message should never get triggered
+                    }
+                }
+                else if(e.getBlock().getType().equals(Material.EMERALD_BLOCK) || (e.getBlock().getType().equals(Material.NETHERITE_BLOCK) && waystone instanceof PublicWaystone)) {
+                    player.sendMessage("Waystone Restored.");
+                }
+                else{
+                    player.sendMessage("This was not the original waystone!");
+                }
 
 
             }
-
-
-
-
-
-
         }
+
+
     }
 
 }

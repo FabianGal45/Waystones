@@ -23,12 +23,11 @@ public abstract class PaginatedSplitMenu extends Menu {
     }
 
     public void addMenuBorder(){
-        inventory.setItem(48, makeItem(Material.BARRIER, "Left"));
+
         inventory.setItem(49, makeItem(Material.RECOVERY_COMPASS, "Death location"));
-        inventory.setItem(50, makeItem(Material.ARROW, "Right"));
 
         ArrayList<Integer> blankSlots = new ArrayList<>();
-        Collections.addAll(blankSlots, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 35, 36, 44, 45, 46, 47, 51, 52, 53);
+        Collections.addAll(blankSlots, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 35, 36, 44, 45, 46, 47, 48, 50, 51, 52, 53);
         for(Integer blankSlot : blankSlots) {
             ItemStack blackPanel = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
             ItemMeta bpMeta = blackPanel.getItemMeta();
@@ -37,6 +36,17 @@ public abstract class PaginatedSplitMenu extends Menu {
             blackPanel.setItemMeta(bpMeta);
             inventory.setItem(blankSlot, blackPanel);
         }
+    }
+
+    public void addMenuPageButtons(int sizePrivWs){
+        if(sizePrivWs > maxPrivateWs * (page+1) || indexPubWs > maxPublicWs * (page +1)){
+            inventory.setItem(50, makeItem(Material.ARROW, "Next Page"));
+        }
+        if(page != 0){
+            inventory.setItem(48, makeItem(Material.BARRIER, "Back"));
+        }
+
+
     }
 
     public int getMaxPrivateWs() {

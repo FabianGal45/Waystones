@@ -43,20 +43,21 @@ public class WaystoneInteract implements Listener {
 
                 //if waystone exists in the database
                 if(ws != null){
-                    if(ws instanceof PublicWaystone){
-                        player.sendMessage("This is a public waystone.");
-                    }
-                    else{
-                        player.sendMessage("This is a private waystone.");
-                    }
-
-                    ArrayList<PrivateWaystone> arrPrivateWaystones;
-                    arrPrivateWaystones = jdbc.getAllPrivateWaystones(player.getUniqueId().toString());
-
                     PlayerMenuUtility pmu = WaystonesPlugin.getPlayerMenuUtility(player);
                     pmu.setPrivateWaystones(jdbc.getAllPrivateWaystones(player.getUniqueId().toString()));
                     pmu.setClickedOnWs(ws);
-                    new WaystonesSplitMenu(pmu).open();
+
+                    if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || (blockUnder.getType().equals(Material.NETHERITE_BLOCK) && ws instanceof PublicWaystone)){
+                        new WaystonesSplitMenu(pmu).open();
+                    }
+                    else{
+                        if(ws instanceof PublicWaystone){
+                            player.sendMessage("Chenge block under for Netherite Block");
+                        }
+                        else{
+                            player.sendMessage("Change block under for Emerald Block");
+                        }
+                    }
 
                 }else{
                   player.sendMessage(ChatColor.RED + "This waystone does not exist in the database!");

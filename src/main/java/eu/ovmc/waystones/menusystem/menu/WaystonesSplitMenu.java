@@ -59,6 +59,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             int index = Objects.requireNonNull(itemMeta.getPersistentDataContainer().get(namespacedKey,PersistentDataType.INTEGER));
             PrivateWaystone selected = privateWaystones.get(index);
 
+            System.out.println(WaystonesPlugin.getPlugin().getDescription().getVersion());
 
             //Teleports player above the selected waystone
             Location loc = selected.getParsedLocation().add(0.5,1.0,0.5);
@@ -83,9 +84,9 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
         }
         else if(e.getCurrentItem().getType().equals(Material.BARRIER)){
             String itemName = PlainTextComponentSerializer.plainText().serialize(Objects.requireNonNull(e.getCurrentItem().getItemMeta().displayName()));
-            if (itemName.equals("Left")) {
+            if (itemName.equals("Back")) {
                 if (page == 0) {
-                    player.sendMessage("You are here already.");
+                    player.sendMessage("This is the first page.");
                 } else {
                     page = page - 1;
                     super.open();
@@ -118,21 +119,25 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
         if(privateWaystones != null && !privateWaystones.isEmpty()) {
             for(int i = 0; i < getMaxPrivateWs(); i++) {
                 indexPrivWs = getMaxPrivateWs() * page + i;
-                if(indexPrivWs >= privateWaystones.size()) break; //If the index has reached the number of players.
+                if(indexPrivWs >= privateWaystones.size()){
+                    indexPrivWs = i-1;
+                    break; //If the index has reached the number of players.
+                }
                 PrivateWaystone ws = privateWaystones.get(indexPrivWs);
-                if ( ws != null){
-
+                if (ws != null){
                     ItemStack privateWs;
 
                     Block blockTop = ws.getParsedLocation().getBlock();
                     Block blockUnder = ws.getParsedLocation().subtract(0.0,1.0,0.0).getBlock();
+
+                    boolean validPrivWs = blockTop.getType().equals(Material.LODESTONE) && blockUnder.getType().equals(Material.EMERALD_BLOCK);
 
                     //if this is the waystone he clicked on make it lime green
                     if(ws.getLocation().equals(playerMenuUtility.getClickedOnWs().getLocation())){
                         //Creates the LimeConcretePowder block item
                         privateWs = new ItemStack(Material.LIME_CONCRETE_POWDER);
                     }
-                    else if(!(blockTop.getType().equals(Material.LODESTONE)) || !(blockUnder.getType().equals(Material.EMERALD_BLOCK))){//Check if the waystone is still valid
+                    else if(!validPrivWs){//if waystone not valid mark it with a cracked stone
                         privateWs = new ItemStack(Material.CRACKED_STONE_BRICKS);
                     }
                     else{
@@ -177,5 +182,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                 }
             }
         }
+
+        addMenuPageButtons(privateWaystones.size());
     }
 }
