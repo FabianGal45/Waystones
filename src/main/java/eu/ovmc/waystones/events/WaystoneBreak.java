@@ -39,13 +39,20 @@ public class WaystoneBreak implements Listener {
             }
         }
 
-        if(block.getType().equals(Material.EMERALD_BLOCK) || block.getType().equals(Material.NETHERITE_BLOCK) && blockAbove.getType().equals(Material.LODESTONE)){
+        if((block.getType().equals(Material.EMERALD_BLOCK) || block.getType().equals(Material.NETHERITE_BLOCK)) && blockAbove.getType().equals(Material.LODESTONE)){
 
+            PrivateWaystone ws = jdbc.getWaystone(blockAbove.getLocation().toString());
+
+            if(block.getType().equals(Material.NETHERITE_BLOCK) && !(ws instanceof PublicWaystone)) {
+                System.out.println("Allowed since this was meant to be a private waystone");
+            }
+            else if(block.getType().equals(Material.EMERALD_BLOCK) && ws instanceof PublicWaystone){
+                System.out.println("Allowed since this was meant to be a public waystone");
+            }
             //if the waystone exists in the database
-            if(jdbc.getWaystone(blockAbove.getLocation().toString()) != null){
+            else if(jdbc.getWaystone(blockAbove.getLocation().toString()) != null){
                 player.sendMessage("You broke the base of a waystone. Disabling...");
                 System.out.println("Location: "+ blockAbove.getLocation());
-                PrivateWaystone ws = jdbc.getWaystone(blockAbove.getLocation().toString());
                 jdbc.remWs(ws);
             }
         }

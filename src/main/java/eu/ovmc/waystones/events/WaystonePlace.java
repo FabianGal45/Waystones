@@ -6,6 +6,7 @@ import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,6 +20,14 @@ public class WaystonePlace implements Listener {
     public void waystonePlaced(BlockPlaceEvent e){
 
         Player player = e.getPlayer();
+
+        //Block player from placing a block when right clicking the waystone
+        if(e.getBlockAgainst().getType().equals(Material.LODESTONE) && !e.getPlayer().isSneaking()){
+            SQLiteJDBC jdbc = new SQLiteJDBC();
+            if(jdbc.getWaystone(e.getBlockAgainst().getLocation().toString()) != null){
+                e.setCancelled(true);
+            }
+        }
 
         if(e.getBlock().getType().equals(Material.LODESTONE)){
             Block blockUnder = e.getBlock().getLocation().subtract(0.0,1.0,0.0).getBlock();
@@ -59,7 +68,7 @@ public class WaystonePlace implements Listener {
             }
         }
 
-        if(e.getBlock().getType().equals(Material.EMERALD_BLOCK)|| e.getBlock().getType().equals(Material.NETHERITE_BLOCK)){
+        if((e.getBlock().getType().equals(Material.EMERALD_BLOCK) || e.getBlock().getType().equals(Material.NETHERITE_BLOCK))){
             Block blockAbove = e.getBlock().getLocation().add(0.0 , 1.0, 0.0).getBlock();
             SQLiteJDBC jdbc = new SQLiteJDBC();
             PrivateWaystone waystone = jdbc.getWaystone(blockAbove.getLocation().toString());
@@ -94,16 +103,18 @@ public class WaystonePlace implements Listener {
                         player.sendMessage(ChatColor.RED + "Something went wrong when registering the waystone.");//This message should never get triggered
                     }
                 }
-                else if(e.getBlock().getType().equals(Material.EMERALD_BLOCK) || (e.getBlock().getType().equals(Material.NETHERITE_BLOCK) && waystone instanceof PublicWaystone)) {
+                else if((e.getBlock().getType().equals(Material.EMERALD_BLOCK) && !(waystone instanceof PublicWaystone)) || ((e.getBlock().getType().equals(Material.NETHERITE_BLOCK)) && waystone instanceof PublicWaystone)) {
                     player.sendMessage("Waystone Restored.");
                 }
                 else{
-                    player.sendMessage("This was not the original waystone!");
+                    player.sendMessage("This is not like the original waystone!");
                 }
 
 
             }
         }
+
+
 
 
     }

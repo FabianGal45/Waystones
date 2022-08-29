@@ -31,7 +31,7 @@ public class WaystoneInteract implements Listener {
         if (e.getClickedBlock() == null) return;
 
         //If right clicked a LODESTONE
-        if(e.getClickedBlock().getType().equals(Material.LODESTONE) && action.equals(Action.RIGHT_CLICK_BLOCK)){
+        if(e.getClickedBlock().getType().equals(Material.LODESTONE) && action.equals(Action.RIGHT_CLICK_BLOCK) && !e.getPlayer().isSneaking()){
             Block blockUnder = e.getClickedBlock().getLocation().subtract(0.0,1.0,0.0).getBlock();
 
             //if block under is EMERALD_BLOCK or NETHERITE_BLOCK
