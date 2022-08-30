@@ -14,14 +14,15 @@ public class WaystoneBreak implements Listener {
 
     @EventHandler
     public void wsBroken(BlockBreakEvent e){
-        Player player = e.getPlayer();
+
         Block block = e.getBlock();
-        Block blockUnder = e.getBlock().getLocation().subtract(0.0,1.0,0.0).getBlock();
         Block blockAbove = e.getBlock().getLocation().add(0.0, 1.0,0.0).getBlock();
 
-        SQLiteJDBC jdbc = new SQLiteJDBC();
-
         if(block.getType().equals(Material.LODESTONE)){
+            Player player = e.getPlayer();
+            Block blockUnder = e.getBlock().getLocation().subtract(0.0,1.0,0.0).getBlock();
+            SQLiteJDBC jdbc = new SQLiteJDBC();
+
             if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || blockUnder.getType().equals(Material.NETHERITE_BLOCK)){
 
                 //if the waystone exists in the database
@@ -40,6 +41,8 @@ public class WaystoneBreak implements Listener {
         }
 
         if((block.getType().equals(Material.EMERALD_BLOCK) || block.getType().equals(Material.NETHERITE_BLOCK)) && blockAbove.getType().equals(Material.LODESTONE)){
+            Player player = e.getPlayer();
+            SQLiteJDBC jdbc = new SQLiteJDBC();
 
             PrivateWaystone ws = jdbc.getWaystone(blockAbove.getLocation().toString());
 
