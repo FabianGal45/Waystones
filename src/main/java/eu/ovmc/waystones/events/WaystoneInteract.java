@@ -1,5 +1,6 @@
 package eu.ovmc.waystones.events;
 
+import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.menusystem.menu.WaystonesSplitMenu;
 import eu.ovmc.waystones.waystones.PublicWaystone;
@@ -38,6 +39,11 @@ public class WaystoneInteract implements Listener {
                 String loc = e.getClickedBlock().getLocation().toString();
                 PrivateWaystone ws = jdbc.getWaystone(loc);
                 Player player = e.getPlayer();
+
+                //TESTING
+                User user = jdbc.getUserFromDB(player.getUniqueId().toString());
+                user.test();
+                System.out.println("Can place: "+user.canPlaceWaystone());
 
                 //if waystone exists in the database
                 if(ws != null){

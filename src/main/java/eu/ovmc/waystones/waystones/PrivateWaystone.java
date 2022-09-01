@@ -57,7 +57,8 @@ public class PrivateWaystone {
         Location loc = null;
         boolean safe = true;
 
-        for(int i = 0; i<10; i++){
+        for(int i = 0; i<5; i++){
+            safe = true;
             loc = getParsedLocation(tpLocation);
             //Centers the player on the block
             float yaw = loc.getYaw();
@@ -86,7 +87,6 @@ public class PrivateWaystone {
                     else {
                         //warn player it is unsafe and they cannot teleport there.
                         safe = false;
-                        player.sendMessage("This teleportation is unsafe!");
                     }
                 }
                 break;
@@ -97,11 +97,18 @@ public class PrivateWaystone {
                     //set location above the lodestone
                     loc = getParsedLocation(location).add(0.5, 1.0 ,0.5);
                 }
+                else {
+                    //warn player it is unsafe and they cannot teleport there.
+                    safe = false;
+                }
             }
         }
 
         if(safe){
             player.teleport(loc);
+        }
+        else{
+            player.sendMessage("This teleportation is unsafe!");
         }
 
     }
