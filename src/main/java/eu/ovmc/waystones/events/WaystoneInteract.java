@@ -23,13 +23,6 @@ public class WaystoneInteract implements Listener {
     @EventHandler
     public void PlayerInteract(PlayerInteractEvent e){
         Action action = e.getAction();
-        
-        //Cancels the action of the left hand. Without this the following code will trigger twice.  https://www.spigotmc.org/threads/playerinteractevent-fires-twice-for-right-clicking.301622/
-        if(e.getHand().equals(EquipmentSlot.OFF_HAND)){
-            e.setCancelled(true);
-            return;
-        }
-
 
         // Ignoring this event if player does not click on a block https://www.spigotmc.org/threads/errors-with-playerinteractevent-and-nameable.390258/
         if (e.getClickedBlock() == null) return;
@@ -52,6 +45,12 @@ public class WaystoneInteract implements Listener {
                     PlayerMenuUtility pmu = WaystonesPlugin.getPlayerMenuUtility(player);
                     pmu.setPrivateWaystones(jdbc.getAllPrivateWaystones(player.getUniqueId().toString()));
                     pmu.setClickedOnWs(ws);
+
+                    //Cancels the action of the left hand. Without this the following code will trigger twice.  https://www.spigotmc.org/threads/playerinteractevent-fires-twice-for-right-clicking.301622/
+                    if(e.getHand().equals(EquipmentSlot.OFF_HAND)) {
+                        e.setCancelled(true);
+                        return;
+                    }
 
                     if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || (blockUnder.getType().equals(Material.NETHERITE_BLOCK) && ws instanceof PublicWaystone)){
                         new WaystonesSplitMenu(pmu).open();
