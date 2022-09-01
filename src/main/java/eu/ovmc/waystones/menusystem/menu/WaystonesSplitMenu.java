@@ -61,9 +61,8 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
             System.out.println(WaystonesPlugin.getPlugin().getDescription().getVersion());
 
-            //Teleports player above the selected waystone
-            Location loc = selected.getParsedLocation().add(0.5,1.0,0.5);
-            player.teleport(loc);
+            //safety feature
+            selected.safeTeleport(player);
 
         }
         else if(e.getCurrentItem().getType().equals(Material.NETHERITE_BLOCK)){
@@ -79,7 +78,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             int index = Objects.requireNonNull(itemMeta.getPersistentDataContainer().get(namespacedKey,PersistentDataType.INTEGER));
             PrivateWaystone selected = privateWaystones.get(index);
 
-            player.sendMessage(Component.text("This waystone has been damaged! ("+selected.getParsedLocation().getBlockX()+", "+selected.getParsedLocation().getBlockY()+", "+ selected.getParsedLocation().getBlockZ()+")",
+            player.sendMessage(Component.text("This waystone has been damaged! ("+selected.getParsedLocation(selected.getLocation()).getBlockX()+", "+selected.getParsedLocation(selected.getLocation()).getBlockY()+", "+ selected.getParsedLocation(selected.getLocation()).getBlockZ()+")",
                             TextColor.fromHexString("#802f45")));
         }
         else if(e.getCurrentItem().getType().equals(Material.BARRIER)){
@@ -127,8 +126,8 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                 if (ws != null){
                     ItemStack privateWs;
 
-                    Block blockTop = ws.getParsedLocation().getBlock();
-                    Block blockUnder = ws.getParsedLocation().subtract(0.0,1.0,0.0).getBlock();
+                    Block blockTop = ws.getParsedLocation(ws.getLocation()).getBlock();
+                    Block blockUnder = ws.getParsedLocation(ws.getLocation()).subtract(0.0,1.0,0.0).getBlock();
 
                     boolean validPrivWs = blockTop.getType().equals(Material.LODESTONE) && blockUnder.getType().equals(Material.EMERALD_BLOCK);
 
@@ -155,12 +154,12 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                     //Creates the lore of the item
                     List<Component> loreArray = new ArrayList<>();
                     String worldName;
-                    if(ws.getParsedLocation().getWorld().getName().equals("world")){
+                    if(ws.getParsedLocation(ws.getLocation()).getWorld().getName().equals("world")){
                         worldName = "World";
-                    } else if(ws.getParsedLocation().getWorld().getName().equals("world_nether")) {
+                    } else if(ws.getParsedLocation(ws.getLocation()).getWorld().getName().equals("world_nether")) {
                         worldName = "Nether";
                     }
-                    else if(ws.getParsedLocation().getWorld().getName().equals("world_the_end")){
+                    else if(ws.getParsedLocation(ws.getLocation()).getWorld().getName().equals("world_the_end")){
                         worldName = "End";
                     }
                     else{
@@ -168,7 +167,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                     }
 
 
-                    loreArray.add(Component.text(worldName +": "+ ws.getParsedLocation().getBlockX()+", "+ ws.getParsedLocation().getBlockY()+", "+ws.getParsedLocation().getBlockZ()));
+                    loreArray.add(Component.text(worldName +": "+ ws.getParsedLocation(ws.getLocation()).getBlockX()+", "+ ws.getParsedLocation(ws.getLocation()).getBlockY()+", "+ws.getParsedLocation(ws.getLocation()).getBlockZ()));
                     ptivateWsMeta.lore(loreArray);
 
                     //Stores the index of the waystone from the waystones list into the NBT meta of that file so that it can be identified when clicked.

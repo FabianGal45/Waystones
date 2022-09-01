@@ -56,7 +56,7 @@ public class SplitMenu {
 
             //Creates the lore of the item
             List<Component> loreArray = new ArrayList<>();
-            loreArray.add(Component.text("Location: "+ ws.getParsedLocation().getBlockX()+", "+ ws.getParsedLocation().getBlockY()+", "+ws.getParsedLocation().getBlockZ()));
+            loreArray.add(Component.text("Location: "+ ws.getParsedLocation(ws.getLocation()).getBlockX()+", "+ ws.getParsedLocation(ws.getLocation()).getBlockY()+", "+ws.getParsedLocation(ws.getLocation()).getBlockZ()));
             ptivateWsMeta.lore(loreArray);
 
             //Upates the meta with the provided one

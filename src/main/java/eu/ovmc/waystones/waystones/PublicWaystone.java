@@ -6,15 +6,15 @@ public class PublicWaystone extends PrivateWaystone {
     private double cost;
     private String category;
 
-    public PublicWaystone(String location, String owner, String name) {
-        super(location, owner, name);
+    public PublicWaystone(String location, String owner, String name, String tpLocation) {
+        super(location, owner, name, tpLocation);
         rating = 0.0;
         cost = 0.0;
         category = null;
     }
 
-    public PublicWaystone(String location, String owner, String name, double rating, double cost, String category) {
-        super(location, owner, name);
+    public PublicWaystone(String location, String owner, String name, String tpLocation, double rating, double cost, String category) {
+        super(location, owner, name, tpLocation);
         this.rating = rating;
         this.cost = cost;
         this.category = category;

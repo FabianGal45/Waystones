@@ -44,6 +44,7 @@ public class SQLiteJDBC {
                     "(location varchar(255)," +
                     " owner VARCHAR(255)," +
                     " name VARCHAR(255)," +
+                    " tp_location VARCHAR(255)," +
                     " PRIMARY KEY(location)" +
                     " FOREIGN KEY (owner)" +
                     "  REFERENCES users(uuid))";
@@ -52,6 +53,7 @@ public class SQLiteJDBC {
                     "(location varchar(255)," +
                     " owner VARCHAR(255)," +
                     " name VARCHAR(255)," +
+                    " tp_location VARCHAR(255)," +
                     " cost DOUBLE(40, 2)," +
                     " rating DOUBLE(40, 2)," +
                     " PRIMARY KEY(location)" +
@@ -110,16 +112,19 @@ public class SQLiteJDBC {
             try{
                 //Query to insert data into tutorials_data table
                 String query = "INSERT INTO public_waystones (" +
-                        "location, " +
-                        "owner) VALUES(?, ?)";
+                        "location," +
+                        "owner," +
+                        "tp_location) VALUES(?, ?, ?)";
 
                 //Creating the preparedStatement object
                 PreparedStatement pstmt = getCon().prepareStatement(query);
                 String location = ws.getLocation();
                 String owner = ws.getOwner();
+                String tpLocation = ws.getTpLocation();
 
                 pstmt.setString(1, location);
                 pstmt.setString(2, owner);
+                pstmt.setString(3, tpLocation);
 
                 pstmt.execute();
                 pstmt.close();
@@ -138,16 +143,20 @@ public class SQLiteJDBC {
             try{
                 //Query to insert data into tutorials_data table
                 String query = "INSERT INTO private_waystones (" +
-                        "location, " +
-                        "owner) VALUES(?, ?)";
+                        "location," +
+                        "owner," +
+                        "tp_location) VALUES(?, ?, ?)";
 
                 //Creating the preparedStatement object
                 PreparedStatement pstmt = getCon().prepareStatement(query);
                 String location = ws.getLocation();
                 String owner = ws.getOwner();
+                System.out.println("Reg - TP loc: "+ws.getTpLocation());
+                String tpLocation = ws.getTpLocation();
 
                 pstmt.setString(1, location);
                 pstmt.setString(2, owner);
+                pstmt.setString(3, tpLocation);
                 pstmt.execute();
                 pstmt.close();
 
@@ -195,13 +204,13 @@ public class SQLiteJDBC {
             String sql = "SELECT * FROM private_waystones WHERE location = '"+ location +"'";
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
-                ws = new PrivateWaystone(rs.getString("location"), rs.getString("owner"), rs.getString("name"));
+                ws = new PrivateWaystone(rs.getString("location"), rs.getString("owner"), rs.getString("name"), rs.getString("tp_location"));
             }
 
             sql = "SELECT * FROM public_waystones WHERE location = '"+ location +"'";
             rs = stmt.executeQuery(sql);
             while(rs.next()){
-                ws = new PublicWaystone(rs.getString("location"), rs.getString("owner"), rs.getString("name"));
+                ws = new PublicWaystone(rs.getString("location"), rs.getString("owner"), rs.getString("name"), rs.getString("tp_location"));
             }
 
 
@@ -226,7 +235,7 @@ public class SQLiteJDBC {
             String sql = "SELECT * FROM private_waystones WHERE owner = '"+ uuid +"';";
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
-                ws = new PrivateWaystone(rs.getString("location"), rs.getString("owner"), rs.getString("name"));
+                ws = new PrivateWaystone(rs.getString("location"), rs.getString("owner"), rs.getString("name"),  rs.getString("tp_location"));
                 pubWs.add(ws);
             }
 

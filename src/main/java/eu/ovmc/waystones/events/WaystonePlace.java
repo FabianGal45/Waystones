@@ -47,14 +47,16 @@ public class WaystonePlace implements Listener {
                 PrivateWaystone waystone = jdbc.getWaystone(e.getBlock().getLocation().toString());
                 if(waystone == null){
                     //register the waystone
+                    String tpLocation;
+                    tpLocation = player.getLocation().toString();
                     if(blockUnder.getType().equals(Material.EMERALD_BLOCK)){
-                        PrivateWaystone ws = new PrivateWaystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString(), null);
+                        PrivateWaystone ws = new PrivateWaystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString(), null, tpLocation);
                         jdbc.regWaystone(ws, user);
                         player.sendMessage("Private waystone registered!");
 
                     }
                     else if(blockUnder.getType().equals(Material.NETHERITE_BLOCK)){
-                        PublicWaystone ws = new PublicWaystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString(), null, 0.1, 1.0, "shop");
+                        PublicWaystone ws = new PublicWaystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString(), null, tpLocation, 0.1, 1.0, "shop");
                         jdbc.regWaystone(ws, user);
                         player.sendMessage("Public waystone registered!");
                     }
@@ -88,14 +90,16 @@ public class WaystonePlace implements Listener {
                 //If waystone does not already exists in the database at this location register it. Otherwise just let it use the old data
                 if(waystone == null){
                     //register the waystone
+                    String tpLocation;
+                    tpLocation = player.getLocation().toString();
                     if(e.getBlock().getType().equals(Material.EMERALD_BLOCK)){
-                        PrivateWaystone ws = new PrivateWaystone(blockAbove.getLocation().toString(), e.getPlayer().getUniqueId().toString(), null);
+                        PrivateWaystone ws = new PrivateWaystone(blockAbove.getLocation().toString(), e.getPlayer().getUniqueId().toString(), null, tpLocation);
                         jdbc.regWaystone(ws, user);
                         player.sendMessage("Private waystone registered!");
 
                     }
                     else if(e.getBlock().getType().equals(Material.NETHERITE_BLOCK)){
-                        PublicWaystone ws = new PublicWaystone(blockAbove.getLocation().toString(), e.getPlayer().getUniqueId().toString(), null, 0.1, 1.0, "shop");
+                        PublicWaystone ws = new PublicWaystone(blockAbove.getLocation().toString(), e.getPlayer().getUniqueId().toString(), null, tpLocation, 0.1, 1.0, "shop");
                         jdbc.regWaystone(ws, user);
                         player.sendMessage("Public waystone registered!");
                     }
