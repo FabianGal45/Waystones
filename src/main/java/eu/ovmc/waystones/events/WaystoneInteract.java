@@ -40,7 +40,7 @@ public class WaystoneInteract implements Listener {
 
                 //TESTING
                 User user = jdbc.getUserFromDB(player.getUniqueId().toString());
-                user.test();
+//                user.test();
                 System.out.println("Can place: "+user.canPlacePrivateWs());
 
                 //if waystone exists in the database

@@ -158,6 +158,11 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                 indexPrivWs = getMaxPrivateWs() * page + i;
                 System.out.println("Index1: "+ indexPrivWs +" = "+ getMaxPrivateWs()+" * "+ page+ " + " + i);
 
+                //Todo Make it so that dyes get placed even if there are no waystones
+                //TODO: take in a ccount the free waystones.
+
+                System.out.println("ws: "+ privateWaystones.size());
+
                 //If finished placing the existing waystones before running out of space start placing the dyes
                 if(indexPrivWs >= privateWaystones.size()){
                     User user = playerMenuUtility.getUser();
@@ -174,12 +179,24 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                         //if green dye have reached the pu AND the pos <= 16
                         if( (indexPrivWs+1) - privateWaystones.size() <= pu && pos <= getMaxPrivateWs()+9){
                             ItemStack limeDye = new ItemStack(Material.LIME_DYE);
+                            ItemMeta limeMeta = limeDye.getItemMeta();
+                            limeMeta.displayName(Component.text("Available").color(TextColor.fromCSSHexString("#93cf98")).decoration(TextDecoration.ITALIC, false));
+                            limeDye.setItemMeta(limeMeta);
+
                             inventory.setItem(pos ,limeDye);
                         }
                         else{
                             //if there is still space, add a grey dye
                             if(indexPrivWs<getMaxPrivateWs()*(page+1)){
                                 ItemStack grayDye = new ItemStack(Material.GRAY_DYE);
+                                ItemMeta grayMeta = grayDye.getItemMeta();
+                                grayMeta.displayName(Component.text("Buy More"));
+                                List<Component> loreArray = new ArrayList<>();
+                                loreArray.add(Component.text("Cost: " + user.getPrice()));
+                                grayMeta.lore(loreArray);
+                                grayDye.setItemMeta(grayMeta);
+
+
                                 inventory.addItem(grayDye);
                                 indexPrivWs--;
                             }

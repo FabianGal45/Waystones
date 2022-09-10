@@ -28,11 +28,11 @@ public class User {
         this.purchasedPrivateWs = purchasedPrivateWs;
     }
 
-    public void test(){
-        int boughtWaystones = 1;
-        int priceMultiplier = 5;
+    public int getPrice(){
+        int boughtWaystones = purchasedPrivateWs;
+        int priceMultiplier = WaystonesPlugin.getPlugin().getConfig().getInt("PriceMultiplier");
 
-        int startPrice = 32;
+        int startPrice = WaystonesPlugin.getPlugin().getConfig().getInt("StartPrice");
         int total = 0;
 
         for(int i=0;i<=boughtWaystones; i++){
@@ -43,7 +43,7 @@ public class User {
             }
         }
         System.out.println(total);
-
+        return total;
     }
 
     public boolean canPlacePrivateWs(){
