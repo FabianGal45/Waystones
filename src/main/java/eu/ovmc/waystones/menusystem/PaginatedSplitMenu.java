@@ -38,8 +38,8 @@ public abstract class PaginatedSplitMenu extends Menu {
         }
     }
 
-    public void addMenuPageButtons(int sizePrivWs){
-        if(sizePrivWs > maxPrivateWs * (page+1) || indexPubWs > maxPublicWs * (page +1)){
+    public void addMenuPageButtons(int num){
+        if(num + 1 >= maxPrivateWs * (page+1) || indexPubWs > maxPublicWs * (page +1)){ //todo remove the =
             inventory.setItem(50, makeItem(Material.ARROW, "Next Page"));
         }
         if(page != 0){

@@ -17,8 +17,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
-import java.util.ArrayList;
-
 public class WaystoneInteract implements Listener {
 
     @EventHandler
@@ -43,7 +41,7 @@ public class WaystoneInteract implements Listener {
                 //TESTING
                 User user = jdbc.getUserFromDB(player.getUniqueId().toString());
                 user.test();
-                System.out.println("Can place: "+user.canPlaceWaystone());
+                System.out.println("Can place: "+user.canPlacePrivateWs());
 
                 //if waystone exists in the database
                 if(ws != null){

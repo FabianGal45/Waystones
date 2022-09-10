@@ -2,6 +2,7 @@ package eu.ovmc.waystones.menusystem.menu;
 
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.SQLiteJDBC;
+import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.menusystem.PaginatedSplitMenu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
@@ -51,8 +52,9 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
         ArrayList<PrivateWaystone> privateWaystones = playerMenuUtility.getPrivateWaystones();
 
+        Material currentItem = e.getCurrentItem().getType();
 
-        if(e.getCurrentItem().getType().equals(Material.EMERALD_BLOCK)){
+        if(currentItem.equals(Material.EMERALD_BLOCK)){
             //Grab the index from the NBT data of the block
             ItemMeta itemMeta = e.getCurrentItem().getItemMeta();
             NamespacedKey namespacedKey = new NamespacedKey(WaystonesPlugin.getPlugin(), "index");
@@ -63,15 +65,16 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
             //safety feature
             selected.safeTeleport(player);
+            //TODO: use papers tasync teleportation
 
         }
-        else if(e.getCurrentItem().getType().equals(Material.NETHERITE_BLOCK)){
+        else if(currentItem.equals(Material.NETHERITE_BLOCK)){
             player.sendMessage("You Clicked Netherite block!");
         }
-        else if(e.getCurrentItem().getType().equals(Material.LIME_CONCRETE_POWDER)){
+        else if(currentItem.equals(Material.LIME_CONCRETE_POWDER)){
             player.sendMessage("You are already at this location");
         }
-        else if(e.getCurrentItem().getType().equals(Material.CRACKED_STONE_BRICKS)){
+        else if(currentItem.equals(Material.CRACKED_STONE_BRICKS)){
             //Grab the index from the NBT data of the block
             ItemMeta itemMeta = e.getCurrentItem().getItemMeta();
             NamespacedKey namespacedKey = new NamespacedKey(WaystonesPlugin.getPlugin(), "index");
@@ -81,7 +84,18 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             player.sendMessage(Component.text("This waystone has been damaged! ("+selected.getParsedLocation(selected.getLocation()).getBlockX()+", "+selected.getParsedLocation(selected.getLocation()).getBlockY()+", "+ selected.getParsedLocation(selected.getLocation()).getBlockZ()+")",
                             TextColor.fromHexString("#802f45")));
         }
-        else if(e.getCurrentItem().getType().equals(Material.BARRIER)){
+        else if(currentItem.equals(Material.GRAY_DYE)){
+            User user = playerMenuUtility.getUser();
+            int purchased = user.getPurchasedPrivateWs();
+            int total = purchased +1;
+            user.setPurchasedPrivateWs(total);
+
+            SQLiteJDBC jdbc = new SQLiteJDBC();
+            jdbc.updateUser(user);
+
+            super.open();
+        }
+        else if(currentItem.equals(Material.BARRIER)){
             String itemName = PlainTextComponentSerializer.plainText().serialize(Objects.requireNonNull(e.getCurrentItem().getItemMeta().displayName()));
             if (itemName.equals("Back")) {
                 if (page == 0) {
@@ -93,18 +107,39 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 //            ArrayList<SplitMenu> GUIs = plugin.getArrGUIs();
             }
         }
-        else if(e.getCurrentItem().getType().equals(Material.ARROW)){//Make it more precise player can click on any arrow including personal inventory.
+        else if(currentItem.equals(Material.ARROW)){//Make it more precise player can click on any arrow including personal inventory.
             System.out.println("Next page was selected");
-            if (!((indexPrivWs + 1) >= privateWaystones.size())){
+//            if ((indexPrivWs + 1) <= privateWaystones.size()){
                 page = page + 1;
                 super.open();
-            }else{
-                //check if there are more public waystones than the slots then open a simple paginated menu.
-                player.sendMessage("You are on the last page.");
-            }
+//            }else{
+//                //check if there are more public waystones than the slots then open a simple paginated menu.
+//                player.sendMessage("You are on the last page.");
+//            }
 //            plugin.openGUI(player);
         }
+        else if (currentItem.equals(Material.RECOVERY_COMPASS) && e.getClick().isRightClick()) {
+            User user = playerMenuUtility.getUser();
+            int purchased = user.getPurchasedPrivateWs();
+            int total = purchased +1;
+            user.setPurchasedPrivateWs(total);
 
+            SQLiteJDBC jdbc = new SQLiteJDBC();
+            jdbc.updateUser(user);
+
+            super.open();
+        }
+        else if (currentItem.equals(Material.RECOVERY_COMPASS) && e.getClick().isLeftClick()) {
+            User user = playerMenuUtility.getUser();
+            int purchased = user.getPurchasedPrivateWs();
+            int total = purchased -1;
+            user.setPurchasedPrivateWs(total);
+
+            SQLiteJDBC jdbc = new SQLiteJDBC();
+            jdbc.updateUser(user);
+
+            super.open();
+        }
 
 
     }
@@ -114,14 +149,46 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
         addMenuBorder();
 
         ArrayList<PrivateWaystone> privateWaystones = playerMenuUtility.getPrivateWaystones();
-
         if(privateWaystones != null && !privateWaystones.isEmpty()) {
+            //loop for each slot available to private waystones (7)
             for(int i = 0; i < getMaxPrivateWs(); i++) {
                 indexPrivWs = getMaxPrivateWs() * page + i;
+                System.out.println("Index1: "+ indexPrivWs +" = "+ getMaxPrivateWs()+" * "+ page+ " + " + i);
+
+                //If finished placing the existing waystones before running out of space
                 if(indexPrivWs >= privateWaystones.size()){
-                    indexPrivWs = i-1;
-                    break; //If the index has reached the number of players.
+//                    indexPrivWs = i-1;
+                    User user = playerMenuUtility.getUser();
+                    int pu = user.getAllowedWs()-privateWaystones.size();
+                    System.out.println("PU: "+ pu);
+
+                    for(int j=0;j<getMaxPrivateWs();j++){
+                        System.out.println("Index2: "+ indexPrivWs);
+                        System.out.println("J: "+j);
+
+                        int pos = indexPrivWs-(getMaxPrivateWs()*page)+10;
+
+                        if( (indexPrivWs+1) - privateWaystones.size() <= pu && getMaxPrivateWs()+9>=pos){
+                            System.out.println("Pos: "+ pos + " Placed!");
+                            ItemStack limeDye = new ItemStack(Material.LIME_DYE);
+                            inventory.setItem(pos ,limeDye);
+                        }
+                        else{
+                            if(indexPrivWs<getMaxPrivateWs()*(page+1)){
+                                ItemStack grayDye = new ItemStack(Material.GRAY_DYE);
+                                inventory.addItem(grayDye);
+                            }
+                            break;
+                        }
+                        indexPrivWs++;
+                    }
+
+
+
+                    System.out.println("End index: "+ indexPrivWs);
+                    break; //If the index has reached the number of waystones.
                 }
+
                 PrivateWaystone ws = privateWaystones.get(indexPrivWs);
                 if (ws != null){
                     ItemStack privateWs;
@@ -129,14 +196,14 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                     Block blockTop = ws.getParsedLocation(ws.getLocation()).getBlock();
                     Block blockUnder = ws.getParsedLocation(ws.getLocation()).subtract(0.0,1.0,0.0).getBlock();
 
-                    boolean validPrivWs = blockTop.getType().equals(Material.LODESTONE) && blockUnder.getType().equals(Material.EMERALD_BLOCK);
+                    boolean damagedWs = !(blockTop.getType().equals(Material.LODESTONE) && blockUnder.getType().equals(Material.EMERALD_BLOCK));
 
                     //if this is the waystone he clicked on make it lime green
                     if(ws.getLocation().equals(playerMenuUtility.getClickedOnWs().getLocation())){
                         //Creates the LimeConcretePowder block item
-                        privateWs = new ItemStack(Material.LIME_CONCRETE_POWDER);
+                        privateWs = new ItemStack(Material.LIME_CONCRETE);
                     }
-                    else if(!validPrivWs){//if waystone not valid mark it with a cracked stone
+                    else if(damagedWs){//if waystone is damaged, mark it with a cracked stone
                         privateWs = new ItemStack(Material.CRACKED_STONE_BRICKS);
                     }
                     else{
@@ -180,8 +247,11 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                     inventory.addItem(privateWs);
                 }
             }
+
+
+
         }
 
-        addMenuPageButtons(privateWaystones.size());
+        addMenuPageButtons(indexPrivWs);
     }
 }

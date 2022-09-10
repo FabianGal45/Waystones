@@ -1,9 +1,14 @@
 package eu.ovmc.waystones.events;
 
+import co.aikar.util.JSONUtil;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -12,6 +17,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
+
+import java.awt.*;
 
 public class WaystonePlace implements Listener {
 //    https://www.spigotmc.org/wiki/using-the-event-api/
@@ -47,13 +54,21 @@ public class WaystonePlace implements Listener {
                 PrivateWaystone waystone = jdbc.getWaystone(e.getBlock().getLocation().toString());
                 if(waystone == null){
                     //register the waystone
-                    String tpLocation;
-                    tpLocation = player.getLocation().toString();
+                    String tpLocation = player.getLocation().toString();
                     if(blockUnder.getType().equals(Material.EMERALD_BLOCK)){
-                        PrivateWaystone ws = new PrivateWaystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString(), null, tpLocation);
-                        jdbc.regWaystone(ws, user);
-                        player.sendMessage("Private waystone registered!");
+                        if(user.canPlacePrivateWs()){
+                            PrivateWaystone ws = new PrivateWaystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString(), null, tpLocation);
+                            jdbc.regWaystone(ws, user);
+                            player.sendMessage("Private waystone registered!");
+                        }
+                        else{
+                            e.setCancelled(true);
+                            player.sendMessage("You need to purchase more waystones");
 
+                            TextComponent text = Component.text("click to add").hoverEvent(HoverEvent.showText(Component.text("aaa"))).clickEvent(ClickEvent.suggestCommand("aaaa"));
+
+                            player.sendMessage(text);
+                        }
                     }
                     else if(blockUnder.getType().equals(Material.NETHERITE_BLOCK)){
                         PublicWaystone ws = new PublicWaystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString(), null, tpLocation, 0.1, 1.0, "shop");

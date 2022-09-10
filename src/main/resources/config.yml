@@ -1,4 +1,4 @@
 Test: 'This is a config file'
-FreePrivateWs: 2
+FreePrivateWs: 1
 StartPrice: 32
 PriceMultiplier: 5

@@ -1,6 +1,7 @@
 package eu.ovmc.waystones.menusystem;
 
 import eu.ovmc.waystones.database.SQLiteJDBC;
+import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import org.bukkit.entity.Player;
 
@@ -10,13 +11,15 @@ public class PlayerMenuUtility {
 
     private Player owner;
     private ArrayList<PrivateWaystone> privateWaystones;
-
     private PrivateWaystone clickedOnWs;
+
+    private User user;
 
     public PlayerMenuUtility(Player owner) {
         this.owner = owner;
         SQLiteJDBC jdbc = new SQLiteJDBC();
         this.privateWaystones = jdbc.getAllPrivateWaystones(owner.getUniqueId().toString());
+        this.user = jdbc.getUserFromDB(owner.getUniqueId().toString());
     }
 
     public PrivateWaystone getClickedOnWs() {
@@ -41,5 +44,13 @@ public class PlayerMenuUtility {
 
     public void setOwner(Player owner) {
         this.owner = owner;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

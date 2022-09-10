@@ -38,6 +38,7 @@ public class SQLiteJDBC {
                     " user_name VARCHAR(255)," +
                     " private_ws INT(255)," +
                     " public_ws INT(255)," +
+                    " purchased_private_ws INT(255)," +
                     " PRIMARY KEY(uuid))";
             stmt.executeUpdate(sql);
             sql = "CREATE TABLE IF NOT EXISTS private_waystones " + //Creates the private_waystones table
@@ -181,7 +182,7 @@ public class SQLiteJDBC {
             String sql = "SELECT * FROM users WHERE uuid = '"+ uuid +"'";
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
-                user = new User(rs.getString("uuid"), rs.getString("user_name"), rs.getInt("private_ws"), rs.getInt("public_ws"));
+                user = new User(rs.getString("uuid"), rs.getString("user_name"), rs.getInt("private_ws"), rs.getInt("public_ws"), rs.getInt("purchased_private_ws"));
             }
 
             stmt.close();
@@ -256,11 +257,12 @@ public class SQLiteJDBC {
         //Count the number of waystones a user has
         int privateCount = countPrivateWs(user);
         int publicCount = countPublicWs(user);
+        int purchasedPrivateWs = user.getPurchasedPrivateWs();
 
         try{
             stmt = getCon().createStatement();
             String sql = "UPDATE users" +
-                    " SET private_ws = " + privateCount + ", public_ws = "+ publicCount +
+                    " SET private_ws = " + privateCount + ", public_ws = "+ publicCount +  ", purchased_private_ws = "+ purchasedPrivateWs +
                     " WHERE uuid = '" + user.getUuid() +"'";
             stmt.executeUpdate(sql);
             System.out.println("User "+ user.getUuid() +" updated!");

@@ -105,7 +105,8 @@ public class PrivateWaystone {
         }
 
         if(safe){
-            player.teleport(loc);
+//            player.teleport(loc);
+            player.teleportAsync(loc);//Todo: try this one
         }
         else{
             player.sendMessage("This teleportation is unsafe!");

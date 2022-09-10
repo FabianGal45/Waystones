@@ -9,7 +9,8 @@ public class User {
     private int privateWs;
     private int publicWs;
 
-    private int purchasedWs;
+    private int purchasedPrivateWs;
+
 
 
     public User() {
@@ -19,11 +20,12 @@ public class User {
         this.publicWs = 0;
     }
 
-    public User(String uuid, String userName, int privateWs, int publicWs) {
+    public User(String uuid, String userName, int privateWs, int publicWs, int purchasedPrivateWs) {
         this.uuid = uuid;
         this.userName = userName;
         this.privateWs = privateWs;
         this.publicWs = publicWs;
+        this.purchasedPrivateWs = purchasedPrivateWs;
     }
 
     public void test(){
@@ -44,18 +46,28 @@ public class User {
 
     }
 
-    public boolean canPlaceWaystone(){
+    public boolean canPlacePrivateWs(){
         boolean result = false;
         int freePrivateWs = WaystonesPlugin.getPlugin().getConfig().getInt("FreePrivateWs");
-        int boughtWs = 1;
 
-
-        System.out.println("math: "+ privateWs + "<=" + freePrivateWs + "+" +  boughtWs);
-        if(privateWs<=freePrivateWs+boughtWs){
+        System.out.println("math: "+ privateWs + "<" + freePrivateWs + "+" +  purchasedPrivateWs);
+        if(privateWs<freePrivateWs+purchasedPrivateWs){
             result = true;
         }
 
         return result;
+    }
+
+    public int getAllowedWs(){
+        int freePrivateWs = WaystonesPlugin.getPlugin().getConfig().getInt("FreePrivateWs");
+        return freePrivateWs+purchasedPrivateWs;
+    }
+
+    public void addPurchase(int num){
+        this.purchasedPrivateWs = purchasedPrivateWs + num;
+
+        SQLiteJDBC jdbc = new SQLiteJDBC();
+        jdbc.updateUser(this);
     }
 
 
@@ -89,5 +101,13 @@ public class User {
 
     public void setPublicWs(int publicWs) {
         this.publicWs = publicWs;
+    }
+
+    public int getPurchasedPrivateWs() {
+        return purchasedPrivateWs;
+    }
+
+    public void setPurchasedPrivateWs(int purchasedPrivateWs) {
+        this.purchasedPrivateWs = purchasedPrivateWs;
     }
 }
