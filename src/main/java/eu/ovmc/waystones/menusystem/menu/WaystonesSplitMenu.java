@@ -109,6 +109,9 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
         }
         else if(currentItem.equals(Material.ARROW)){//Make it more precise player can click on any arrow including personal inventory.
             System.out.println("Next page was selected");
+            //Todo: Check if withing the first page there is a gray dye. If it is then open the big menu
+
+
 //            if ((indexPrivWs + 1) <= privateWaystones.size()){
                 page = page + 1;
                 super.open();
@@ -155,37 +158,36 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                 indexPrivWs = getMaxPrivateWs() * page + i;
                 System.out.println("Index1: "+ indexPrivWs +" = "+ getMaxPrivateWs()+" * "+ page+ " + " + i);
 
-                //If finished placing the existing waystones before running out of space
+                //If finished placing the existing waystones before running out of space start placing the dyes
                 if(indexPrivWs >= privateWaystones.size()){
-//                    indexPrivWs = i-1;
                     User user = playerMenuUtility.getUser();
+                    //the amount of purchased and unused waystones
                     int pu = user.getAllowedWs()-privateWaystones.size();
                     System.out.println("PU: "+ pu);
 
+                    //loop 7 times
                     for(int j=0;j<getMaxPrivateWs();j++){
-                        System.out.println("Index2: "+ indexPrivWs);
-                        System.out.println("J: "+j);
 
+                        //the position at which the dye to be placed
                         int pos = indexPrivWs-(getMaxPrivateWs()*page)+10;
 
-                        if( (indexPrivWs+1) - privateWaystones.size() <= pu && getMaxPrivateWs()+9>=pos){
-                            System.out.println("Pos: "+ pos + " Placed!");
+                        //if green dye have reached the pu AND the pos <= 16
+                        if( (indexPrivWs+1) - privateWaystones.size() <= pu && pos <= getMaxPrivateWs()+9){
                             ItemStack limeDye = new ItemStack(Material.LIME_DYE);
                             inventory.setItem(pos ,limeDye);
                         }
                         else{
+                            //if there is still space, add a grey dye
                             if(indexPrivWs<getMaxPrivateWs()*(page+1)){
                                 ItemStack grayDye = new ItemStack(Material.GRAY_DYE);
                                 inventory.addItem(grayDye);
+                                indexPrivWs--;
                             }
                             break;
                         }
                         indexPrivWs++;
                     }
 
-
-
-                    System.out.println("End index: "+ indexPrivWs);
                     break; //If the index has reached the number of waystones.
                 }
 
