@@ -38,10 +38,15 @@ public class WaystoneInteract implements Listener {
                 PrivateWaystone ws = jdbc.getWaystone(loc);
                 Player player = e.getPlayer();
 
-                //TESTING
+                //Check if the user exists if not register him.
                 User user = jdbc.getUserFromDB(player.getUniqueId().toString());
-//                user.test();
-                System.out.println("Can place: "+user.canPlacePrivateWs());
+                if(user == null){
+                    jdbc.regPlayer(player);
+                }
+
+                //TESTING
+//                User user = jdbc.getUserFromDB(player.getUniqueId().toString());
+//                System.out.println("Can place: "+user.canPlacePrivateWs());
 
                 //if waystone exists in the database
                 if(ws != null){

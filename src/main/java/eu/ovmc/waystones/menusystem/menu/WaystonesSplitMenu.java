@@ -7,22 +7,21 @@ import eu.ovmc.waystones.menusystem.PaginatedSplitMenu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.CompassMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import javax.xml.stream.events.Namespace;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -65,13 +64,12 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
             //safety feature
             selected.safeTeleport(player);
-            //TODO: use papers tasync teleportation
 
         }
         else if(currentItem.equals(Material.NETHERITE_BLOCK)){
             player.sendMessage("You Clicked Netherite block!");
         }
-        else if(currentItem.equals(Material.LIME_CONCRETE_POWDER)){
+        else if(currentItem.equals(Material.LIME_CONCRETE)){
             player.sendMessage("You are already at this location");
         }
         else if(currentItem.equals(Material.CRACKED_STONE_BRICKS)){
@@ -85,15 +83,30 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                             TextColor.fromHexString("#802f45")));
         }
         else if(currentItem.equals(Material.GRAY_DYE)){
+            Economy econ = WaystonesPlugin.getEcon();
+
             User user = playerMenuUtility.getUser();
             int purchased = user.getPurchasedPrivateWs();
-            int total = purchased +1;
-            user.setPurchasedPrivateWs(total);
+            int cost = user.getCostOfNextWs();
+            EconomyResponse r = econ.withdrawPlayer(player, cost);
 
-            SQLiteJDBC jdbc = new SQLiteJDBC();
-            jdbc.updateUser(user);
+            if(r.transactionSuccess()){
+                int total = purchased +1;
+                user.setPurchasedPrivateWs(total);
 
-            super.open();
+                SQLiteJDBC jdbc = new SQLiteJDBC();
+                jdbc.updateUser(user);
+
+                player.sendMessage(Component.text("You purchased a waystone for ", NamedTextColor.GREEN)
+                        .append(Component.text( econ.format(cost), NamedTextColor.GREEN)));
+
+                super.open();
+            }
+            else{
+                player.sendMessage(Component.text("You don't have ", NamedTextColor.DARK_RED)
+                        .append(Component.text( econ.format(user.getCostOfNextWs()), NamedTextColor.RED)));
+            }
+
         }
         else if(currentItem.equals(Material.BARRIER)){
             String itemName = PlainTextComponentSerializer.plainText().serialize(Objects.requireNonNull(e.getCurrentItem().getItemMeta().displayName()));
@@ -159,7 +172,6 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                 System.out.println("Index1: "+ indexPrivWs +" = "+ getMaxPrivateWs()+" * "+ page+ " + " + i);
 
                 //Todo Make it so that dyes get placed even if there are no waystones
-                //TODO: take in a ccount the free waystones.
 
                 System.out.println("ws: "+ privateWaystones.size());
 
@@ -188,11 +200,14 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                         else{
                             //if there is still space, add a grey dye
                             if(indexPrivWs<getMaxPrivateWs()*(page+1)){
+                                Economy econ = WaystonesPlugin.getEcon();
+
                                 ItemStack grayDye = new ItemStack(Material.GRAY_DYE);
                                 ItemMeta grayMeta = grayDye.getItemMeta();
-                                grayMeta.displayName(Component.text("Buy More"));
+                                grayMeta.displayName(Component.text("Buy more").color(NamedTextColor.GRAY));
                                 List<Component> loreArray = new ArrayList<>();
-                                loreArray.add(Component.text("Cost: " + user.getPrice()));
+                                loreArray.add(Component.text("Cost: ", NamedTextColor.GRAY).append(Component.text(econ.format(user.getCostOfNextWs()), NamedTextColor.DARK_AQUA)));
+                                loreArray.add(Component.text("Balance: ", NamedTextColor.DARK_GRAY).append(Component.text(econ.format(econ.getBalance(playerMenuUtility.getOwner())), NamedTextColor.DARK_GRAY)));
                                 grayMeta.lore(loreArray);
                                 grayDye.setItemMeta(grayMeta);
 

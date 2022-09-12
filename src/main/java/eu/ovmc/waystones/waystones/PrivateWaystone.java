@@ -60,12 +60,14 @@ public class PrivateWaystone {
         for(int i = 0; i<5; i++){
             safe = true;
             loc = getParsedLocation(tpLocation);
+            System.out.println("loc1: "+ loc);
             //Centers the player on the block
             float yaw = loc.getYaw();
             float pitch = loc.getPitch();
-            loc = loc.set((int)loc.getX()+0.5, loc.getY(), (int)loc.getZ()+0.5);
+            loc = loc.set(centerCoordinate(loc.getX()), loc.getY(), centerCoordinate(loc.getZ()));
             loc.setYaw(yaw);
             loc.setPitch(pitch-18);
+            System.out.println("loc2: "+ loc);
 
             Block landingBlock = loc.getBlock().getLocation().subtract(0.0, (double) i, 0.0).getBlock();
 
@@ -73,6 +75,7 @@ public class PrivateWaystone {
             if(!landingBlock.getType().equals(Material.AIR)){
                 //position the player once a landing block has been found
                 loc.set(landingBlock.getX()+0.5, landingBlock.getY()+1, landingBlock.getZ()+0.5);
+                System.out.println("loc3: "+ loc);
 
                 //if the block is dangerous and there isn't enough space above for the player then it's unsafe
                 if((landingBlock.getType().equals(Material.LAVA)
@@ -83,6 +86,7 @@ public class PrivateWaystone {
                     if(isSpaceAbove(getParsedLocation(location))){
                         //set location above the lodestone
                         loc = getParsedLocation(location).add(0.5, 1.0 ,0.5);
+                        System.out.println("loc4: "+ loc);
                     }
                     else {
                         //warn player it is unsafe and they cannot teleport there.
@@ -96,6 +100,7 @@ public class PrivateWaystone {
                 if(isSpaceAbove(getParsedLocation(location))){
                     //set location above the lodestone
                     loc = getParsedLocation(location).add(0.5, 1.0 ,0.5);
+                    System.out.println("loc5: "+ loc);
                 }
                 else {
                     //warn player it is unsafe and they cannot teleport there.
@@ -106,13 +111,25 @@ public class PrivateWaystone {
 
         if(safe){
 //            player.teleport(loc);
-            player.teleportAsync(loc);//Todo: try this one
+            player.teleportAsync(loc);
+            System.out.println("loc6: "+ loc);
         }
         else{
             player.sendMessage("This teleportation is unsafe!");
         }
 
     }
+
+    private double centerCoordinate(double n){
+        if(n < 0){
+            n = (int)n - 0.5;
+        }
+        else{
+            n = (int)n + 0.5;
+        }
+        return n;
+    }
+
 
     private boolean isSpaceAbove(Location loc){
         Material above1 = loc.add(0.0,1.0,0.0).getBlock().getType();

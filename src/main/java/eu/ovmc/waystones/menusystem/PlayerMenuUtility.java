@@ -12,7 +12,6 @@ public class PlayerMenuUtility {
     private Player owner;
     private ArrayList<PrivateWaystone> privateWaystones;
     private PrivateWaystone clickedOnWs;
-
     private User user;
 
     public PlayerMenuUtility(Player owner) {

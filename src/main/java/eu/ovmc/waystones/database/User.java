@@ -1,6 +1,11 @@
 package eu.ovmc.waystones.database;
 
 import eu.ovmc.waystones.WaystonesPlugin;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.economy.EconomyResponse;
+import org.bukkit.entity.Player;
 
 public class User {
 
@@ -8,17 +13,7 @@ public class User {
     private String userName;
     private int privateWs;
     private int publicWs;
-
     private int purchasedPrivateWs;
-
-
-
-    public User() {
-        this.uuid = null;
-        this.userName = "";
-        this.privateWs = 0;
-        this.publicWs = 0;
-    }
 
     public User(String uuid, String userName, int privateWs, int publicWs, int purchasedPrivateWs) {
         this.uuid = uuid;
@@ -28,7 +23,7 @@ public class User {
         this.purchasedPrivateWs = purchasedPrivateWs;
     }
 
-    public int getPrice(){
+    public int getCostOfNextWs(){
         int boughtWaystones = purchasedPrivateWs;
         int priceMultiplier = WaystonesPlugin.getPlugin().getConfig().getInt("PriceMultiplier");
 

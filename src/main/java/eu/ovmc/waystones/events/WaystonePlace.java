@@ -1,6 +1,7 @@
 package eu.ovmc.waystones.events;
 
 import co.aikar.util.JSONUtil;
+import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.database.User;
@@ -9,12 +10,16 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
@@ -22,8 +27,8 @@ import java.awt.*;
 
 public class WaystonePlace implements Listener {
 //    https://www.spigotmc.org/wiki/using-the-event-api/
-    
-    @EventHandler
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true) //https://www.spigotmc.org/threads/checking-if-a-block-was-successfully-broken.428658/
     public void waystonePlaced(BlockPlaceEvent e){
 
         Player player = e.getPlayer();
@@ -63,11 +68,11 @@ public class WaystonePlace implements Listener {
                         }
                         else{
                             e.setCancelled(true);
-                            player.sendMessage("You need to purchase more waystones");
-
-                            TextComponent text = Component.text("click to add").hoverEvent(HoverEvent.showText(Component.text("aaa"))).clickEvent(ClickEvent.suggestCommand("aaaa"));
-
-                            player.sendMessage(text);
+                            Economy econ = WaystonesPlugin.getEcon();
+                            player.sendMessage(Component.text("Buy one more waystone " + econ.format(user.getCostOfNextWs()) , NamedTextColor.GRAY)
+                                    .append(Component.text(" [Buy]", NamedTextColor.DARK_GREEN).decorate(TextDecoration.BOLD)
+                                            .hoverEvent(HoverEvent.showText(Component.text("Buy one more Waystone")))
+                                            .clickEvent(ClickEvent.runCommand("/purchase"))));
                         }
                     }
                     else if(blockUnder.getType().equals(Material.NETHERITE_BLOCK)){

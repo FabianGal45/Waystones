@@ -6,13 +6,14 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
 public class WaystoneBreak implements Listener {
 //    https://www.tutorialspoint.com/sqlite/sqlite_java.htm
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void wsBroken(BlockBreakEvent e){
 
         Block block = e.getBlock();
