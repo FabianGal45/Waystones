@@ -1,9 +1,6 @@
 package eu.ovmc.waystones.waystones;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -113,6 +110,7 @@ public class PrivateWaystone {
 //            player.teleport(loc);
             player.teleportAsync(loc);
             System.out.println("loc6: "+ loc);
+            player.playSound(loc, Sound.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.BLOCKS, 1,1);
         }
         else{
             player.sendMessage("This teleportation is unsafe!");

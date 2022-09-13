@@ -1,6 +1,6 @@
 package eu.ovmc.waystones;
 
-import eu.ovmc.waystones.commands.Purchase;
+import eu.ovmc.waystones.commands.Ws;
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.events.MenuHandler;
@@ -13,7 +13,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -42,7 +41,7 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
         }
 
         //Commands
-        getCommand("purchase").setExecutor(new Purchase());
+        getCommand("ws").setExecutor(new Ws());
 
 
         //Events

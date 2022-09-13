@@ -14,14 +14,20 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-public class Purchase implements CommandExecutor {
+public class Ws implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
         if(sender instanceof Player){
             Player player = (Player) sender;
 
+
+
             if(args.length==0){
+                WaystonesPlugin plugin = WaystonesPlugin.getPlugin();
+                player.sendMessage("Custom plugin made for OVMC. "+ plugin.getDescription().getVersion());
+            }
+            else if (args[0].equals("purchase")) {
                 SQLiteJDBC jdbc = new SQLiteJDBC();
                 Economy econ = WaystonesPlugin.getEcon();
                 PlayerMenuUtility pmu = WaystonesPlugin.getPlayerMenuUtility(player);
@@ -29,7 +35,7 @@ public class Purchase implements CommandExecutor {
                 if(pmu != null){
                     User user = pmu.getUser();
                     int purchasedPrivateWs = user.getPurchasedPrivateWs();
-                    int cost = user.getCostOfNextWs();
+                    long cost = user.getCostOfNextWs();
                     EconomyResponse r = econ.withdrawPlayer(player, cost);
 
                     if(r.transactionSuccess()){
@@ -46,10 +52,11 @@ public class Purchase implements CommandExecutor {
                     }
                 }
                 else{
-                    player.sendMessage(Component.text("You have not placed any waystone. Try placing one", NamedTextColor.RED)); //Todo: Test this
+                    player.sendMessage(Component.text("Something went wrong when purchasing a waystone", NamedTextColor.RED)); //Todo: Test this
                 }
-
-
+            }
+            else{
+                player.sendMessage(Component.text("This command does not exist", NamedTextColor.DARK_RED));
             }
 
 

@@ -13,9 +13,7 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Tag;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -65,6 +63,7 @@ public class WaystonePlace implements Listener {
                             PrivateWaystone ws = new PrivateWaystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString(), null, tpLocation);
                             jdbc.regWaystone(ws, user);
                             player.sendMessage("Private waystone registered!");
+                            player.playSound(e.getBlock().getLocation(), Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1, 2);
                         }
                         else{
                             e.setCancelled(true);
@@ -72,7 +71,7 @@ public class WaystonePlace implements Listener {
                             player.sendMessage(Component.text("Buy one more waystone " + econ.format(user.getCostOfNextWs()) , NamedTextColor.GRAY)
                                     .append(Component.text(" [Buy]", NamedTextColor.DARK_GREEN).decorate(TextDecoration.BOLD)
                                             .hoverEvent(HoverEvent.showText(Component.text("Buy one more Waystone")))
-                                            .clickEvent(ClickEvent.runCommand("/purchase"))));
+                                            .clickEvent(ClickEvent.runCommand("/ws purchase"))));
                         }
                     }
                     else if(blockUnder.getType().equals(Material.NETHERITE_BLOCK)){

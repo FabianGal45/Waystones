@@ -23,17 +23,18 @@ public class User {
         this.purchasedPrivateWs = purchasedPrivateWs;
     }
 
-    public int getCostOfNextWs(){
+    public long getCostOfNextWs(){
         int boughtWaystones = purchasedPrivateWs;
         int priceMultiplier = WaystonesPlugin.getPlugin().getConfig().getInt("PriceMultiplier");
 
         int startPrice = WaystonesPlugin.getPlugin().getConfig().getInt("StartPrice");
-        int total = 0;
+        long total = 0;
 
         for(int i=0;i<=boughtWaystones; i++){
             if(i==0){
                 total = startPrice;
             }else{
+                System.out.println("total: "+total+", PriceM: "+ priceMultiplier);
                 total = total*priceMultiplier;
             }
         }

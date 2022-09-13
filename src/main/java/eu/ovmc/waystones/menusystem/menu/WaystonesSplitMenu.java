@@ -13,8 +13,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -54,6 +53,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
         Material currentItem = e.getCurrentItem().getType();
 
         if(currentItem.equals(Material.EMERALD_BLOCK)){
+            player.playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, SoundCategory.BLOCKS, 1, 1);
             //Grab the index from the NBT data of the block
             ItemMeta itemMeta = e.getCurrentItem().getItemMeta();
             NamespacedKey namespacedKey = new NamespacedKey(WaystonesPlugin.getPlugin(), "index");
@@ -62,8 +62,15 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
             System.out.println(WaystonesPlugin.getPlugin().getDescription().getVersion());
 
-            //safety feature
-            selected.safeTeleport(player);
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WaystonesPlugin.getPlugin(), new Runnable() {
+                @Override
+                public void run() {
+                    //safety feature
+                    selected.safeTeleport(player);
+                }
+            },5);
+
+
 
         }
         else if(currentItem.equals(Material.NETHERITE_BLOCK)){
@@ -87,7 +94,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
             User user = playerMenuUtility.getUser();
             int purchased = user.getPurchasedPrivateWs();
-            int cost = user.getCostOfNextWs();
+            long cost = user.getCostOfNextWs();
             EconomyResponse r = econ.withdrawPlayer(player, cost);
 
             if(r.transactionSuccess()){
@@ -110,6 +117,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
         }
         else if(currentItem.equals(Material.BARRIER)){
             String itemName = PlainTextComponentSerializer.plainText().serialize(Objects.requireNonNull(e.getCurrentItem().getItemMeta().displayName()));
+            player.playSound(player.getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 1, 2);
             if (itemName.equals("Back")) {
                 if (page == 0) {
                     player.sendMessage("This is the first page.");
@@ -122,6 +130,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
         }
         else if(currentItem.equals(Material.ARROW)){//Make it more precise player can click on any arrow including personal inventory.
             System.out.println("Next page was selected");
+            player.playSound(player.getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 1, 2);
             //Todo: Check if withing the first page there is a gray dye. If it is then open the big menu
 
 
@@ -206,6 +215,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                                 ItemMeta grayMeta = grayDye.getItemMeta();
                                 grayMeta.displayName(Component.text("Buy more").color(NamedTextColor.GRAY));
                                 List<Component> loreArray = new ArrayList<>();
+                                System.out.println("Cost raw: "+ user.getCostOfNextWs()+ ", Formatted: " + econ.format(user.getCostOfNextWs()));
                                 loreArray.add(Component.text("Cost: ", NamedTextColor.GRAY).append(Component.text(econ.format(user.getCostOfNextWs()), NamedTextColor.DARK_AQUA)));
                                 loreArray.add(Component.text("Balance: ", NamedTextColor.DARK_GRAY).append(Component.text(econ.format(econ.getBalance(playerMenuUtility.getOwner())), NamedTextColor.DARK_GRAY)));
                                 grayMeta.lore(loreArray);

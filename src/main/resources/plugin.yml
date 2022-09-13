@@ -7,5 +7,5 @@ description: This is a waystone plugin made to remove the use of commands when t
 depend:
   - Vault
 commands:
-  purchase:
+  ws:
     description: Purchase a waystone.

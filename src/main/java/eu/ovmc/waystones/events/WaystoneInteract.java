@@ -9,6 +9,8 @@ import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.WaystonesPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -62,6 +64,7 @@ public class WaystoneInteract implements Listener {
                     }
 
                     if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || (blockUnder.getType().equals(Material.NETHERITE_BLOCK) && ws instanceof PublicWaystone)){
+//                        player.playSound(ws.getParsedLocation(ws.getLocation()), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 1, 2);
                         new WaystonesSplitMenu(pmu).open();
                     }
                     else{
