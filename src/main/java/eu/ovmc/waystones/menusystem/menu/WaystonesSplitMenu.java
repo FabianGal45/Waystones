@@ -210,7 +210,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
                                 if(discount>0){
                                     Component oldPrice = Component.text(formatter.format(user.getCostOfNextWs()),NamedTextColor.RED).decoration(TextDecoration.STRIKETHROUGH, true);
-                                    Component newPrice = Component.text(" "+econ.format(Math.round(user.getCostOfNextWs() * (1-discount))), NamedTextColor.DARK_AQUA).decoration(TextDecoration.STRIKETHROUGH, false);
+                                    Component newPrice = Component.text(" "+econ.format(Math.round(user.getCostOfNextWs() * (1-discount))), NamedTextColor.WHITE).decoration(TextDecoration.STRIKETHROUGH, false);
 
                                     loreArray.add(Component.text("Cost: ", NamedTextColor.GRAY).decoration(TextDecoration.STRIKETHROUGH,false)
                                             .append(oldPrice)
@@ -218,9 +218,8 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                                     loreArray.add(Component.text("Discount: ",NamedTextColor.GRAY).append(Component.text(Math.round(discount*100)+"%",NamedTextColor.WHITE)));
                                 }
                                 else{
-                                    loreArray.add(Component.text("Cost: ", NamedTextColor.GRAY).append(Component.text(econ.format(user.getCostOfNextWs()), NamedTextColor.DARK_AQUA)));
+                                    loreArray.add(Component.text("Cost: ", NamedTextColor.GRAY).append(Component.text(econ.format(user.getCostOfNextWs()), NamedTextColor.WHITE)));
                                 }
-//                                loreArray.add(Component.text("Cost: ", NamedTextColor.GRAY).append(Component.text(econ.format(user.getDiscount(playerMenuUtility.getOwner())), NamedTextColor.DARK_AQUA)));
                                 loreArray.add(Component.text(""));
                                 loreArray.add(Component.text("1 vote = 1% discount", NamedTextColor.GRAY));
                                 loreArray.add(Component.text("Balance: ", NamedTextColor.DARK_GRAY).append(Component.text(econ.format(econ.getBalance(playerMenuUtility.getOwner())), NamedTextColor.DARK_GRAY)));

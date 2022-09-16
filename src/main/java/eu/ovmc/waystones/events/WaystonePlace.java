@@ -115,10 +115,22 @@ public class WaystonePlace implements Listener {
                     String tpLocation;
                     tpLocation = player.getLocation().toString();
                     if(e.getBlock().getType().equals(Material.EMERALD_BLOCK)){
-                        PrivateWaystone ws = new PrivateWaystone(blockAbove.getLocation().toString(), e.getPlayer().getUniqueId().toString(), null, tpLocation);
-                        jdbc.regWaystone(ws, user);
-                        player.sendMessage("Private waystone registered!");
+                        if(user.canPlacePrivateWs()){
+                            PrivateWaystone ws = new PrivateWaystone(blockAbove.getLocation().toString(), e.getPlayer().getUniqueId().toString(), null, tpLocation);
+                            jdbc.regWaystone(ws, user);
+                            player.playSound(e.getBlock().getLocation(), Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1, 2);
+                            player.sendMessage("Private waystone registered!");
+                        }
+                        else{
+                            e.setCancelled(true);
+                            Economy econ = WaystonesPlugin.getEcon();
+                            PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(player);
 
+                            player.sendMessage(Component.text("Buy one more waystone for " + econ.format(user.getCostOfNextWs()*(1-user.getDiscount(playerMenuUtility))) , NamedTextColor.GRAY)
+                                    .append(Component.text(" [Buy]", NamedTextColor.DARK_GREEN).decorate(TextDecoration.BOLD)
+                                            .hoverEvent(HoverEvent.showText(Component.text("Buy one more Waystone")))
+                                            .clickEvent(ClickEvent.runCommand("/ws purchase"))));
+                        }
                     }
                     else if(e.getBlock().getType().equals(Material.NETHERITE_BLOCK)){
                         PublicWaystone ws = new PublicWaystone(blockAbove.getLocation().toString(), e.getPlayer().getUniqueId().toString(), null, tpLocation, 0.1, 1.0, "shop");
@@ -129,7 +141,8 @@ public class WaystonePlace implements Listener {
                         player.sendMessage(ChatColor.RED + "Something went wrong when registering the waystone.");//This message should never get triggered
                     }
                 }
-                else if((e.getBlock().getType().equals(Material.EMERALD_BLOCK) && !(waystone instanceof PublicWaystone)) || ((e.getBlock().getType().equals(Material.NETHERITE_BLOCK)) && waystone instanceof PublicWaystone)) {
+                else if((e.getBlock().getType().equals(Material.EMERALD_BLOCK) && !(waystone instanceof PublicWaystone))
+                        || ((e.getBlock().getType().equals(Material.NETHERITE_BLOCK)) && waystone instanceof PublicWaystone)) {
                     player.sendMessage("Waystone Restored.");
                 }
                 else{
