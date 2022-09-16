@@ -1,10 +1,17 @@
 package eu.ovmc.waystones.database;
 
+import com.bencodez.votingplugin.VotingPluginMain;
+import com.bencodez.votingplugin.advancedcore.AdvancedCorePlugin;
+import com.bencodez.votingplugin.advancedcore.api.user.AdvancedCoreUser;
+import com.bencodez.votingplugin.user.VotingPluginUser;
 import eu.ovmc.waystones.WaystonesPlugin;
+import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
 public class User {
@@ -64,6 +71,64 @@ public class User {
 
         SQLiteJDBC jdbc = new SQLiteJDBC();
         jdbc.updateUser(this);
+    }
+
+    public double getDiscount(PlayerMenuUtility playerMenuUtility) {
+        double discount;
+        int totalPoints = playerMenuUtility.getVotingPluginUser().getPoints();
+
+        int maxDiscount = WaystonesPlugin.getPlugin().getConfig().getInt("MaxDiscount");
+        if(totalPoints>0){
+            if(totalPoints>maxDiscount){
+                discount = (double) maxDiscount/100;
+            }
+            else{
+                discount = (double) totalPoints/100;
+            }
+        }
+        else{
+            discount = 0.0;
+        }
+
+        return discount;
+    }
+
+
+    public boolean purchaseWaystone(PlayerMenuUtility playerMenuUtility){
+        boolean success;
+        long cost = getCostOfNextWs();
+        double discount = getDiscount(playerMenuUtility);
+        Player player = playerMenuUtility.getOwner();
+
+        if(discount>0){
+            cost = Math.round(cost * (1-discount));
+        }
+
+        Economy econ = WaystonesPlugin.getEcon();
+        EconomyResponse r = econ.withdrawPlayer(player, cost);
+
+        if(r.transactionSuccess()){
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.BLOCKS, 1, 2);
+            purchasedPrivateWs++;
+
+            SQLiteJDBC jdbc = new SQLiteJDBC();
+            jdbc.updateUser(this);
+
+            playerMenuUtility.getVotingPluginUser().removePoints((int) (discount*100));
+
+            player.sendMessage(Component.text("You purchased a waystone for ", NamedTextColor.GREEN)
+                    .append(Component.text( econ.format(cost), NamedTextColor.GREEN)));
+
+            success = true;
+        }
+        else{
+            player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
+            player.sendMessage(Component.text("You don't have ", NamedTextColor.DARK_RED)
+                    .append(Component.text( econ.format(cost), NamedTextColor.RED)));
+            success = false;
+        }
+
+        return success;
     }
 
 

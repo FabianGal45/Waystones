@@ -2,6 +2,7 @@ package eu.ovmc.waystones.events;
 
 import co.aikar.util.JSONUtil;
 import eu.ovmc.waystones.WaystonesPlugin;
+import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.database.User;
@@ -68,7 +69,9 @@ public class WaystonePlace implements Listener {
                         else{
                             e.setCancelled(true);
                             Economy econ = WaystonesPlugin.getEcon();
-                            player.sendMessage(Component.text("Buy one more waystone " + econ.format(user.getCostOfNextWs()) , NamedTextColor.GRAY)
+                            PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(player);
+
+                            player.sendMessage(Component.text("Buy one more waystone for " + econ.format(user.getCostOfNextWs()*(1-user.getDiscount(playerMenuUtility))) , NamedTextColor.GRAY)
                                     .append(Component.text(" [Buy]", NamedTextColor.DARK_GREEN).decorate(TextDecoration.BOLD)
                                             .hoverEvent(HoverEvent.showText(Component.text("Buy one more Waystone")))
                                             .clickEvent(ClickEvent.runCommand("/ws purchase"))));

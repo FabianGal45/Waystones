@@ -53,9 +53,9 @@ public class WaystoneInteract implements Listener {
                 //if waystone exists in the database
                 if(ws != null){
                     e.setCancelled(true);
-                    PlayerMenuUtility pmu = WaystonesPlugin.getPlayerMenuUtility(player);
-                    pmu.setPrivateWaystones(jdbc.getAllPrivateWaystones(player.getUniqueId().toString()));
-                    pmu.setClickedOnWs(ws);
+                    PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(player);
+                    playerMenuUtility.setPrivateWaystones(jdbc.getAllPrivateWaystones(player.getUniqueId().toString()));
+                    playerMenuUtility.setClickedOnWs(ws);
 
                     //Cancels the action of the left hand. Without this the following code will trigger twice.  https://www.spigotmc.org/threads/playerinteractevent-fires-twice-for-right-clicking.301622/
                     if(e.getHand().equals(EquipmentSlot.OFF_HAND)) {
@@ -65,7 +65,7 @@ public class WaystoneInteract implements Listener {
 
                     if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || (blockUnder.getType().equals(Material.NETHERITE_BLOCK) && ws instanceof PublicWaystone)){
 //                        player.playSound(ws.getParsedLocation(ws.getLocation()), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 1, 2);
-                        new WaystonesSplitMenu(pmu).open();
+                        new WaystonesSplitMenu(playerMenuUtility).open();
                     }
                     else{
                         if(ws instanceof PublicWaystone){

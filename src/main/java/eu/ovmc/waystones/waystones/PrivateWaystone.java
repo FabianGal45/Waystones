@@ -1,5 +1,6 @@
 package eu.ovmc.waystones.waystones;
 
+import eu.ovmc.waystones.WaystonesPlugin;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;

@@ -28,28 +28,10 @@ public class Ws implements CommandExecutor {
                 player.sendMessage("Custom plugin made for OVMC. "+ plugin.getDescription().getVersion());
             }
             else if (args[0].equals("purchase")) {
-                SQLiteJDBC jdbc = new SQLiteJDBC();
-                Economy econ = WaystonesPlugin.getEcon();
-                PlayerMenuUtility pmu = WaystonesPlugin.getPlayerMenuUtility(player);
-
-                if(pmu != null){
-                    User user = pmu.getUser();
-                    int purchasedPrivateWs = user.getPurchasedPrivateWs();
-                    long cost = user.getCostOfNextWs();
-                    EconomyResponse r = econ.withdrawPlayer(player, cost);
-
-                    if(r.transactionSuccess()){
-                        purchasedPrivateWs++;
-                        user.setPurchasedPrivateWs(purchasedPrivateWs);
-                        jdbc.updateUser(user);
-
-                        player.sendMessage(Component.text("You purchased a waystone for ", NamedTextColor.GREEN)
-                                .append(Component.text( econ.format(cost), NamedTextColor.GREEN)));
-                    }
-                    else{
-                        player.sendMessage(Component.text("You don't have ", NamedTextColor.DARK_RED)
-                                .append(Component.text( econ.format(user.getCostOfNextWs()), NamedTextColor.RED)));
-                    }
+                PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(player);
+                if(playerMenuUtility != null){
+                    User user = playerMenuUtility.getUser();
+                    user.purchaseWaystone(playerMenuUtility);
                 }
                 else{
                     player.sendMessage(Component.text("Something went wrong when purchasing a waystone", NamedTextColor.RED)); //Todo: Test this

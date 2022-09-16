@@ -3,6 +3,8 @@ import eu.ovmc.waystones.waystones.PublicWaystone;
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,6 +32,7 @@ public class WaystoneBreak implements Listener {
                 PrivateWaystone ws = jdbc.getWaystone(block.getLocation().toString());
                 if(ws != null){
 
+                    player.playSound(ws.getParsedLocation(ws.getLocation()), Sound.BLOCK_BEACON_DEACTIVATE, SoundCategory.BLOCKS, 1, 2);
                     if(ws instanceof PublicWaystone){
                         player.sendMessage("you broke a public waystone");
                     }else{

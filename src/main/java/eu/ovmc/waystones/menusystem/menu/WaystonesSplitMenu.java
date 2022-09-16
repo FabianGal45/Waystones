@@ -1,5 +1,9 @@
 package eu.ovmc.waystones.menusystem.menu;
 
+import com.bencodez.votingplugin.VotingPluginMain;
+import com.bencodez.votingplugin.advancedcore.AdvancedCorePlugin;
+import com.bencodez.votingplugin.advancedcore.api.user.AdvancedCoreUser;
+import com.bencodez.votingplugin.user.VotingPluginUser;
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.database.User;
@@ -10,6 +14,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.format.TextFormat;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -21,6 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -90,28 +96,10 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                             TextColor.fromHexString("#802f45")));
         }
         else if(currentItem.equals(Material.GRAY_DYE)){
-            Economy econ = WaystonesPlugin.getEcon();
-
             User user = playerMenuUtility.getUser();
-            int purchased = user.getPurchasedPrivateWs();
-            long cost = user.getCostOfNextWs();
-            EconomyResponse r = econ.withdrawPlayer(player, cost);
-
-            if(r.transactionSuccess()){
-                int total = purchased +1;
-                user.setPurchasedPrivateWs(total);
-
-                SQLiteJDBC jdbc = new SQLiteJDBC();
-                jdbc.updateUser(user);
-
-                player.sendMessage(Component.text("You purchased a waystone for ", NamedTextColor.GREEN)
-                        .append(Component.text( econ.format(cost), NamedTextColor.GREEN)));
-
+            boolean purchaseSuccess = user.purchaseWaystone(playerMenuUtility);
+            if(purchaseSuccess){
                 super.open();
-            }
-            else{
-                player.sendMessage(Component.text("You don't have ", NamedTextColor.DARK_RED)
-                        .append(Component.text( econ.format(user.getCostOfNextWs()), NamedTextColor.RED)));
             }
 
         }
@@ -210,13 +198,31 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                             //if there is still space, add a grey dye
                             if(indexPrivWs<getMaxPrivateWs()*(page+1)){
                                 Economy econ = WaystonesPlugin.getEcon();
+                                DecimalFormat formatter = new DecimalFormat("#,###");
 
                                 ItemStack grayDye = new ItemStack(Material.GRAY_DYE);
                                 ItemMeta grayMeta = grayDye.getItemMeta();
                                 grayMeta.displayName(Component.text("Buy more").color(NamedTextColor.GRAY));
                                 List<Component> loreArray = new ArrayList<>();
                                 System.out.println("Cost raw: "+ user.getCostOfNextWs()+ ", Formatted: " + econ.format(user.getCostOfNextWs()));
-                                loreArray.add(Component.text("Cost: ", NamedTextColor.GRAY).append(Component.text(econ.format(user.getCostOfNextWs()), NamedTextColor.DARK_AQUA)));
+
+                                double discount = user.getDiscount(playerMenuUtility);
+
+                                if(discount>0){
+                                    Component oldPrice = Component.text(formatter.format(user.getCostOfNextWs()),NamedTextColor.RED).decoration(TextDecoration.STRIKETHROUGH, true);
+                                    Component newPrice = Component.text(" "+econ.format(Math.round(user.getCostOfNextWs() * (1-discount))), NamedTextColor.DARK_AQUA).decoration(TextDecoration.STRIKETHROUGH, false);
+
+                                    loreArray.add(Component.text("Cost: ", NamedTextColor.GRAY).decoration(TextDecoration.STRIKETHROUGH,false)
+                                            .append(oldPrice)
+                                            .append(newPrice));
+                                    loreArray.add(Component.text("Discount: ",NamedTextColor.GRAY).append(Component.text(Math.round(discount*100)+"%",NamedTextColor.WHITE)));
+                                }
+                                else{
+                                    loreArray.add(Component.text("Cost: ", NamedTextColor.GRAY).append(Component.text(econ.format(user.getCostOfNextWs()), NamedTextColor.DARK_AQUA)));
+                                }
+//                                loreArray.add(Component.text("Cost: ", NamedTextColor.GRAY).append(Component.text(econ.format(user.getDiscount(playerMenuUtility.getOwner())), NamedTextColor.DARK_AQUA)));
+                                loreArray.add(Component.text(""));
+                                loreArray.add(Component.text("1 vote = 1% discount", NamedTextColor.GRAY));
                                 loreArray.add(Component.text("Balance: ", NamedTextColor.DARK_GRAY).append(Component.text(econ.format(econ.getBalance(playerMenuUtility.getOwner())), NamedTextColor.DARK_GRAY)));
                                 grayMeta.lore(loreArray);
                                 grayDye.setItemMeta(grayMeta);

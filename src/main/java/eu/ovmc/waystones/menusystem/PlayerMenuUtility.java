@@ -1,5 +1,9 @@
 package eu.ovmc.waystones.menusystem;
 
+import com.bencodez.votingplugin.VotingPluginMain;
+import com.bencodez.votingplugin.advancedcore.AdvancedCorePlugin;
+import com.bencodez.votingplugin.advancedcore.api.user.AdvancedCoreUser;
+import com.bencodez.votingplugin.user.VotingPluginUser;
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
@@ -13,12 +17,14 @@ public class PlayerMenuUtility {
     private ArrayList<PrivateWaystone> privateWaystones;
     private PrivateWaystone clickedOnWs;
     private User user;
+    VotingPluginUser votingPluginUser;
 
     public PlayerMenuUtility(Player owner) {
         this.owner = owner;
         SQLiteJDBC jdbc = new SQLiteJDBC();
         this.privateWaystones = jdbc.getAllPrivateWaystones(owner.getUniqueId().toString());
         this.user = jdbc.getUserFromDB(owner.getUniqueId().toString());
+        votingPluginUser = new VotingPluginUser(VotingPluginMain.getPlugin(), new AdvancedCoreUser(AdvancedCorePlugin.getInstance(), owner));
     }
 
     public PrivateWaystone getClickedOnWs() {
@@ -51,5 +57,9 @@ public class PlayerMenuUtility {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public VotingPluginUser getVotingPluginUser() {
+        return votingPluginUser;
     }
 }
