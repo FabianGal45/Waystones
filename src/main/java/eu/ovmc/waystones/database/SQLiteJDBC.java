@@ -251,6 +251,31 @@ public class SQLiteJDBC {
         return pubWs;
     }
 
+    public ArrayList<PublicWaystone> getAllPublicWaystones(String uuid){
+        ArrayList<PublicWaystone> pubWs = new ArrayList<>();
+        PublicWaystone ws = null;
+        Statement stmt;
+
+        try{
+            stmt = getCon().createStatement();
+            String sql = "SELECT * FROM public_waystones WHERE owner = '"+ uuid +"';";
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()){
+                ws = new PublicWaystone(rs.getString("location"), rs.getString("owner"), rs.getString("name"), rs.getString("tp_location"));
+                pubWs.add(ws);
+            }
+
+            stmt.close();
+
+        }catch (Exception e){
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.out.println(e +" Failed to retrieve Waystone from public_waystones table.");
+            System.exit(0);
+        }
+
+        return pubWs;
+    }
+
     public void updateUser(User user){
         Statement stmt;
 

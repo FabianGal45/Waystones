@@ -1,9 +1,5 @@
 package eu.ovmc.waystones.database;
 
-import com.bencodez.votingplugin.VotingPluginMain;
-import com.bencodez.votingplugin.advancedcore.AdvancedCorePlugin;
-import com.bencodez.votingplugin.advancedcore.api.user.AdvancedCoreUser;
-import com.bencodez.votingplugin.user.VotingPluginUser;
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import net.kyori.adventure.text.Component;
@@ -41,11 +37,9 @@ public class User {
             if(i==0){
                 total = startPrice;
             }else{
-                System.out.println("total: "+total+", PriceM: "+ priceMultiplier);
                 total = total*priceMultiplier;
             }
         }
-        System.out.println(total);
         return total;
     }
 
@@ -53,7 +47,6 @@ public class User {
         boolean result = false;
         int freePrivateWs = WaystonesPlugin.getPlugin().getConfig().getInt("FreePrivateWs");
 
-        System.out.println("math: "+ privateWs + "<" + freePrivateWs + "+" +  purchasedPrivateWs);
         if(privateWs<freePrivateWs+purchasedPrivateWs){
             result = true;
         }
@@ -61,9 +54,16 @@ public class User {
         return result;
     }
 
-    public int getAllowedWs(){
+    public int getAllowedPrivWs(){
         int freePrivateWs = WaystonesPlugin.getPlugin().getConfig().getInt("FreePrivateWs");
+
+        //TODO: if user has permission to more private waystones the add the value
+
         return freePrivateWs+purchasedPrivateWs;
+    }
+
+    public int getAllowedPubWs(){
+        return WaystonesPlugin.getPlugin().getConfig().getInt("FreePublicWs"); //TODO: + permission
     }
 
     public void addPurchase(int num){

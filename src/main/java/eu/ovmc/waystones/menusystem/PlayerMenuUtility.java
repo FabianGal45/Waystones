@@ -7,6 +7,7 @@ import com.bencodez.votingplugin.user.VotingPluginUser;
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
+import eu.ovmc.waystones.waystones.PublicWaystone;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class PlayerMenuUtility {
 
     private Player owner;
     private ArrayList<PrivateWaystone> privateWaystones;
+    private ArrayList<PublicWaystone> publicWaystones;
     private PrivateWaystone clickedOnWs;
     private User user;
     VotingPluginUser votingPluginUser;
@@ -41,6 +43,14 @@ public class PlayerMenuUtility {
 
     public void setPrivateWaystones(ArrayList<PrivateWaystone> privateWaystones) {
         this.privateWaystones = privateWaystones;
+    }
+
+    public ArrayList<PublicWaystone> getPublicWaystones() {
+        return publicWaystones;
+    }
+
+    public void setPublicWaystones(ArrayList<PublicWaystone> publicWaystones) {
+        this.publicWaystones = publicWaystones;
     }
 
     public Player getOwner() {

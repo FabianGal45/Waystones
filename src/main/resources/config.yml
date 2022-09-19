@@ -1,5 +1,6 @@
 Test: 'This is a config file'
 FreePrivateWs: 2
+FreePublicWs: 2
 StartPrice: 32
 PriceMultiplier: 5
 MaxDiscount: 95

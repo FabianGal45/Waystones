@@ -1,6 +1,7 @@
 package eu.ovmc.waystones.events;
 
 import eu.ovmc.waystones.database.User;
+import eu.ovmc.waystones.menusystem.PaginatedMenu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.menusystem.menu.WaystonesSplitMenu;
 import eu.ovmc.waystones.waystones.PublicWaystone;
@@ -40,6 +41,12 @@ public class WaystoneInteract implements Listener {
                 PrivateWaystone ws = jdbc.getWaystone(loc);
                 Player player = e.getPlayer();
 
+                //Cancels the action of the left hand. Without this the following code will trigger twice.  https://www.spigotmc.org/threads/playerinteractevent-fires-twice-for-right-clicking.301622/
+                if(e.getHand().equals(EquipmentSlot.OFF_HAND)) {
+                    e.setCancelled(true);
+                    return;
+                }
+
                 //Check if the user exists if not register him.
                 User user = jdbc.getUserFromDB(player.getUniqueId().toString());
                 if(user == null){
@@ -55,17 +62,12 @@ public class WaystoneInteract implements Listener {
                     e.setCancelled(true);
                     PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(player);
                     playerMenuUtility.setPrivateWaystones(jdbc.getAllPrivateWaystones(player.getUniqueId().toString()));
+                    playerMenuUtility.setPublicWaystones(jdbc.getAllPublicWaystones(player.getUniqueId().toString()));
                     playerMenuUtility.setClickedOnWs(ws);
-
-                    //Cancels the action of the left hand. Without this the following code will trigger twice.  https://www.spigotmc.org/threads/playerinteractevent-fires-twice-for-right-clicking.301622/
-                    if(e.getHand().equals(EquipmentSlot.OFF_HAND)) {
-                        e.setCancelled(true);
-                        return;
-                    }
 
                     if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || (blockUnder.getType().equals(Material.NETHERITE_BLOCK) && ws instanceof PublicWaystone)){
 //                        player.playSound(ws.getParsedLocation(ws.getLocation()), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 1, 2);
-                        new WaystonesSplitMenu(playerMenuUtility).open();
+                        new WaystonesSplitMenu(playerMenuUtility, 0).open();
                     }
                     else{
                         if(ws instanceof PublicWaystone){
