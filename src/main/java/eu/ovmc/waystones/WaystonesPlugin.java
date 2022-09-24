@@ -13,13 +13,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
 public final class WaystonesPlugin extends JavaPlugin implements Listener {
     private static WaystonesPlugin plugin;
+    private SQLiteJDBC jdbc;
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
-
     private static final Logger log = Logger.getLogger("Minecraft");
     private static Economy econ = null;
 
@@ -31,7 +32,7 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
         plugin = this;
 
         //SQLiteJDBC - Connect and create the tables.
-        SQLiteJDBC jdbc = new SQLiteJDBC();
+        jdbc = new SQLiteJDBC();
         jdbc.createTables();
 
         if (!setupEconomy() ) {
@@ -88,6 +89,17 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
         return econ;
     }
 
+    public SQLiteJDBC getJdbc() {
+        return jdbc;
+    }
+
     @Override
-    public void onDisable() {}
+    public void onDisable() {
+        try {
+            jdbc.getCon().close();
+        } catch (SQLException e) {
+            System.out.println("Unable to close connection!");
+        }
+
+    }
 }

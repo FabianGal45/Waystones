@@ -1,7 +1,6 @@
 package eu.ovmc.waystones.commands;
 
 import eu.ovmc.waystones.WaystonesPlugin;
-import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import net.kyori.adventure.text.Component;

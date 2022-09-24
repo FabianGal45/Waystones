@@ -69,7 +69,7 @@ public class User {
     public void addPurchase(int num){
         this.purchasedPrivateWs = purchasedPrivateWs + num;
 
-        SQLiteJDBC jdbc = new SQLiteJDBC();
+        SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
         jdbc.updateUser(this);
     }
 
@@ -111,7 +111,7 @@ public class User {
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.BLOCKS, 1, 2);
             purchasedPrivateWs++;
 
-            SQLiteJDBC jdbc = new SQLiteJDBC();
+            SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
             jdbc.updateUser(this);
 
             playerMenuUtility.getVotingPluginUser().removePoints((int) (discount*100));

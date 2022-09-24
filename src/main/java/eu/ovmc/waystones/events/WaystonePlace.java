@@ -34,7 +34,7 @@ public class WaystonePlace implements Listener {
 
         //Block player from placing a block when right clicking the waystone
         if(e.getBlockAgainst().getType().equals(Material.LODESTONE) && !e.getPlayer().isSneaking()){
-            SQLiteJDBC jdbc = new SQLiteJDBC();
+            SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
             if(jdbc.getWaystone(e.getBlockAgainst().getLocation().toString()) != null){
                 e.setCancelled(true);
             }
@@ -44,7 +44,7 @@ public class WaystonePlace implements Listener {
             Block blockUnder = e.getBlock().getLocation().subtract(0.0,1.0,0.0).getBlock();
             if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || blockUnder.getType().equals(Material.NETHERITE_BLOCK)){
                 //get user data from users table
-                SQLiteJDBC jdbc = new SQLiteJDBC();
+                SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
                 User user = jdbc.getUserFromDB(player.getUniqueId().toString());
 
                 //if player does not exists
@@ -95,7 +95,7 @@ public class WaystonePlace implements Listener {
 
         if((e.getBlock().getType().equals(Material.EMERALD_BLOCK) || e.getBlock().getType().equals(Material.NETHERITE_BLOCK))){
             Block blockAbove = e.getBlock().getLocation().add(0.0 , 1.0, 0.0).getBlock();
-            SQLiteJDBC jdbc = new SQLiteJDBC();
+            SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
             PrivateWaystone waystone = jdbc.getWaystone(blockAbove.getLocation().toString());
 
             if(blockAbove.getType().equals(Material.LODESTONE)){

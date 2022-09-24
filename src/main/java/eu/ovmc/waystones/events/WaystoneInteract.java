@@ -36,7 +36,7 @@ public class WaystoneInteract implements Listener {
 
             //if block under is EMERALD_BLOCK or NETHERITE_BLOCK
             if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || blockUnder.getType().equals(Material.NETHERITE_BLOCK)) {
-                SQLiteJDBC jdbc = new SQLiteJDBC();
+                SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
                 String loc = e.getClickedBlock().getLocation().toString();
                 PrivateWaystone ws = jdbc.getWaystone(loc);
                 Player player = e.getPlayer();

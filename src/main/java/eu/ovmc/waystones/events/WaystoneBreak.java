@@ -1,4 +1,5 @@
 package eu.ovmc.waystones.events;
+import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
@@ -24,7 +25,7 @@ public class WaystoneBreak implements Listener {
         if(block.getType().equals(Material.LODESTONE)){
             Player player = e.getPlayer();
             Block blockUnder = e.getBlock().getLocation().subtract(0.0,1.0,0.0).getBlock();
-            SQLiteJDBC jdbc = new SQLiteJDBC();
+            SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
 
             if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || blockUnder.getType().equals(Material.NETHERITE_BLOCK)){
 
@@ -46,7 +47,7 @@ public class WaystoneBreak implements Listener {
 
         if((block.getType().equals(Material.EMERALD_BLOCK) || block.getType().equals(Material.NETHERITE_BLOCK)) && blockAbove.getType().equals(Material.LODESTONE)){
             Player player = e.getPlayer();
-            SQLiteJDBC jdbc = new SQLiteJDBC();
+            SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
 
             PrivateWaystone ws = jdbc.getWaystone(blockAbove.getLocation().toString());
 

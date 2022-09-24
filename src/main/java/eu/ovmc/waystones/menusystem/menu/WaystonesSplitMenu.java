@@ -155,7 +155,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             int total = purchased +1;
             user.setPurchasedPrivateWs(total);
 
-            SQLiteJDBC jdbc = new SQLiteJDBC();
+            SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
             jdbc.updateUser(user);
 
             super.open();
@@ -166,7 +166,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             int total = purchased -1;
             user.setPurchasedPrivateWs(total);
 
-            SQLiteJDBC jdbc = new SQLiteJDBC();
+            SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
             jdbc.updateUser(user);
 
             super.open();
