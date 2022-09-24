@@ -46,7 +46,6 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
-        //TODO: Handle the menu here
 
         Player player = (Player) e.getWhoClicked();
 
@@ -139,8 +138,6 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
         else if(currentItem.equals(Material.ARROW)){//Make it more precise player can click on any arrow including personal inventory.
             System.out.println("Next page was selected");
             player.playSound(player.getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 1, 2);
-            //Todo: Check if withing the first page there is a gray dye. If it is then open the big menu
-
 
             if(indexPrivWs < maxPrivateWs * (page + 1)){
                 page = page + 1;
@@ -316,7 +313,6 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             indexPubWs = getMaxPublicWs() * page + i;
             System.out.println("Index PUB: "+indexPubWs + " Page: "+ page);
             if(indexPubWs >= publicWaystones.size()){
-//                System.out.println("STOP!");
                 indexPubWs--;
                 break;
             }
@@ -368,7 +364,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                 //Stores the index of the waystone from the waystones list into the NBT meta of that file so that it can be identified when clicked.
                 publicMeta.getPersistentDataContainer().set(new NamespacedKey(WaystonesPlugin.getPlugin(), "index"), PersistentDataType.INTEGER, indexPubWs);
 
-                //Upates the meta with the provided one
+                //Updates the meta with the provided one
                 publicWs.setItemMeta(publicMeta);
 
                 //Add the item to the inventory
