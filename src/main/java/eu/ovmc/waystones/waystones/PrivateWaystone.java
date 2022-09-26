@@ -58,14 +58,12 @@ public class PrivateWaystone {
         for(int i = 0; i<5; i++){
             safe = true;
             loc = getParsedLocation(tpLocation);
-            System.out.println("loc1: "+ loc);
             //Centers the player on the block
             float yaw = loc.getYaw();
             float pitch = loc.getPitch();
             loc = loc.set(centerCoordinate(loc.getX()), loc.getY(), centerCoordinate(loc.getZ()));
             loc.setYaw(yaw);
             loc.setPitch(pitch-18);
-            System.out.println("loc2: "+ loc);
 
             Block landingBlock = loc.getBlock().getLocation().subtract(0.0, (double) i, 0.0).getBlock();
 
@@ -73,7 +71,6 @@ public class PrivateWaystone {
             if(!landingBlock.getType().equals(Material.AIR)){
                 //position the player once a landing block has been found
                 loc.set(landingBlock.getX()+0.5, landingBlock.getY()+1, landingBlock.getZ()+0.5);
-                System.out.println("loc3: "+ loc);
 
                 //if the block is dangerous and there isn't enough space above for the player then it's unsafe
                 if((landingBlock.getType().equals(Material.LAVA)
@@ -84,7 +81,6 @@ public class PrivateWaystone {
                     if(isSpaceAbove(getParsedLocation(location))){
                         //set location above the lodestone
                         loc = getParsedLocation(location).add(0.5, 1.0 ,0.5);
-                        System.out.println("loc4: "+ loc);
                     }
                     else {
                         //warn player it is unsafe and they cannot teleport there.
@@ -98,7 +94,6 @@ public class PrivateWaystone {
                 if(isSpaceAbove(getParsedLocation(location))){
                     //set location above the lodestone
                     loc = getParsedLocation(location).add(0.5, 1.0 ,0.5);
-                    System.out.println("loc5: "+ loc);
                 }
                 else {
                     //warn player it is unsafe and they cannot teleport there.
@@ -110,10 +105,10 @@ public class PrivateWaystone {
         if(safe){
 //            player.teleport(loc);
             player.teleportAsync(loc);
-            System.out.println("loc6: "+ loc);
             player.playSound(loc, Sound.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.BLOCKS, 1,1);
         }
         else{
+            player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
             player.sendMessage("This teleportation is unsafe!");
         }
 

@@ -139,7 +139,9 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             System.out.println("Next page was selected");
             player.playSound(player.getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 1, 2);
 
-            if(indexPrivWs < maxPrivateWs * (page + 1)){
+            User user = playerMenuUtility.getUser();
+            System.out.println(">>>> "+ (user.getAllowedPrivWs())+ " < "+ (maxPrivateWs * (page + 1)));
+            if(user.getAllowedPrivWs() < (maxPrivateWs * (page + 1))){ //get allowed < page max
                 page = page + 1;
                 new PublicWaystonesMenu(playerMenuUtility, page, indexPubWs).open();
             }
@@ -198,6 +200,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                     int pos = indexPrivWs-(getMaxPrivateWs()*page)+10;
 
                     //if green dye have reached the pu AND the pos <= 16
+//                    System.out.println(">>>>> ( "+ indexPrivWs +" +1 ) - " + privateWaystones.size() +" <= pu: "+pu);
                     if( (indexPrivWs+1) - privateWaystones.size() <= pu && pos <= getMaxPrivateWs()+9){
                         ItemStack limeDye = new ItemStack(Material.LIME_DYE);
                         ItemMeta limeMeta = limeDye.getItemMeta();
@@ -242,11 +245,12 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                             inventory.addItem(grayDye);
                             indexPrivWs--;
                         }
+                        System.out.println("INDEX>>> "+ indexPrivWs);
                         break;
                     }
                     indexPrivWs++;
                 }
-
+                System.out.println("INDEX>>> "+ indexPrivWs);
                 break; //If the index has reached the number of waystones.
             }
 
@@ -310,6 +314,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
         }
 
         for(int i = 0; i < getMaxPublicWs(); i++) {
+            System.out.println("INDEX>>> "+ indexPrivWs);
             indexPubWs = getMaxPublicWs() * page + i;
             System.out.println("Index PUB: "+indexPubWs + " Page: "+ page);
             if(indexPubWs >= publicWaystones.size()){

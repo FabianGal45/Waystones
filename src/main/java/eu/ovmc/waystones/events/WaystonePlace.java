@@ -67,6 +67,7 @@ public class WaystonePlace implements Listener {
                             player.playSound(e.getBlock().getLocation(), Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1, 2);
                         }
                         else{
+                            player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
                             e.setCancelled(true);
                             Economy econ = WaystonesPlugin.getEcon();
                             PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(player);
@@ -78,10 +79,17 @@ public class WaystonePlace implements Listener {
                         }
                     }
                     else if(blockUnder.getType().equals(Material.NETHERITE_BLOCK)){
-                        player.playSound(e.getBlock().getLocation(), Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1, 2);
-                        PublicWaystone ws = new PublicWaystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString(), null, tpLocation, 0.1, 1.0, "shop");
-                        jdbc.regWaystone(ws, user);
-                        player.sendMessage("Public waystone registered!");
+                        if (user.canPlacePublicWs()){
+                            player.playSound(e.getBlock().getLocation(), Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1, 2);
+                            PublicWaystone ws = new PublicWaystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString(), null, tpLocation, 0.1, 1.0, "shop");
+                            jdbc.regWaystone(ws, user);
+                            player.sendMessage("Public waystone registered!");
+                        }else{
+                            player.playSound(e.getBlock().getLocation(), Sound.BLOCK_ANVIL_LAND, SoundCategory.BLOCKS, (float)0.5, (float) 0.5);
+                            e.setCancelled(true);
+                            player.sendMessage("You have reached the limit.");
+                        }
+
                     }
                     else{
                         player.sendMessage(ChatColor.RED + "Something went wrong when registering the waystone.");//This message should never get triggered

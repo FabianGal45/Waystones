@@ -6,6 +6,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -17,6 +18,7 @@ public class User {
     private int privateWs;
     private int publicWs;
     private int purchasedPrivateWs;
+    private int acquiredPublicWs;
 
     public User(String uuid, String userName, int privateWs, int publicWs, int purchasedPrivateWs) {
         this.uuid = uuid;
@@ -53,6 +55,20 @@ public class User {
 
         return result;
     }
+
+    public boolean canPlacePublicWs(){
+        boolean canPlace = false;
+        int freePublicWs = WaystonesPlugin.getPlugin().getConfig().getInt("FreePublicWs");
+
+        int acquiredPublicWs = 0;
+
+        if(publicWs<freePublicWs+acquiredPublicWs){
+            canPlace = true;
+        }
+
+        return canPlace;
+    }
+
 
     public int getAllowedPrivWs(){
         int freePrivateWs = WaystonesPlugin.getPlugin().getConfig().getInt("FreePrivateWs");

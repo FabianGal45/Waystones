@@ -39,6 +39,7 @@ public class SQLiteJDBC {
                     " private_ws INT(255)," +
                     " public_ws INT(255)," +
                     " purchased_private_ws INT(255)," +
+                    " acquired_public_ws INT(255)," +
                     " PRIMARY KEY(uuid))";
             stmt.executeUpdate(sql);
             sql = "CREATE TABLE IF NOT EXISTS private_waystones " + //Creates the private_waystones table
@@ -86,8 +87,9 @@ public class SQLiteJDBC {
                     " uuid," +
                     " user_name," +
                     " private_ws," +
-                    " public_ws)" +
-                    " VALUES(?, ?, ?, ?)";
+                    " public_ws," +
+                    " acquired_public_ws)" +
+                    " VALUES(?, ?, ?, ?, ?)";
 
             //Creating the preparedStatement object
             PreparedStatement pstmt = getCon().prepareStatement(query);
@@ -96,6 +98,7 @@ public class SQLiteJDBC {
             pstmt.setString(2, p.getName());
             pstmt.setInt(3, 0);
             pstmt.setInt(4, 0);
+            pstmt.setInt(5, 0);
             pstmt.execute();
             pstmt.close();
 
