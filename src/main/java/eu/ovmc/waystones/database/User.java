@@ -18,25 +18,25 @@ public class User {
     private int privateWs;
     private int publicWs;
     private int purchasedPrivateWs;
+    private int acquiredPrivateWs;
     private int acquiredPublicWs;
 
-    public User(String uuid, String userName, int privateWs, int publicWs, int purchasedPrivateWs, int acquiredPublicWs) {
+    public User(String uuid, String userName, int privateWs, int publicWs, int purchasedPrivateWs, int acquiredPrivateWs, int acquiredPublicWs) {
         this.uuid = uuid;
         this.userName = userName;
         this.privateWs = privateWs;
         this.publicWs = publicWs;
         this.purchasedPrivateWs = purchasedPrivateWs;
+        this.acquiredPrivateWs = acquiredPrivateWs;
         this.acquiredPublicWs = acquiredPublicWs;
     }
 
     public long getCostOfNextWs(){
-        int boughtWaystones = purchasedPrivateWs;
         int priceMultiplier = WaystonesPlugin.getPlugin().getConfig().getInt("PriceMultiplier");
-
         int startPrice = WaystonesPlugin.getPlugin().getConfig().getInt("StartPrice");
         long total = 0;
 
-        for(int i=0;i<=boughtWaystones; i++){
+        for(int i=0;i<=purchasedPrivateWs; i++){
             if(i==0){
                 total = startPrice;
             }else{
@@ -50,7 +50,7 @@ public class User {
         boolean result = false;
         int freePrivateWs = WaystonesPlugin.getPlugin().getConfig().getInt("FreePrivateWs");
 
-        if(privateWs<freePrivateWs+purchasedPrivateWs){
+        if(privateWs<freePrivateWs+acquiredPrivateWs+purchasedPrivateWs){
             result = true;
         }
 
@@ -74,7 +74,7 @@ public class User {
 
         //TODO: if user has permission to more private waystones the add the value
 
-        return freePrivateWs+purchasedPrivateWs;
+        return freePrivateWs+acquiredPrivateWs+purchasedPrivateWs;
     }
 
     public int getAllowedPubWs(){
@@ -184,6 +184,14 @@ public class User {
 
     public void setPublicWs(int publicWs) {
         this.publicWs = publicWs;
+    }
+
+    public int getAcquiredPrivateWs() {
+        return acquiredPrivateWs;
+    }
+
+    public void setAcquiredPrivateWs(int acquiredPrivateWs) {
+        this.acquiredPrivateWs = acquiredPrivateWs;
     }
 
     public int getPurchasedPrivateWs() {

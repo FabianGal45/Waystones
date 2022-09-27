@@ -42,31 +42,19 @@ public class Ws implements CommandExecutor {
                 }
             }
             else if (args[0].equals("set")) {
-                if(args[1].equals("public")){//TODO: else to set the acquired private
-                    if(args.length>3){
+                if(player.hasPermission("waystones.admin")){
+                    if(args[1].equals("public")){
+                        if(args.length>3){
 
-                        OfflinePlayer target = Bukkit.getOfflinePlayer(args[2]);
-                        SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
+                            OfflinePlayer target = Bukkit.getOfflinePlayer(args[2]);
+                            SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
 
-                        if(target.isOnline()){
-                            System.out.println("UUID Online " + target.getUniqueId());
+                            if(target.isOnline()){
+                                System.out.println("UUID Online " + target.getUniqueId());
 
-                            PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(target.getPlayer());
-                            User user = playerMenuUtility.getUser();
+                                PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(target.getPlayer());
+                                User user = playerMenuUtility.getUser();
 
-                            try{
-                                user.setAcquiredPublicWs(Integer.parseInt(args[3]));
-                                jdbc.updateUser(user);
-                                player.sendMessage("Set "+ args[3] + " public waystones to " + target.getName());
-                            }
-                            catch (NumberFormatException e){
-                                player.sendMessage(args[3]+" has to be a number.");
-                            }
-
-
-                        }else{
-                            User user = jdbc.getUserFromDB(target.getUniqueId().toString());
-                            if(user != null){
                                 try{
                                     user.setAcquiredPublicWs(Integer.parseInt(args[3]));
                                     jdbc.updateUser(user);
@@ -77,12 +65,73 @@ public class Ws implements CommandExecutor {
                                 }
 
 
-                            }
-                            else{
-                                player.sendMessage("This user does not exist in the database.");
+                            }else{
+                                User user = jdbc.getUserFromDB(target.getUniqueId().toString());
+                                if(user != null){
+                                    try{
+                                        user.setAcquiredPublicWs(Integer.parseInt(args[3]));
+                                        jdbc.updateUser(user);
+                                        player.sendMessage("Set "+ args[3] + " public waystones to " + target.getName());
+                                    }
+                                    catch (NumberFormatException e){
+                                        player.sendMessage(args[3]+" has to be a number.");
+                                    }
+
+
+                                }
+                                else{
+                                    player.sendMessage("This user does not exist in the database.");
+                                }
                             }
                         }
                     }
+                    else if(args[1].equals("private")){
+                        if(args.length>3){
+
+                            OfflinePlayer target = Bukkit.getOfflinePlayer(args[2]);
+                            SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
+
+                            if(target.isOnline()){
+                                System.out.println("UUID Online " + target.getUniqueId());
+
+                                PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(target.getPlayer());
+                                User user = playerMenuUtility.getUser();
+
+                                try{
+                                    user.setAcquiredPrivateWs(Integer.parseInt(args[3]));
+                                    jdbc.updateUser(user);
+                                    player.sendMessage("Set "+ args[3] + " private waystones to " + target.getName());
+                                }
+                                catch (NumberFormatException e){
+                                    player.sendMessage(args[3]+" has to be a number.");
+                                }
+
+
+                            }else{
+                                User user = jdbc.getUserFromDB(target.getUniqueId().toString());
+                                if(user != null){
+                                    try{
+                                        user.setPurchasedPrivateWs(Integer.parseInt(args[3]));
+                                        jdbc.updateUser(user);
+                                        player.sendMessage("Set "+ args[3] + " private waystones to " + target.getName());
+                                    }
+                                    catch (NumberFormatException e){
+                                        player.sendMessage(args[3]+" has to be a number.");
+                                    }
+
+
+                                }
+                                else{
+                                    player.sendMessage("This user does not exist in the database.");
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        player.sendMessage(Component.text("private or public?", NamedTextColor.DARK_RED));
+                    }
+                }else{
+                    player.sendMessage(Component.text("You do not have permission.", NamedTextColor.DARK_RED));
                 }
             }
             else{

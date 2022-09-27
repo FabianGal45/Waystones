@@ -39,6 +39,7 @@ public class SQLiteJDBC {
                     " private_ws INT(255)," +
                     " public_ws INT(255)," +
                     " purchased_private_ws INT(255)," +
+                    " acquired_private_ws INT(255)," +
                     " acquired_public_ws INT(255)," +
                     " PRIMARY KEY(uuid))";
             stmt.executeUpdate(sql);
@@ -86,19 +87,13 @@ public class SQLiteJDBC {
             String query = "INSERT INTO users (" +
                     " uuid," +
                     " user_name," +
-                    " private_ws," +
-                    " public_ws," +
-                    " acquired_public_ws)" +
-                    " VALUES(?, ?, ?, ?, ?)";
+                    " VALUES(?, ?)";
 
             //Creating the preparedStatement object
             PreparedStatement pstmt = getCon().prepareStatement(query);
 
             pstmt.setString(1, p.getUniqueId().toString());
             pstmt.setString(2, p.getName());
-            pstmt.setInt(3, 0);
-            pstmt.setInt(4, 0);
-            pstmt.setInt(5, 0);
             pstmt.execute();
             pstmt.close();
 
@@ -190,6 +185,7 @@ public class SQLiteJDBC {
                         rs.getInt("private_ws"),
                         rs.getInt("public_ws"),
                         rs.getInt("purchased_private_ws"),
+                        rs.getInt("acquired_private_ws"),
                         rs.getInt("acquired_public_ws"));
             }
 
@@ -291,12 +287,13 @@ public class SQLiteJDBC {
         int privateCount = countPrivateWs(user);
         int publicCount = countPublicWs(user);
         int purchasedPrivateWs = user.getPurchasedPrivateWs();
+        int acquiredPrivateWs = user.getAcquiredPrivateWs();
         int acquiredPublicWs = user.getAcquiredPublicWs();
 
         try{
             stmt = getCon().createStatement();
             String sql = "UPDATE users" +
-                    " SET private_ws = " + privateCount + ", public_ws = "+ publicCount +  ", purchased_private_ws = "+ purchasedPrivateWs + ", acquired_public_ws = " + acquiredPublicWs +
+                    " SET private_ws = " + privateCount + ", public_ws = "+ publicCount +  ", purchased_private_ws = "+ purchasedPrivateWs + ", acquired_private_ws = " + acquiredPrivateWs +", acquired_public_ws = " + acquiredPublicWs +
                     " WHERE uuid = '" + user.getUuid() +"'";
             stmt.executeUpdate(sql);
             System.out.println("User "+ user.getUuid() +" updated!");
