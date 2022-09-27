@@ -20,12 +20,13 @@ public class User {
     private int purchasedPrivateWs;
     private int acquiredPublicWs;
 
-    public User(String uuid, String userName, int privateWs, int publicWs, int purchasedPrivateWs) {
+    public User(String uuid, String userName, int privateWs, int publicWs, int purchasedPrivateWs, int acquiredPublicWs) {
         this.uuid = uuid;
         this.userName = userName;
         this.privateWs = privateWs;
         this.publicWs = publicWs;
         this.purchasedPrivateWs = purchasedPrivateWs;
+        this.acquiredPublicWs = acquiredPublicWs;
     }
 
     public long getCostOfNextWs(){
@@ -59,8 +60,6 @@ public class User {
     public boolean canPlacePublicWs(){
         boolean canPlace = false;
         int freePublicWs = WaystonesPlugin.getPlugin().getConfig().getInt("FreePublicWs");
-
-        int acquiredPublicWs = 0;
 
         if(publicWs<freePublicWs+acquiredPublicWs){
             canPlace = true;
@@ -147,6 +146,13 @@ public class User {
         return success;
     }
 
+    public int getAcquiredPublicWs() {
+        return acquiredPublicWs;
+    }
+
+    public void setAcquiredPublicWs(int acquiredPublicWs) {
+        this.acquiredPublicWs = acquiredPublicWs;
+    }
 
     public String getUuid() {
         return uuid;

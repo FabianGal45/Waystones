@@ -185,7 +185,12 @@ public class SQLiteJDBC {
             String sql = "SELECT * FROM users WHERE uuid = '"+ uuid +"'";
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
-                user = new User(rs.getString("uuid"), rs.getString("user_name"), rs.getInt("private_ws"), rs.getInt("public_ws"), rs.getInt("purchased_private_ws"));
+                user = new User(rs.getString("uuid"),
+                        rs.getString("user_name"),
+                        rs.getInt("private_ws"),
+                        rs.getInt("public_ws"),
+                        rs.getInt("purchased_private_ws"),
+                        rs.getInt("acquired_public_ws"));
             }
 
             stmt.close();
@@ -286,11 +291,12 @@ public class SQLiteJDBC {
         int privateCount = countPrivateWs(user);
         int publicCount = countPublicWs(user);
         int purchasedPrivateWs = user.getPurchasedPrivateWs();
+        int acquiredPublicWs = user.getAcquiredPublicWs();
 
         try{
             stmt = getCon().createStatement();
             String sql = "UPDATE users" +
-                    " SET private_ws = " + privateCount + ", public_ws = "+ publicCount +  ", purchased_private_ws = "+ purchasedPrivateWs +
+                    " SET private_ws = " + privateCount + ", public_ws = "+ publicCount +  ", purchased_private_ws = "+ purchasedPrivateWs + ", acquired_public_ws = " + acquiredPublicWs +
                     " WHERE uuid = '" + user.getUuid() +"'";
             stmt.executeUpdate(sql);
             System.out.println("User "+ user.getUuid() +" updated!");

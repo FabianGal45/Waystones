@@ -1,17 +1,22 @@
 package eu.ovmc.waystones.commands;
 
 import eu.ovmc.waystones.WaystonesPlugin;
+import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
 
 public class Ws implements CommandExecutor {
     @Override
@@ -34,6 +39,50 @@ public class Ws implements CommandExecutor {
                 }
                 else{
                     player.sendMessage(Component.text("Something went wrong when purchasing a waystone", NamedTextColor.RED)); //Todo: Test this
+                }
+            }
+            else if (args[0].equals("set")) {
+                if(args[1].equals("public")){//TODO: else to set the acquired private
+                    if(args.length>3){
+
+                        OfflinePlayer target = Bukkit.getOfflinePlayer(args[2]);
+                        SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
+
+                        if(target.isOnline()){
+                            System.out.println("UUID Online " + target.getUniqueId());
+
+                            PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(target.getPlayer());
+                            User user = playerMenuUtility.getUser();
+
+                            try{
+                                user.setAcquiredPublicWs(Integer.parseInt(args[3]));
+                                jdbc.updateUser(user);
+                                player.sendMessage("Set "+ args[3] + " public waystones to " + target.getName());
+                            }
+                            catch (NumberFormatException e){
+                                player.sendMessage(args[3]+" has to be a number.");
+                            }
+
+
+                        }else{
+                            User user = jdbc.getUserFromDB(target.getUniqueId().toString());
+                            if(user != null){
+                                try{
+                                    user.setAcquiredPublicWs(Integer.parseInt(args[3]));
+                                    jdbc.updateUser(user);
+                                    player.sendMessage("Set "+ args[3] + " public waystones to " + target.getName());
+                                }
+                                catch (NumberFormatException e){
+                                    player.sendMessage(args[3]+" has to be a number.");
+                                }
+
+
+                            }
+                            else{
+                                player.sendMessage("This user does not exist in the database.");
+                            }
+                        }
+                    }
                 }
             }
             else{
