@@ -72,13 +72,11 @@ public class User {
     public int getAllowedPrivWs(){
         int freePrivateWs = WaystonesPlugin.getPlugin().getConfig().getInt("FreePrivateWs");
 
-        //TODO: if user has permission to more private waystones the add the value
-
         return freePrivateWs+acquiredPrivateWs+purchasedPrivateWs;
     }
 
     public int getAllowedPubWs(){
-        return WaystonesPlugin.getPlugin().getConfig().getInt("FreePublicWs"); //TODO: + permission
+        return WaystonesPlugin.getPlugin().getConfig().getInt("FreePublicWs");
     }
 
     public void addPurchase(int num){

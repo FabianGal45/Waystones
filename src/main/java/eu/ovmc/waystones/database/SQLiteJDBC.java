@@ -86,7 +86,7 @@ public class SQLiteJDBC {
             //Query to insert data into tutorials_data table
             String query = "INSERT INTO users (" +
                     " uuid," +
-                    " user_name," +
+                    " user_name)" +
                     " VALUES(?, ?)";
 
             //Creating the preparedStatement object
@@ -255,17 +255,20 @@ public class SQLiteJDBC {
         return pubWs;
     }
 
-    public ArrayList<PublicWaystone> getAllPublicWaystones(String uuid){
+    public ArrayList<PublicWaystone> getAllPublicWaystones(){
         ArrayList<PublicWaystone> pubWs = new ArrayList<>();
         PublicWaystone ws = null;
         Statement stmt;
 
         try{
             stmt = getCon().createStatement();
-            String sql = "SELECT * FROM public_waystones WHERE owner = '"+ uuid +"';";
+            String sql = "SELECT * FROM public_waystones;";
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
-                ws = new PublicWaystone(rs.getString("location"), rs.getString("owner"), rs.getString("name"), rs.getString("tp_location"));
+                ws = new PublicWaystone(rs.getString("location"),
+                        rs.getString("owner"),
+                        rs.getString("name"),
+                        rs.getString("tp_location"));
                 pubWs.add(ws);
             }
 

@@ -4,6 +4,7 @@ import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
+import eu.ovmc.waystones.menusystem.menu.WaystonesSplitMenu;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.milkbowl.vault.economy.Economy;
@@ -135,6 +136,30 @@ public class Ws implements CommandExecutor {
                     player.sendMessage(Component.text("You do not have permission.", NamedTextColor.DARK_RED));
                 }
             }
+            else if (args[0].equals("open")){
+                if(player.hasPermission("waystones.admin")){
+
+                    SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
+                    OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+                    User user = jdbc.getUserFromDB(target.getUniqueId().toString());
+
+                    //if user exists in the database open a split menu as the player
+                    if(user != null){
+                        PlayerMenuUtility playerMenuUtility = new PlayerMenuUtility(target);
+                        playerMenuUtility.setPrivateWaystones(jdbc.getAllPrivateWaystones(target.getUniqueId().toString()));
+                        playerMenuUtility.setPublicWaystones(jdbc.getAllPublicWaystones());
+
+                        new WaystonesSplitMenu(playerMenuUtility, 0).openAs(player);
+
+                    }else{
+                        player.sendMessage("This user does not exist in the database.");
+                    }
+
+
+
+
+                }
+            }
             else{
                 player.sendMessage(Component.text("This command does not exist", NamedTextColor.DARK_RED));
             }
@@ -143,7 +168,6 @@ public class Ws implements CommandExecutor {
         }
         else{
             ConsoleCommandSender console = getServer().getConsoleSender();
-
             if (args[0].equals("set")) {
                 if (args[1].equals("public")) {
                     if (args.length > 3) {

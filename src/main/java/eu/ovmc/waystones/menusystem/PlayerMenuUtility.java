@@ -9,6 +9,8 @@ import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.waystones.PublicWaystone;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -22,12 +24,12 @@ public class PlayerMenuUtility {
     private User user;
     VotingPluginUser votingPluginUser;
 
-    public PlayerMenuUtility(Player owner) {
-        this.owner = owner;
+    public PlayerMenuUtility(OfflinePlayer owner) {
+        this.owner = Bukkit.getPlayer(owner.getUniqueId());
         SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
         this.privateWaystones = jdbc.getAllPrivateWaystones(owner.getUniqueId().toString());
         this.user = jdbc.getUserFromDB(owner.getUniqueId().toString());
-        votingPluginUser = new VotingPluginUser(VotingPluginMain.getPlugin(), new AdvancedCoreUser(AdvancedCorePlugin.getInstance(), owner));
+        votingPluginUser = new VotingPluginUser(VotingPluginMain.getPlugin(), new AdvancedCoreUser(AdvancedCorePlugin.getInstance(), owner.getUniqueId()));
     }
 
     public PrivateWaystone getClickedOnWs() {

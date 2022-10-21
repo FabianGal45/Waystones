@@ -3,6 +3,7 @@ package eu.ovmc.waystones.menusystem;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -41,6 +42,15 @@ public abstract class Menu implements InventoryHolder {
 
         playerMenuUtility.getOwner().openInventory(inventory);
     }
+
+    public void openAs(Player player){
+        inventory = Bukkit.createInventory(this, getSlots(), getMenuName());
+
+        this.setMenuItems();
+
+        player.openInventory(inventory);
+    }
+
     @Override
     public @NotNull Inventory getInventory(){
         return inventory;

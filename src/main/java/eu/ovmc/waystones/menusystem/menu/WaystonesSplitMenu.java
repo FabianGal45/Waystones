@@ -256,26 +256,24 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
             PrivateWaystone ws = privateWaystones.get(indexPrivWs);
             if (ws != null){
-                ItemStack privateWs;
+                ItemStack privateWs= new ItemStack(Material.EMERALD_BLOCK);
 
                 Block blockTop = ws.getParsedLocation(ws.getLocation()).getBlock();
                 Block blockUnder = ws.getParsedLocation(ws.getLocation()).subtract(0.0,1.0,0.0).getBlock();
 
                 boolean damagedWs = !(blockTop.getType().equals(Material.LODESTONE) && blockUnder.getType().equals(Material.EMERALD_BLOCK));
 
-                //if this is the waystone he clicked on make it lime green
-                if(ws.getLocation().equals(playerMenuUtility.getClickedOnWs().getLocation())){
-                    //Creates the LimeConcretePowder block item
-                    privateWs = new ItemStack(Material.LIME_CONCRETE);
-                }
-                else if(damagedWs){//if waystone is damaged, mark it with a cracked stone
-                    privateWs = new ItemStack(Material.CRACKED_STONE_BRICKS);
-                }
-                else{
-                    //Creates the Emerald block item
-                    privateWs = new ItemStack(Material.EMERALD_BLOCK);
-                }
+                //if this is the waystone he openned the menu from on make it lime green
+                if(playerMenuUtility.getClickedOnWs() != null){
+                    if(ws.getLocation().equals(playerMenuUtility.getClickedOnWs().getLocation())){
+                        //Creates the LimeConcretePowder block item
+                        privateWs = new ItemStack(Material.LIME_CONCRETE);
+                    }
+                    else if(damagedWs){//if waystone is damaged, mark it with a cracked stone
+                        privateWs = new ItemStack(Material.CRACKED_STONE_BRICKS);
+                    }
 
+                }
 
                 ItemMeta ptivateWsMeta = privateWs.getItemMeta();
 
@@ -323,7 +321,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             }
             PublicWaystone ws = publicWaystones.get(indexPubWs);
             if (ws != null) {
-                ItemStack publicWs;
+                ItemStack publicWs = new ItemStack(Material.NETHERITE_BLOCK);
 
                 Block blockTop = ws.getParsedLocation(ws.getLocation()).getBlock();
                 Block blockUnder = ws.getParsedLocation(ws.getLocation()).subtract(0.0,1.0,0.0).getBlock();
@@ -331,16 +329,14 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                 boolean damagedWs = !(blockTop.getType().equals(Material.LODESTONE) && blockUnder.getType().equals(Material.NETHERITE_BLOCK));
 
                 //if this is the waystone he clicked on make it lime green
-                if(ws.getLocation().equals(playerMenuUtility.getClickedOnWs().getLocation())){
-                    //Creates the LimeConcretePowder block item
-                    publicWs = new ItemStack(Material.BLACK_CONCRETE);
-                }
-                else if(damagedWs){//if waystone is damaged, mark it with a cracked stone
-                    publicWs = new ItemStack(Material.CRACKED_STONE_BRICKS);
-                }
-                else{
-                    //Creates the Emerald block item
-                    publicWs = new ItemStack(Material.NETHERITE_BLOCK);
+                if(playerMenuUtility.getClickedOnWs() != null){
+                    if(ws.getLocation().equals(playerMenuUtility.getClickedOnWs().getLocation())){
+                        //Creates the LimeConcretePowder block item
+                        publicWs = new ItemStack(Material.BLACK_CONCRETE);
+                    }
+                    else if(damagedWs){//if waystone is damaged, mark it with a cracked stone
+                        publicWs = new ItemStack(Material.CRACKED_STONE_BRICKS);
+                    }
                 }
 
                 ItemMeta publicMeta = publicWs.getItemMeta();

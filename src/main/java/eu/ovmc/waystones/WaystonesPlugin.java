@@ -8,6 +8,7 @@ import eu.ovmc.waystones.events.WaystoneBreak;
 import eu.ovmc.waystones.events.WaystoneInteract;
 import eu.ovmc.waystones.events.WaystonePlace;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -62,7 +63,7 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
             return playerMenuUtilityMap.get(player);
         }
         else {//Register the player and return it's newly generated playerMenuUtility var.
-            playerMenuUtility = new PlayerMenuUtility(player);
+            playerMenuUtility = new PlayerMenuUtility(Bukkit.getOfflinePlayer(player.getUniqueId()));
             playerMenuUtilityMap.put(player,playerMenuUtility);
 
             return playerMenuUtility;
