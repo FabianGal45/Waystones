@@ -1,6 +1,7 @@
 package eu.ovmc.waystones;
 
 import eu.ovmc.waystones.commands.Ws;
+import eu.ovmc.waystones.commands.WsTabCompletion;
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.events.MenuHandler;
@@ -44,6 +45,7 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
 
         //Commands
         getCommand("ws").setExecutor(new Ws());
+        getCommand("ws").setTabCompleter(new WsTabCompletion());
 
 
         //Events

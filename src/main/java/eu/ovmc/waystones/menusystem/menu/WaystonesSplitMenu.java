@@ -129,8 +129,15 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                 if (page == 0) {
                     player.sendMessage("This is the first page.");
                 } else {
-                    page = page - 1;
-                    super.open();
+                    if(adminOpenedMenu == null){
+                        page = page - 1;
+                        super.open();
+                    }
+                    else{
+                        page = page - 1;
+                        super.openAs(adminOpenedMenu);
+                    }
+
                 }
 //            ArrayList<SplitMenu> GUIs = plugin.getArrGUIs();
             }
@@ -142,12 +149,22 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             User user = playerMenuUtility.getUser();
             System.out.println(">>>> "+ (user.getAllowedPrivWs())+ " < "+ (maxPrivateWs * (page + 1)));
             if(user.getAllowedPrivWs() < (maxPrivateWs * (page + 1))){ //get allowed < page max
-                page = page + 1;
-                new PublicWaystonesMenu(playerMenuUtility, page, indexPubWs).open();
+                if(adminOpenedMenu == null){ //if this menu has no admin assigned that might have oppened it then run it for the player
+                    page = page + 1;
+                    new PublicWaystonesMenu(playerMenuUtility, page, indexPubWs).open();
+                } else{ //if there is an admin that has oppened this menu then continue openning for the admin todo: add this to the publicWaystonesMenu
+                    page = page + 1;
+                    new PublicWaystonesMenu(playerMenuUtility, page, indexPubWs).openAs(adminOpenedMenu);
+                }
             }
             else{
-                page = page + 1;
-                super.open();
+                if(adminOpenedMenu == null){ //if this menu has no admin assigned that might have oppened it then run it for the player
+                    page = page + 1;
+                    super.open();
+                } else{ //if there is an admin that has oppened this menu then continue openning for the admin
+                    page = page + 1;
+                    super.openAs(adminOpenedMenu);
+                }
             }
 
         }

@@ -70,7 +70,7 @@ public class User {
 
 
     public int getAllowedPrivWs(){
-        int freePrivateWs = WaystonesPlugin.getPlugin().getConfig().getInt("FreePrivateWs");
+        int freePrivateWs = WaystonesPlugin.getPlugin().getConfig().getInt("FreePrivateWs"); //from confing.yml
 
         return freePrivateWs+acquiredPrivateWs+purchasedPrivateWs;
     }

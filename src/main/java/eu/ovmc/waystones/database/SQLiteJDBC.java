@@ -200,6 +200,37 @@ public class SQLiteJDBC {
         return user;
     }
 
+    public ArrayList<User> getAllUsersFromDB() {
+        Statement stmt;
+//        String uuid = p.getUniqueId().toString();
+        User user = null;
+        ArrayList<User> userArrayList = new ArrayList<>();
+        try{
+            stmt = getCon().createStatement();
+            String sql = "SELECT * FROM users";
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()){
+                user = new User(rs.getString("uuid"),
+                        rs.getString("user_name"),
+                        rs.getInt("private_ws"),
+                        rs.getInt("public_ws"),
+                        rs.getInt("purchased_private_ws"),
+                        rs.getInt("acquired_private_ws"),
+                        rs.getInt("acquired_public_ws"));
+                userArrayList.add(user);
+            }
+
+            stmt.close();
+
+        }catch (Exception e){
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.out.println(e +" Failed to retrieve user from users table.");
+            System.exit(0);
+        }
+
+        return userArrayList;
+    }
+
     public PrivateWaystone getWaystone(String location){
         PrivateWaystone ws = null;
 

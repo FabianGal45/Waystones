@@ -22,6 +22,7 @@ public abstract class Menu implements InventoryHolder {
 
     protected Inventory inventory;
 
+    protected Player adminOpenedMenu;
 
     public Menu(PlayerMenuUtility playerMenuUtility){
         this.playerMenuUtility = playerMenuUtility;
@@ -47,6 +48,8 @@ public abstract class Menu implements InventoryHolder {
         inventory = Bukkit.createInventory(this, getSlots(), getMenuName());
 
         this.setMenuItems();
+
+        adminOpenedMenu = player;
 
         player.openInventory(inventory);
     }

@@ -99,13 +99,18 @@ public class Ws implements CommandExecutor {
                                 PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(target.getPlayer());
                                 User user = playerMenuUtility.getUser();
 
-                                try{
-                                    user.setAcquiredPrivateWs(user.getAcquiredPrivateWs() + Integer.parseInt(args[3]));
-                                    jdbc.updateUser(user);
-                                    player.sendMessage("Added "+ args[3] + " private waystones to " + target.getName());
-                                }
-                                catch (NumberFormatException e){
-                                    player.sendMessage(args[3]+" has to be a number.");
+                                if(user !=null){//if the user is registered on the database
+                                    try{
+                                        user.setAcquiredPrivateWs(user.getAcquiredPrivateWs() + Integer.parseInt(args[3]));
+                                        jdbc.updateUser(user);
+                                        player.sendMessage("Added "+ args[3] + " private waystones to " + target.getName());
+                                    }
+                                    catch (NumberFormatException e){
+                                        player.sendMessage(args[3]+" has to be a number.");
+                                    }
+
+                                }else{
+                                    player.sendMessage("This user does not exist in the database.");
                                 }
 
 
@@ -120,8 +125,6 @@ public class Ws implements CommandExecutor {
                                     catch (NumberFormatException e){
                                         player.sendMessage(args[3]+" has to be a number.");
                                     }
-
-
                                 }
                                 else{
                                     player.sendMessage("This user does not exist in the database.");
@@ -154,10 +157,9 @@ public class Ws implements CommandExecutor {
                     }else{
                         player.sendMessage("This user does not exist in the database.");
                     }
-
-
-
-
+                }
+                else{
+                    player.sendMessage(Component.text("You do not have permission.", NamedTextColor.DARK_RED));
                 }
             }
             else{
@@ -180,13 +182,18 @@ public class Ws implements CommandExecutor {
                             PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(target.getPlayer());
                             User user = playerMenuUtility.getUser();
 
-                            try {
-                                user.setAcquiredPublicWs(Integer.parseInt(args[3]));
-                                jdbc.updateUser(user);
-                                console.sendMessage("Set " + args[3] + " public waystones to " + target.getName());
-                            } catch (NumberFormatException e) {
-                                console.sendMessage(args[3] + " has to be a number.");
+                            if(user !=null){
+                                try {
+                                    user.setAcquiredPublicWs(Integer.parseInt(args[3]));
+                                    jdbc.updateUser(user);
+                                    console.sendMessage("Set " + args[3] + " public waystones to " + target.getName());
+                                } catch (NumberFormatException e) {
+                                    console.sendMessage(args[3] + " has to be a number.");
+                                }
+                            } else{
+                                console.sendMessage("This user does not exist in the database.");
                             }
+
                         } else {
                             User user = jdbc.getUserFromDB(target.getUniqueId().toString());
                             if (user != null) {
@@ -259,13 +266,18 @@ public class Ws implements CommandExecutor {
                             PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(target.getPlayer());
                             User user = playerMenuUtility.getUser();
 
-                            try{
-                                user.setAcquiredPublicWs(user.getAcquiredPublicWs() + Integer.parseInt(args[3]));
-                                jdbc.updateUser(user);
-                                console.sendMessage("Added "+ args[3] + " public waystones to " + target.getName());
+                            if(user != null){
+                                try{
+                                    user.setAcquiredPublicWs(user.getAcquiredPublicWs() + Integer.parseInt(args[3]));
+                                    jdbc.updateUser(user);
+                                    console.sendMessage("Added "+ args[3] + " public waystones to " + target.getName());
+                                }
+                                catch (NumberFormatException e){
+                                    console.sendMessage(args[3]+" has to be a number.");
+                                }
                             }
-                            catch (NumberFormatException e){
-                                console.sendMessage(args[3]+" has to be a number.");
+                            else{
+                                console.sendMessage("This user does not exist in the database.");
                             }
 
 
@@ -301,13 +313,18 @@ public class Ws implements CommandExecutor {
                             PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(target.getPlayer());
                             User user = playerMenuUtility.getUser();
 
-                            try{
-                                user.setAcquiredPrivateWs(user.getAcquiredPrivateWs() + Integer.parseInt(args[3]));
-                                jdbc.updateUser(user);
-                                console.sendMessage("Added "+ args[3] + " private waystones to " + target.getName());
+                            if(user != null){
+                                try{
+                                    user.setAcquiredPrivateWs(user.getAcquiredPrivateWs() + Integer.parseInt(args[3]));
+                                    jdbc.updateUser(user);
+                                    console.sendMessage("Added "+ args[3] + " private waystones to " + target.getName());
+                                }
+                                catch (NumberFormatException e){
+                                    console.sendMessage(args[3]+" has to be a number.");
+                                }
                             }
-                            catch (NumberFormatException e){
-                                console.sendMessage(args[3]+" has to be a number.");
+                            else{
+                                console.sendMessage("This user does not exist in the database.");
                             }
 
 

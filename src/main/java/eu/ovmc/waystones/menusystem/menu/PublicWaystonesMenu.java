@@ -46,18 +46,31 @@ public class PublicWaystonesMenu extends PaginatedMenu {
         if(currentItem.equals(Material.BARRIER)){
             player.playSound(player.getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 1, 2);
             if(page == 0){
-                new WaystonesSplitMenu(playerMenuUtility, startingPage-1).open();
+                if(adminOpenedMenu == null){
+                    new WaystonesSplitMenu(playerMenuUtility, startingPage-1).open();
+                }else{
+                    new WaystonesSplitMenu(playerMenuUtility, startingPage-1).openAs(adminOpenedMenu);
+                }
             }
             else{
-                page = page - 1;
-                super.open();
+                if(adminOpenedMenu == null){
+                    page = page - 1;
+                    super.open();
+                }else{
+                    page = page - 1;
+                    super.openAs(adminOpenedMenu);
+                }
             }
         }
         else if(currentItem.equals(Material.ARROW)){//Make it more precise player can click on any arrow including personal inventory.
             System.out.println("Next page was selected");
             player.playSound(player.getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 1, 2);
             page = page + 1;
-            super.open();
+            if (adminOpenedMenu == null) {
+                super.open();
+            }else{
+                super.openAs(adminOpenedMenu);
+            }
         }
         else if(currentItem.equals(Material.NETHERITE_BLOCK)){
             player.sendMessage("You Clicked Netherite block!");
@@ -106,7 +119,7 @@ public class PublicWaystonesMenu extends PaginatedMenu {
             }
             PublicWaystone ws = publicWaystones.get(indexPubWs);
             if (ws != null) {
-                ItemStack publicWs;
+                ItemStack publicWs = new ItemStack(Material.NETHERITE_BLOCK);
 
                 Block blockTop = ws.getParsedLocation(ws.getLocation()).getBlock();
                 Block blockUnder = ws.getParsedLocation(ws.getLocation()).subtract(0.0,1.0,0.0).getBlock();
@@ -114,16 +127,16 @@ public class PublicWaystonesMenu extends PaginatedMenu {
                 boolean damagedWs = !(blockTop.getType().equals(Material.LODESTONE) && blockUnder.getType().equals(Material.NETHERITE_BLOCK));
 
                 //if this is the waystone he clicked on make it lime green
-                if(ws.getLocation().equals(playerMenuUtility.getClickedOnWs().getLocation())){
-                    //Creates the LimeConcretePowder block item
-                    publicWs = new ItemStack(Material.BLACK_CONCRETE);
-                }
-                else if(damagedWs){//if waystone is damaged, mark it with a cracked stone
-                    publicWs = new ItemStack(Material.CRACKED_STONE_BRICKS);
-                }
-                else{
-                    //Creates the Emerald block item
-                    publicWs = new ItemStack(Material.NETHERITE_BLOCK);
+                if(playerMenuUtility.getClickedOnWs() != null) {
+                    if (ws.getLocation().equals(playerMenuUtility.getClickedOnWs().getLocation())) {
+                        //Creates the LimeConcretePowder block item
+                        publicWs = new ItemStack(Material.BLACK_CONCRETE);
+                    } else if (damagedWs) {//if waystone is damaged, mark it with a cracked stone
+                        publicWs = new ItemStack(Material.CRACKED_STONE_BRICKS);
+                    } else {
+                        //Creates the Emerald block item
+                        publicWs = new ItemStack(Material.NETHERITE_BLOCK);
+                    }
                 }
 
                 ItemMeta publicMeta = publicWs.getItemMeta();
