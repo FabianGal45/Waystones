@@ -113,17 +113,20 @@ public class SQLiteJDBC {
                 String query = "INSERT INTO public_waystones (" +
                         "location," +
                         "owner," +
-                        "tp_location) VALUES(?, ?, ?)";
+                        "name," +
+                        "tp_location) VALUES(?, ?, ?, ?)";
 
                 //Creating the preparedStatement object
                 PreparedStatement pstmt = getCon().prepareStatement(query);
                 String location = ws.getLocation();
                 String owner = ws.getOwner();
+                String name = ws.getName();
                 String tpLocation = ws.getTpLocation();
 
                 pstmt.setString(1, location);
                 pstmt.setString(2, owner);
-                pstmt.setString(3, tpLocation);
+                pstmt.setString(3, name);
+                pstmt.setString(4, tpLocation);
 
                 pstmt.execute();
                 pstmt.close();
@@ -144,18 +147,21 @@ public class SQLiteJDBC {
                 String query = "INSERT INTO private_waystones (" +
                         "location," +
                         "owner," +
-                        "tp_location) VALUES(?, ?, ?)";
+                        "name," +
+                        "tp_location) VALUES(?, ?, ?, ?)";
 
                 //Creating the preparedStatement object
                 PreparedStatement pstmt = getCon().prepareStatement(query);
                 String location = ws.getLocation();
                 String owner = ws.getOwner();
+                String name = ws.getName();
                 System.out.println("Reg - TP loc: "+ws.getTpLocation());
                 String tpLocation = ws.getTpLocation();
 
                 pstmt.setString(1, location);
                 pstmt.setString(2, owner);
-                pstmt.setString(3, tpLocation);
+                pstmt.setString(3, name);
+                pstmt.setString(4, tpLocation);
                 pstmt.execute();
                 pstmt.close();
 

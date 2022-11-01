@@ -17,6 +17,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -36,7 +37,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
     @Override
     public Component getMenuName() {
-        return Component.text("Your waystones");
+        return Component.text(playerMenuUtility.getOwner().getName()+ "'s Waystone");
     }
 
     @Override
@@ -54,26 +55,31 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
         Material currentItem = e.getCurrentItem().getType();
 
+
+
         if(currentItem.equals(Material.EMERALD_BLOCK)){
-            player.playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, SoundCategory.BLOCKS, 1, 1);
+
             //Grab the index from the NBT data of the block
             ItemMeta itemMeta = e.getCurrentItem().getItemMeta();
             NamespacedKey namespacedKey = new NamespacedKey(WaystonesPlugin.getPlugin(), "index");
             int index = Objects.requireNonNull(itemMeta.getPersistentDataContainer().get(namespacedKey,PersistentDataType.INTEGER));
             PrivateWaystone selected = privateWaystones.get(index);
 
-            System.out.println(WaystonesPlugin.getPlugin().getDescription().getVersion());
+//            System.out.println(WaystonesPlugin.getPlugin().getDescription().getVersion());
 
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WaystonesPlugin.getPlugin(), new Runnable() {
-                @Override
-                public void run() {
-                    //safety feature
-                    selected.safeTeleport(player);
-                }
-            },5);
-
-
-
+            if(e.getClick() == ClickType.RIGHT){
+                new EditMenu(playerMenuUtility, selected).open();
+            }
+            else{
+                player.playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, SoundCategory.BLOCKS, 1, 1);
+                Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WaystonesPlugin.getPlugin(), new Runnable() { //add some delay before teleporting
+                    @Override
+                    public void run() {
+                        //safety feature
+                        selected.safeTeleport(player);
+                    }
+                },5);
+            }
         }
         else if(currentItem.equals(Material.NETHERITE_BLOCK)){
             player.sendMessage("You Clicked Netherite block!");
@@ -84,17 +90,47 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             System.out.println("NBT: index: "+index);
             PublicWaystone selected = publicWaystones.get(index);
 
-            player.playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, SoundCategory.BLOCKS, 1, 1);
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WaystonesPlugin.getPlugin(), new Runnable() {
-                @Override
-                public void run() {
-                    //safety feature
-                    selected.safeTeleport(player);
-                }
-            },5);
+            if(e.getClick() == ClickType.RIGHT){
+                new EditMenu(playerMenuUtility, selected).open();
+            }
+            else{
+                player.playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, SoundCategory.BLOCKS, 1, 1);
+                Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WaystonesPlugin.getPlugin(), new Runnable() {
+                    @Override
+                    public void run() {
+                        //safety feature
+                        selected.safeTeleport(player);
+                    }
+                },5);
+            }
+
+
+
+
         }
         else if(currentItem.equals(Material.LIME_CONCRETE) || currentItem.equals(Material.BLACK_CONCRETE)){
-            player.sendMessage("You are already at this location");
+            //Grab the index from the NBT data of the block
+            ItemMeta itemMeta = e.getCurrentItem().getItemMeta();
+            NamespacedKey namespacedKey = new NamespacedKey(WaystonesPlugin.getPlugin(), "index");
+            int index = Objects.requireNonNull(itemMeta.getPersistentDataContainer().get(namespacedKey,PersistentDataType.INTEGER));
+            PrivateWaystone selected;
+
+            if(currentItem.equals(Material.LIME_CONCRETE)){
+                selected = privateWaystones.get(index);
+            }
+            else{
+                selected = publicWaystones.get(index);
+            }
+
+
+            if(e.getClick() == ClickType.RIGHT){
+                new EditMenu(playerMenuUtility, selected).open();
+            }
+            else{
+                player.sendMessage("You are already at this location");
+            }
+
+
         }
         else if(currentItem.equals(Material.CRACKED_STONE_BRICKS)){
             //Grab the index from the NBT data of the block
@@ -152,7 +188,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                 if(adminOpenedMenu == null){ //if this menu has no admin assigned that might have oppened it then run it for the player
                     page = page + 1;
                     new PublicWaystonesMenu(playerMenuUtility, page, indexPubWs).open();
-                } else{ //if there is an admin that has oppened this menu then continue openning for the admin todo: add this to the publicWaystonesMenu
+                } else{ //if there is an admin that has oppened this menu then continue openning for the admin
                     page = page + 1;
                     new PublicWaystonesMenu(playerMenuUtility, page, indexPubWs).openAs(adminOpenedMenu);
                 }
@@ -295,8 +331,14 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                 ItemMeta ptivateWsMeta = privateWs.getItemMeta();
 
                 //Sets the name
-                ptivateWsMeta.displayName(Component.text("#"+(indexPrivWs+1)+" ")
-                        .append(Component.text("Private Waystone").decoration(TextDecoration.ITALIC, false)));
+                if(ws.getName() == null){
+                    ptivateWsMeta.displayName(Component.text("Null")
+                            .decoration(TextDecoration.ITALIC, false));
+                }
+                else{
+                    ptivateWsMeta.displayName(Component.text(ws.getName())
+                            .decoration(TextDecoration.ITALIC, false));
+                }
 
                 //Creates the lore of the item
                 List<Component> loreArray = new ArrayList<>();
@@ -359,7 +401,12 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                 ItemMeta publicMeta = publicWs.getItemMeta();
 
                 //Sets the name
-                publicMeta.displayName(Component.text("Public Waystone").decoration(TextDecoration.ITALIC, false));
+                if(ws.getName() == null){
+                    publicMeta.displayName(Component.text("Null").decoration(TextDecoration.ITALIC, false));
+                }
+                else{
+                    publicMeta.displayName(Component.text(ws.getName()).decoration(TextDecoration.ITALIC, false));
+                }
 
                 //Creates the lore of the item
                 List<Component> loreArray = new ArrayList<>();
