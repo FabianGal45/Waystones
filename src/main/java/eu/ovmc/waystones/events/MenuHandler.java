@@ -19,7 +19,7 @@ public class MenuHandler implements Listener {
             e.setCancelled(true); //stops player from moving the item.
 
             if(e.getCurrentItem() != null && e.getClickedInventory().getType().toString().equals("CHEST")){
-                //Handle the menu withing the menu class.
+                //Handle the menu within the menu class.
                 Menu menu = (Menu) holder;
                 menu.handleMenu(e);
             }

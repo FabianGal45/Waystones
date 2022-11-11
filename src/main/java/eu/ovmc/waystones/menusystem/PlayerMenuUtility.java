@@ -20,9 +20,9 @@ public class PlayerMenuUtility {
     private Player owner;
     private ArrayList<PrivateWaystone> privateWaystones;
     private ArrayList<PublicWaystone> publicWaystones;
-    private PrivateWaystone clickedOnWs;
+    private PrivateWaystone clickedOnWs;//This is the physical waystone a player clicked on
     private User user;
-    VotingPluginUser votingPluginUser;
+    private VotingPluginUser votingPluginUser;
 
     public PlayerMenuUtility(OfflinePlayer owner) {
         this.owner = Bukkit.getPlayer(owner.getUniqueId());

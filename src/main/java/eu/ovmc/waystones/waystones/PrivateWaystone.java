@@ -5,6 +5,9 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 public class PrivateWaystone {
     private String location;
     private String owner;
@@ -103,7 +106,6 @@ public class PrivateWaystone {
         }
 
         if(safe){
-//            player.teleport(loc);
             player.teleportAsync(loc);
             player.playSound(loc, Sound.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.BLOCKS, 1,1);
         }

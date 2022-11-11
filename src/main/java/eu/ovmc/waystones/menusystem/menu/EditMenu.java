@@ -1,5 +1,8 @@
 package eu.ovmc.waystones.menusystem.menu;
 
+import eu.ovmc.waystones.WaystonesPlugin;
+import eu.ovmc.waystones.menusystem.ChatInputHandler;
+import eu.ovmc.waystones.menusystem.EditMenuUtility;
 import eu.ovmc.waystones.menusystem.Menu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
@@ -7,6 +10,7 @@ import eu.ovmc.waystones.waystones.PublicWaystone;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -31,6 +35,18 @@ public class EditMenu extends Menu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
+        Player player = (Player) e.getWhoClicked();
+        Material currentItem = e.getCurrentItem().getType();
+//        SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
+
+        if(currentItem.equals(Material.NAME_TAG)){
+            player.sendMessage("Enter new name for: "+ selected.getName());
+            inventory.close();
+
+            ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
+            EditMenuUtility editMenuUtility = new EditMenuUtility(selected,this);
+            chatInputHandler.changeWsName(player, editMenuUtility); //pass the player to be added to the list and the menu to be oppened later
+        }
 
     }
 

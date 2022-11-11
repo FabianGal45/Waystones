@@ -3,11 +3,9 @@ package eu.ovmc.waystones;
 import eu.ovmc.waystones.commands.Ws;
 import eu.ovmc.waystones.commands.WsTabCompletion;
 import eu.ovmc.waystones.database.SQLiteJDBC;
+import eu.ovmc.waystones.events.*;
+import eu.ovmc.waystones.menusystem.ChatInputHandler;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
-import eu.ovmc.waystones.events.MenuHandler;
-import eu.ovmc.waystones.events.WaystoneBreak;
-import eu.ovmc.waystones.events.WaystoneInteract;
-import eu.ovmc.waystones.events.WaystonePlace;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -22,9 +20,12 @@ import java.util.logging.Logger;
 public final class WaystonesPlugin extends JavaPlugin implements Listener {
     private static WaystonesPlugin plugin;
     private SQLiteJDBC jdbc;
+    private ChatInputHandler chatInputHandler;
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
     private static final Logger log = Logger.getLogger("Minecraft");
     private static Economy econ = null;
+
+
 
     @Override
     public void onEnable() {
@@ -36,6 +37,9 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
         //SQLiteJDBC - Connect and create the tables.
         jdbc = new SQLiteJDBC();
         jdbc.createTables();
+
+        //Create the chat input handler here so that it doesn't get created multiple times in other classes and make the use of static hashmap redundant.
+        chatInputHandler = new ChatInputHandler();
 
         if (!setupEconomy() ) {
             log.severe(String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
@@ -49,6 +53,8 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
 
 
         //Events
+        getServer().getPluginManager().registerEvents(new CloseInventory(), this);
+        getServer().getPluginManager().registerEvents(new ChatListener(), this);
         getServer().getPluginManager().registerEvents(new MenuHandler(), this);
         getServer().getPluginManager().registerEvents(new WaystonePlace(), this);
         getServer().getPluginManager().registerEvents(new WaystoneInteract(), this);
@@ -94,6 +100,9 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
 
     public SQLiteJDBC getJdbc() {
         return jdbc;
+    }
+    public ChatInputHandler getChatInputHandler() {
+        return chatInputHandler;
     }
 
     @Override

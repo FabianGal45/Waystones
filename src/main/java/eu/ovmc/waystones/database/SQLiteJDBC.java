@@ -347,6 +347,57 @@ public class SQLiteJDBC {
 
     }
 
+    public void updateWaystone(PrivateWaystone ws){
+
+        if(ws instanceof PublicWaystone){
+            try{
+                String sql = "UPDATE public_waystones" +
+                        " SET name = ?, tp_location = ?, cost = ?, rating = ?" +
+                        " WHERE location = ?;";
+
+
+                PreparedStatement pstmt = getCon().prepareStatement(sql);
+                pstmt.setString(1, ws.getName());
+                pstmt.setString(2, ws.getLocation());
+                pstmt.setDouble(3, ((PublicWaystone) ws).getCost());
+                pstmt.setDouble(4, ((PublicWaystone) ws).getRating());
+                pstmt.setString(5, ws.getLocation());
+
+                pstmt.execute();
+                pstmt.close();
+            }catch (Exception e){
+                System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+                System.out.println(e +" Failed to update Public waystone!");
+                System.exit(0);
+            }
+
+
+        }
+        else{
+            try{
+                String sql = "UPDATE private_waystones" +
+                        " SET name = ?, tp_location = ?" +
+                        " WHERE location = ?;";
+
+
+                PreparedStatement pstmt = getCon().prepareStatement(sql);
+                pstmt.setString(1, ws.getName());
+                pstmt.setString(2, ws.getLocation());
+                pstmt.setString(3, ws.getLocation());
+
+                pstmt.execute();
+                pstmt.close();
+            }catch (Exception e){
+                System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+                System.out.println(e +" Failed to update Private waystone!");
+                System.exit(0);
+            }
+        }
+
+
+
+    }
+
      private int countPrivateWs(User user){
         int num = 0;
         Statement stmt;

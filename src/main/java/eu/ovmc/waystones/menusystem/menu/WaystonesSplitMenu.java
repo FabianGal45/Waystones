@@ -3,7 +3,6 @@ package eu.ovmc.waystones.menusystem.menu;
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.database.User;
-import eu.ovmc.waystones.menusystem.PaginatedMenu;
 import eu.ovmc.waystones.menusystem.PaginatedSplitMenu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
@@ -37,7 +36,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
     @Override
     public Component getMenuName() {
-        return Component.text(playerMenuUtility.getOwner().getName()+ "'s Waystone");
+        return Component.text(playerMenuUtility.getOwner().getName()+ "'s Waystone"); //todo fix this with openAs
     }
 
     @Override
