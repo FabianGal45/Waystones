@@ -31,6 +31,7 @@ public class WaystoneInteract implements Listener {
 
         //If right clicked a LODESTONE
         if(e.getClickedBlock().getType().equals(Material.LODESTONE) && action.equals(Action.RIGHT_CLICK_BLOCK) && !e.getPlayer().isSneaking()){
+            System.out.println("WaystonesInteract - Thread: "+ Thread.currentThread().getName()+"; "+Thread.currentThread().getName());
 
             Block blockUnder = e.getClickedBlock().getLocation().subtract(0.0,1.0,0.0).getBlock();
 

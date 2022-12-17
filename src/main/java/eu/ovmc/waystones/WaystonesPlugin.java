@@ -51,6 +51,7 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
         getCommand("ws").setExecutor(new Ws());
         getCommand("ws").setTabCompleter(new WsTabCompletion());
 
+        System.out.println("EditmenuUtility - Thread: "+ Thread.currentThread().getName()+"; "+Thread.currentThread().getName());
 
         //Events
         getServer().getPluginManager().registerEvents(new CloseInventory(), this);

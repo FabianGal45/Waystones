@@ -1,31 +1,33 @@
 package eu.ovmc.waystones.menusystem;
 
-import eu.ovmc.waystones.menusystem.Menu;
+import eu.ovmc.waystones.menusystem.menu.EditMenu;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class EditMenuUtility {
 
     private PrivateWaystone selected;//This is the waystone a player has selected. Used to edit the waystone.
-    private Menu returnToMenu;//This is the menu a player might get redirected to. Usually the last menu they have oppened.
+    private EditMenu editMenu;//This is the menu a player might get redirected to. Usually the last menu they have oppened.
 
-    public EditMenuUtility(PrivateWaystone selected, Menu returnToMenu) {
+    public EditMenuUtility(PrivateWaystone selected, EditMenu editMenu) {
         this.selected = selected;
-        this.returnToMenu = returnToMenu;
+        this.editMenu = editMenu;
     }
+
+    BukkitRunnable runnable = new BukkitRunnable() {
+        @Override
+        public void run() {
+            editMenu.open();
+            System.out.println("<><><><><>< TEST ><><><><><>");
+        }
+    };
 
     public PrivateWaystone getSelected() {
         return selected;
     }
 
-    public void setSelected(PrivateWaystone selected) {
-        this.selected = selected;
-    }
-
-    public Menu getReturnToMenu() {
-        return returnToMenu;
-    }
-
-    public void setReturnToMenu(Menu returnToMenu) {
-        this.returnToMenu = returnToMenu;
+    public void returnToMenu(){
+        System.out.println("EditmenuUtility - Thread: "+ Thread.currentThread().getName()+"; "+Thread.currentThread().getName());
+//        runnable.run();
     }
 }

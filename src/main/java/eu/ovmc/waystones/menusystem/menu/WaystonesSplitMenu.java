@@ -46,6 +46,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
+        System.out.println("WaystonesSplitMenu - Thread: "+ Thread.currentThread().getName()+"; "+Thread.currentThread().getName());
 
         Player player = (Player) e.getWhoClicked();
 
