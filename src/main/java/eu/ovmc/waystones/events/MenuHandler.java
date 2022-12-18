@@ -22,6 +22,7 @@ public class MenuHandler implements Listener {
                 //Handle the menu within the menu class.
                 Menu menu = (Menu) holder;
                 menu.handleMenu(e);
+                menu.close();//TODO: fix the closing issue where the server opens many menues
             }
         }
 

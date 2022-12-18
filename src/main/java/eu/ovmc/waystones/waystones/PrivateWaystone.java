@@ -1,5 +1,6 @@
 package eu.ovmc.waystones.waystones;
 
+import com.google.gson.stream.JsonToken;
 import eu.ovmc.waystones.WaystonesPlugin;
 import org.bukkit.*;
 import org.bukkit.block.Block;

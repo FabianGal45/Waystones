@@ -268,7 +268,7 @@ public class SQLiteJDBC {
     }
 
     public ArrayList<PrivateWaystone> getAllPrivateWaystones(String uuid){
-        ArrayList<PrivateWaystone> pubWs = new ArrayList<>();
+        ArrayList<PrivateWaystone> privWs = new ArrayList<>();
         PrivateWaystone ws = null;
         Statement stmt;
 
@@ -278,7 +278,7 @@ public class SQLiteJDBC {
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
                 ws = new PrivateWaystone(rs.getString("location"), rs.getString("owner"), rs.getString("name"),  rs.getString("tp_location"));
-                pubWs.add(ws);
+                privWs.add(ws);
             }
 
             stmt.close();
@@ -289,7 +289,7 @@ public class SQLiteJDBC {
             System.exit(0);
         }
 
-        return pubWs;
+        return privWs;
     }
 
     public ArrayList<PublicWaystone> getAllPublicWaystones(){
@@ -382,7 +382,7 @@ public class SQLiteJDBC {
 
                 PreparedStatement pstmt = getCon().prepareStatement(sql);
                 pstmt.setString(1, ws.getName());
-                pstmt.setString(2, ws.getLocation());
+                pstmt.setString(2, ws.getTpLocation());
                 pstmt.setString(3, ws.getLocation());
 
                 pstmt.execute();

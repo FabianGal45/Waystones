@@ -2,11 +2,8 @@ package eu.ovmc.waystones.menusystem;
 
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.SQLiteJDBC;
-import io.papermc.paper.event.player.AsyncChatEvent;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 
@@ -34,9 +31,7 @@ public class ChatInputHandler {
             SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
 
             //Set the name of the waystone with the input from player
-//            String plainMessage = PlainTextComponentSerializer.plainText().serialize(e.message());
-            String plainMessage = e.getMessage();
-            emu.getSelected().setName(String.valueOf(plainMessage));
+            emu.getSelected().setName(e.getMessage());
 
             //Update the name in the database
             jdbc.updateWaystone(emu.getSelected());
