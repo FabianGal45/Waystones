@@ -7,17 +7,17 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class EditMenuUtility {
 
     private PrivateWaystone selected;//This is the waystone a player has selected. Used to edit the waystone.
-    private EditMenu editMenu;//This is the menu a player might get redirected to. Usually the last menu they have oppened.
+    private Menu menu;//This is the menu a player might get redirected to. Usually the last menu they have oppened.
 
-    public EditMenuUtility(PrivateWaystone selected, EditMenu editMenu) {
+    public EditMenuUtility(PrivateWaystone selected, Menu menu) {
         this.selected = selected;
-        this.editMenu = editMenu;
+        this.menu = menu;
     }
 
     BukkitRunnable runnable = new BukkitRunnable() {
         @Override
         public void run() {
-            editMenu.open();
+            menu.open();
             System.out.println("<><><><><>< TEST ><><><><><>");
         }
     };
@@ -28,6 +28,7 @@ public class EditMenuUtility {
 
     public void returnToMenu(){
         System.out.println("EditmenuUtility - Thread: "+ Thread.currentThread().getName()+"; "+Thread.currentThread().getName());
+//        menu.open();
 //        runnable.run();
     }
 }

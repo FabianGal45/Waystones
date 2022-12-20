@@ -204,28 +204,26 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             }
 
         }
-        else if (currentItem.equals(Material.RECOVERY_COMPASS) && e.getClick().isRightClick()) {
+        else if (currentItem.equals(Material.RECOVERY_COMPASS)) {
             User user = playerMenuUtility.getUser();
             int purchased = user.getPurchasedPrivateWs();
-            int total = purchased +1;
-            user.setPurchasedPrivateWs(total);
-
+            int total;
             SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
-            jdbc.updateUser(user);
+
+            if(e.getClick().isRightClick()){
+                total = purchased +1;
+                user.setPurchasedPrivateWs(total);
+                jdbc.updateUser(user);
+            }else if(e.getClick().isLeftClick()){
+                total = purchased -1;
+                user.setPurchasedPrivateWs(total);
+                jdbc.updateUser(user);
+            }
 
             super.open();
         }
-        else if (currentItem.equals(Material.RECOVERY_COMPASS) && e.getClick().isLeftClick()) {
-            User user = playerMenuUtility.getUser();
-            int purchased = user.getPurchasedPrivateWs();
-            int total = purchased -1;
-            user.setPurchasedPrivateWs(total);
 
-            SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
-            jdbc.updateUser(user);
-
-            super.open();
-        }
+//        super.close();
 
 
     }

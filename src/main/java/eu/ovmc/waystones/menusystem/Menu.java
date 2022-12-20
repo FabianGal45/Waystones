@@ -46,7 +46,7 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public void close(){
-        inventory.close();
+        playerMenuUtility.getOwner().closeInventory();
     }
 
     public void openAs(Player player){
