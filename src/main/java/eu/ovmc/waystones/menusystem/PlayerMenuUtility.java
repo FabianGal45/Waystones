@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
+//The Owner of the waystones
 public class PlayerMenuUtility {
 
     private Player owner;

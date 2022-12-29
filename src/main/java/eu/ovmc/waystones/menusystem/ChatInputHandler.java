@@ -2,47 +2,70 @@ package eu.ovmc.waystones.menusystem;
 
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.SQLiteJDBC;
+import eu.ovmc.waystones.menusystem.menu.EditMenu;
+import eu.ovmc.waystones.waystones.PrivateWaystone;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.HashMap;
+import java.util.concurrent.CountDownLatch;
 
 public class ChatInputHandler {
     //This class will be handling all utility classes for all chat request-response needs
 
-    private static final HashMap<Player, Object> playerList = new HashMap<>();
+    private static final HashMap<Player, PrivateWaystone> chatInputMap = new HashMap<>();
 
-    public HashMap<Player, Object> getChatMap(){//Get the map when needed
-       return playerList;
+    PlayerMenuUtility playerMenuUtility;
+
+    public HashMap<Player, PrivateWaystone> getChatInputMap(){//Get the map when needed
+       return chatInputMap;
    }
 
-    public void changeWsName(Player player, EditMenuUtility editMenuUtility){
-        playerList.put(player, editMenuUtility);
+    public void changeWsName(PlayerMenuUtility playerMenuUtility, Player player, PrivateWaystone selected){
+        chatInputMap.put(player, selected);
+        this.playerMenuUtility = playerMenuUtility;
     }
 
     public void handleChatInput(AsyncPlayerChatEvent e){
-        if(playerList.get(e.getPlayer()) instanceof EditMenuUtility){ //If the reason you are taking the input is to edit then...
-            System.out.println("ChatInputHandler - Thread: "+ Thread.currentThread().getName()+"; "+Thread.currentThread().getName());
-            e.setCancelled(true);
+        //Rename the waystone
+        PrivateWaystone selected = chatInputMap.get(e.getPlayer());
+        SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
+
+        //Set the name of the waystone with the input from player
+        selected.setName(e.getMessage());
+
+        //Update the name in the database
+        jdbc.updateWaystone(selected);
+
+        e.getPlayer().sendMessage("The name has ben set to: "+selected.getName());
+        chatInputMap.remove(e.getPlayer());
 
 
-            //Rename the waystone
-            EditMenuUtility emu = (EditMenuUtility) playerList.get(e.getPlayer());
-            SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
+        //Running this synchronously
+        final CountDownLatch latch = new CountDownLatch(1);
 
-            //Set the name of the waystone with the input from player
-            emu.getSelected().setName(e.getMessage());
+        Bukkit.getScheduler().runTask(WaystonesPlugin.getPlugin(), new Runnable() {
+            @Override
+            public void run() {
+                // Perform the synchronous operation
 
-            //Update the name in the database
-            jdbc.updateWaystone(emu.getSelected());
+                //Reopen the last menu
+                new EditMenu(playerMenuUtility, selected).open();
 
-            e.getPlayer().sendMessage("The name has ben set to: "+emu.getSelected().getName());
-            playerList.remove(e.getPlayer());
 
-            //Reopen the last menu
-            emu.returnToMenu();
+                // When the operation is complete, count down the latch
+                latch.countDown();
+            }
+        });
 
+        try {
+            // Wait for the latch to reach zero
+            latch.await();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
         }
+
 
 
     }

@@ -2,7 +2,6 @@ package eu.ovmc.waystones.menusystem.menu;
 
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.menusystem.ChatInputHandler;
-import eu.ovmc.waystones.menusystem.EditMenuUtility;
 import eu.ovmc.waystones.menusystem.Menu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
@@ -45,8 +44,7 @@ public class EditMenu extends Menu {
             inventory.close();
 
             ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
-            EditMenuUtility editMenuUtility = new EditMenuUtility(selected,this);
-            chatInputHandler.changeWsName(player, editMenuUtility); //pass the player to be added to the list and the menu to be oppened later
+            chatInputHandler.changeWsName(playerMenuUtility, player, selected); //pass the player to be added to the list and the menu to be oppened later
         }
 
     }

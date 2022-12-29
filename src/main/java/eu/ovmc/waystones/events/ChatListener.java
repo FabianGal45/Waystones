@@ -6,30 +6,30 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatEvent;
 
 
 public class ChatListener implements Listener {
     // @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    private ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void asyncPlayerChatOld(AsyncPlayerChatEvent e){ //I have to use a deprecated method as the old plugins use it as the default and canceling a new event won't work
+    public void asyncPlayerChat(AsyncPlayerChatEvent e){ //I have to use a deprecated method as the old plugins use it as the default and canceling a new event won't work
 
-        ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
-
-        if(chatInputHandler.getChatMap().containsKey(e.getPlayer())){//If the player exists in the hash map, waiting to get an input
-            System.out.println("ChatListener - Thread: "+ Thread.currentThread().getName()+"; "+Thread.currentThread().getName());
-            System.out.println("This player is in the list. Handling...");
+        if(chatInputHandler.getChatInputMap().containsKey(e.getPlayer())){//If the player exists in the hash map, waiting to get an input
+            e.setCancelled(true);
             chatInputHandler.handleChatInput(e);
+        }
+    }
+
+    //In order to open an inventory it has to be triggered synchronously
+    @EventHandler
+    public void syncPlayerChat(PlayerChatEvent e){
+        if(chatInputHandler.getChatInputMap().containsKey(e.getPlayer())){//If the player exists in the hash map, waiting to get an input
             e.setCancelled(true);
         }
     }
 
 
-
-//    @EventHandler
-//    public void abstractChatEvent(ChatRenderer e){
-//        e.render()
-//        System.out.println("AAAAA aaa AAA");
-//    }
 }
 
