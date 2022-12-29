@@ -3,6 +3,7 @@ package eu.ovmc.waystones.commands;
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.database.User;
+import eu.ovmc.waystones.menusystem.ChatInputHandler;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.menusystem.menu.WaystonesSplitMenu;
 import net.kyori.adventure.text.Component;
@@ -160,6 +161,12 @@ public class Ws implements CommandExecutor {
                 }
                 else{
                     player.sendMessage(Component.text("You do not have permission.", NamedTextColor.DARK_RED));
+                }
+            }
+            else if (args[0].equals("cancelNameChange")){
+                ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
+                if(chatInputHandler.getChatInputMap().containsKey(player)){
+                    chatInputHandler.removePlayerFromList(player);
                 }
             }
             else{

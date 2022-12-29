@@ -122,6 +122,7 @@ public class User {
 
         if(r.transactionSuccess()){
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.BLOCKS, 1, 2);
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.BLOCKS, (float) 0.5, (float) 1.6);
             purchasedPrivateWs++;
 
             SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();

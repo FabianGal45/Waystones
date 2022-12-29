@@ -11,6 +11,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -81,14 +82,46 @@ public class PublicWaystonesMenu extends PaginatedMenu {
             System.out.println("NBT: index: "+index);
             PublicWaystone selected = publicWaystones.get(index);
 
-            player.playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, SoundCategory.BLOCKS, 1, 1);
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WaystonesPlugin.getPlugin(), new Runnable() {
-                @Override
-                public void run() {
-                    //safety feature
-                    selected.safeTeleport(player);
+            if(e.getClick() == ClickType.RIGHT){
+                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
+                if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
+                    new EditMenu(playerMenuUtility, selected).open();
                 }
-            },5);
+                else{
+                    player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
+                }
+            }
+            else{
+                player.playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, SoundCategory.BLOCKS, 1, 1);
+                Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WaystonesPlugin.getPlugin(), new Runnable() {
+                    @Override
+                    public void run() {
+                        //safety feature
+                        selected.safeTeleport(player);
+                    }
+                },5);
+            }
+        }
+        else if(currentItem.equals(Material.BLACK_CONCRETE)){
+            ItemMeta itemMeta = e.getCurrentItem().getItemMeta();
+            NamespacedKey namespacedKey = new NamespacedKey(WaystonesPlugin.getPlugin(), "index");
+            int index = Objects.requireNonNull(itemMeta.getPersistentDataContainer().get(namespacedKey,PersistentDataType.INTEGER));
+            System.out.println("NBT: index: "+index);
+            PublicWaystone selected = publicWaystones.get(index);
+
+            if(e.getClick() == ClickType.RIGHT){
+                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
+                if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
+                    new EditMenu(playerMenuUtility, selected).open();
+                }
+                else{
+                    player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
+                }
+            }
+            else{
+                player.sendMessage("You are already at this location");
+                player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
+            }
         }
         else if(currentItem.equals(Material.CRACKED_STONE_BRICKS)){
             //Grab the index from the NBT data of the block

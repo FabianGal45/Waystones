@@ -8,6 +8,10 @@ import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -39,12 +43,16 @@ public class EditMenu extends Menu {
         Material currentItem = e.getCurrentItem().getType();
 //        SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
 
-        if(currentItem.equals(Material.NAME_TAG)){
-            player.sendMessage("Enter new name for: "+ selected.getName());
-            inventory.close();
-
+        if(currentItem.equals(Material.NAME_TAG)){ // Change name of waystone
             ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
-            chatInputHandler.changeWsName(playerMenuUtility, player, selected); //pass the player to be added to the list and the menu to be oppened later
+            chatInputHandler.addPlayerToList(playerMenuUtility, player, selected); //pass the player to be added to the list and the menu to be oppened later
+
+            player.sendMessage(Component.text("Enter new name: ", NamedTextColor.GRAY)
+                    .append(Component.text(" [X]", NamedTextColor.DARK_RED).decorate(TextDecoration.BOLD)
+                            .hoverEvent(HoverEvent.showText(Component.text("Or type \"cancel\"")))
+                            .clickEvent(ClickEvent.runCommand("/ws cancelNameChange"))));
+
+            inventory.close();
         }
 
     }
@@ -62,7 +70,7 @@ public class EditMenu extends Menu {
         if(selected instanceof PublicWaystone){ // if the waystone is a public waystone
             ItemStack nameTag = new ItemStack(Material.NAME_TAG);
             ItemMeta nameTagMeta = nameTag.getItemMeta();
-            TextComponent ntName = Component.text("Name");
+            TextComponent ntName = Component.text("Rename");
             nameTagMeta.displayName(ntName);
             nameTag.setItemMeta(nameTagMeta);
             inventory.setItem(10, nameTag);
@@ -92,7 +100,7 @@ public class EditMenu extends Menu {
         else{ // if the Waystone is a Private waystone
             ItemStack nameTag = new ItemStack(Material.NAME_TAG);
             ItemMeta nameTagMeta = nameTag.getItemMeta();
-            TextComponent ntName = Component.text("Name");
+            TextComponent ntName = Component.text("Rename");
             nameTagMeta.displayName(ntName);
             nameTag.setItemMeta(nameTagMeta);
             inventory.setItem(11, nameTag);

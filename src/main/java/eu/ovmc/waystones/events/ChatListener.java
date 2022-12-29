@@ -17,16 +17,13 @@ public class ChatListener implements Listener {
     public void asyncPlayerChat(AsyncPlayerChatEvent e){ //I have to use a deprecated method as the old plugins use it as the default and canceling a new event won't work
 
         if(chatInputHandler.getChatInputMap().containsKey(e.getPlayer())){//If the player exists in the hash map, waiting to get an input
-            e.setCancelled(true);
-            chatInputHandler.handleChatInput(e);
-        }
-    }
-
-    //In order to open an inventory it has to be triggered synchronously
-    @EventHandler
-    public void syncPlayerChat(PlayerChatEvent e){
-        if(chatInputHandler.getChatInputMap().containsKey(e.getPlayer())){//If the player exists in the hash map, waiting to get an input
-            e.setCancelled(true);
+            if(!e.getMessage().equalsIgnoreCase("cancel")){
+                chatInputHandler.handleChatInput(e);
+            }
+            else{
+                e.setCancelled(true);
+                chatInputHandler.removePlayerFromList(e.getPlayer());
+            }
         }
     }
 

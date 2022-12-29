@@ -91,7 +91,13 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             PublicWaystone selected = publicWaystones.get(index);
 
             if(e.getClick() == ClickType.RIGHT){
-                new EditMenu(playerMenuUtility, selected).open();
+                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
+                if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
+                    new EditMenu(playerMenuUtility, selected).open();
+                }
+                else{
+                    player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
+                }
             }
             else{
                 player.playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, SoundCategory.BLOCKS, 1, 1);
@@ -124,10 +130,17 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
 
             if(e.getClick() == ClickType.RIGHT){
-                new EditMenu(playerMenuUtility, selected).open();
+                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
+                if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
+                    new EditMenu(playerMenuUtility, selected).open();
+                }
+                else{
+                    player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
+                }
             }
             else{
                 player.sendMessage("You are already at this location");
+                player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
             }
 
 
