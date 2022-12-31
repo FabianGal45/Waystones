@@ -16,23 +16,37 @@ import java.util.concurrent.CountDownLatch;
 public class ChatInputHandler {
     //This class will be handling all utility classes for all chat request-response needs
 
-    private static final HashMap<Player, PrivateWaystone> TEXT_INPUT_MAP = new HashMap<>();
-    private static final HashMap<Player, PrivateWaystone> CHAT_CLICK_MAP = new HashMap<>();
+    private static final HashMap<Player, EditMenu> TEXT_INPUT_MAP = new HashMap<>();
+    private static final HashMap<Player, EditMenu> CHAT_CLICK_MAP = new HashMap<>();
 
-    PlayerMenuUtility playerMenuUtility;
+    public void addPlayerToTextMap(Player player, EditMenu editMenu){
+        TEXT_INPUT_MAP.put(player, editMenu);
 
-    public void addPlayerToTextMap(PlayerMenuUtility playerMenuUtility, Player player, PrivateWaystone selected){
-        TEXT_INPUT_MAP.put(player, selected);
-        this.playerMenuUtility = playerMenuUtility;
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WaystonesPlugin.getPlugin(), new Runnable() {
+            @Override
+            public void run() {
+                TEXT_INPUT_MAP.remove(player);
+                System.out.println("TEXT_INPUT_MAP timed out!");
+            }
+        },1200);//run after 60 seconds
     }
 
-    public void addPlayerToChatClickMap(Player player, PrivateWaystone selected){
-        CHAT_CLICK_MAP.put(player, selected);
+    public void addPlayerToChatClickMap(Player player, EditMenu editMenu){
+        CHAT_CLICK_MAP.put(player, editMenu);
+
+
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WaystonesPlugin.getPlugin(), new Runnable() {
+            @Override
+            public void run() {
+                CHAT_CLICK_MAP.remove(player);
+                System.out.println("CHAT_CLICK_MAP timed out!");
+            }
+        },1200);//run after 60 seconds
     }
 
     public void handleChatInput(AsyncPlayerChatEvent e){
         //Rename the waystone
-        PrivateWaystone selected = TEXT_INPUT_MAP.get(e.getPlayer());
+        PrivateWaystone selected = TEXT_INPUT_MAP.get(e.getPlayer()).getSelected();
         SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
 
         //Set the name of the waystone with the input from player
@@ -46,27 +60,27 @@ public class ChatInputHandler {
             e.getPlayer().sendMessage(Component.text("Name set to: ", NamedTextColor.GRAY)
                     .append(Component.text(selected.getName(), NamedTextColor.WHITE)));
 
-            openPreviousEditMenu(e.getPlayer());
+            openPreviousEditMenu(TEXT_INPUT_MAP.get(e.getPlayer()));
             e.setCancelled(true);
         }
         TEXT_INPUT_MAP.remove(e.getPlayer());
     }
 
     public void handleRemoveWs(Player player){
-        PrivateWaystone selected = CHAT_CLICK_MAP.get(player);
+        PrivateWaystone selected = CHAT_CLICK_MAP.get(player).getSelected();
         SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
 
         jdbc.remWs(selected);
         CHAT_CLICK_MAP.remove(player);
-        System.out.println("REMOVED WS");
+        TEXT_INPUT_MAP.remove(player);//remove from here as a precaution. You can't edit something that doesn't exist
+        player.sendMessage(Component.text("Waystone had been removed.", NamedTextColor.GREEN));
     }
 
-    private void openPreviousEditMenu(Player player){
-        PrivateWaystone selected = TEXT_INPUT_MAP.get(player);
+    private void openPreviousEditMenu(EditMenu editMenu){
 
         if(Bukkit.isPrimaryThread()){
             System.out.println("PRIMARY THREAD!!");
-            new EditMenu(playerMenuUtility, selected).open();
+            editMenu.open();
         }
         else{
             System.out.println("NOT PRIMARY THREAD!!");
@@ -79,7 +93,7 @@ public class ChatInputHandler {
                     // Perform the synchronous operation
 
                     //Reopen the Edit menu
-                    new EditMenu(playerMenuUtility, selected).open();
+                    editMenu.open();
 
                     // When the operation is complete, count down the latch
                     latch.countDown();
@@ -96,20 +110,20 @@ public class ChatInputHandler {
     }
 
     public void removePlayerFromTextMap(Player player){
-        openPreviousEditMenu(player);
+        openPreviousEditMenu(TEXT_INPUT_MAP.get(player));
         TEXT_INPUT_MAP.remove(player);
     }
 
     public void removePlayerFromChatClickMap(Player player){
-        openPreviousEditMenu(player);
+        openPreviousEditMenu(CHAT_CLICK_MAP.get(player));
         CHAT_CLICK_MAP.remove(player);
     }
 
-    public HashMap<Player, PrivateWaystone> getTextInputMap(){//Get the map when needed
+    public HashMap<Player, EditMenu> getTextInputMap(){//Get the map when needed
         return TEXT_INPUT_MAP;
     }
 
-    public HashMap<Player, PrivateWaystone> getChatClickMap(){
+    public HashMap<Player, EditMenu> getChatClickMap(){
         return CHAT_CLICK_MAP;
     }
 

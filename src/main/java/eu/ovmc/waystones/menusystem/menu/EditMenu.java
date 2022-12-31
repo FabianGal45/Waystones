@@ -45,7 +45,7 @@ public class EditMenu extends Menu {
 
         if(currentItem.equals(Material.NAME_TAG)){ // Change name of waystone
             ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
-            chatInputHandler.addPlayerToTextMap(playerMenuUtility, player, selected); //pass the player to be added to the list and the menu to be oppened later
+            chatInputHandler.addPlayerToTextMap(player,this); //pass the player to be added to the list and the menu to be oppened later
 
             player.sendMessage(Component.text("Enter new name: ", NamedTextColor.GRAY)
                     .append(Component.text(" [X]", NamedTextColor.DARK_RED).decorate(TextDecoration.BOLD)
@@ -56,7 +56,7 @@ public class EditMenu extends Menu {
         }
         else if(currentItem.equals(Material.REDSTONE_BLOCK)){
             ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
-            chatInputHandler.addPlayerToChatClickMap(player, selected);
+            chatInputHandler.addPlayerToChatClickMap(player, this);
 
             player.sendMessage(Component.text("You or anyone else will not be able to teleport or use this waystone.", NamedTextColor.RED));
 
@@ -140,5 +140,10 @@ public class EditMenu extends Menu {
             blackPanel.setItemMeta(bpMeta);
             inventory.setItem(i, blackPanel);
         }
+    }
+
+
+    public PrivateWaystone getSelected() {
+        return selected;
     }
 }
