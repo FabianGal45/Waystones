@@ -63,6 +63,14 @@ public class SQLiteJDBC {
                     " FOREIGN KEY (owner)" +
                     "  REFERENCES users(uuid))";
             stmt.executeUpdate(sql);
+            sql = "CREATE TABLE IF NOT EXISTS ratings " +  //Creates the public_waystones table
+                    "(public_waystone VARCHAR(255)," +
+                    " player_uuid VARCHAR(255)," +
+                    " player_name VARCHAR(255)," +
+                    " rate INT(255)," +
+                    " FOREIGN KEY (public_waystone)" +
+                    "  REFERENCES public_waystones(location))";
+            stmt.executeUpdate(sql);
             stmt.close();
 
             //Prints the table names to console to check if they exist
@@ -107,7 +115,7 @@ public class SQLiteJDBC {
     public void regWaystone(PrivateWaystone ws, User user){
 
         if(ws instanceof PublicWaystone){
-            System.out.println("PUBLIC!!!!!");
+
             try{
                 //Query to insert data into tutorials_data table
                 String query = "INSERT INTO public_waystones (" +
@@ -176,6 +184,98 @@ public class SQLiteJDBC {
         }
     }
 
+    public void regRate(PublicWaystone ws, Player player, int rate){
+        try{
+            //Query to insert data into tutorials_data table
+            String query = "INSERT INTO ratings (" +
+                    "public_waystone,"+
+                    "player_uuid," +
+                    "player_name," +
+                    "rate) VALUES(?, ?, ?, ?)";
+
+            //Creating the preparedStatement object
+            PreparedStatement pstmt = getCon().prepareStatement(query);
+            String playerUUID = String.valueOf(player.getUniqueId());
+
+            pstmt.setString(1, ws.getLocation());
+            pstmt.setString(2, playerUUID);
+            pstmt.setString(3, player.getName());
+            pstmt.setInt(4, rate);
+            pstmt.execute();
+            pstmt.close();
+
+            //Start calculating the final rate based on all entries.
+            ArrayList<Integer> ratesList = getAllRatesForPubWs(ws);
+
+            int a = 0, b = 0, c = 0, d = 0, e = 0, r = ratesList.size();
+            for(Integer i :ratesList){
+                if(i==1){
+                    a++;
+                } else if (i==2){
+                    b++;
+                } else if (i==3) {
+                    c++;
+                } else if (i==4){
+                    d++;
+                } else if (i==5){
+                    e++;
+                }
+            }
+
+            double finalRate = (double)(a+2*b+3*c+4*d+5*e)/r;
+            ws.setRating(finalRate);
+            updateWaystone(ws);
+
+        }catch (Exception e){
+            System.err.println(e.getClass().getName() + ": " + e.getMessage() );
+            System.out.println(e +"Could not register waystone.");
+            System.exit(0);
+        }
+    }
+
+    public boolean checkIfPlayerRated(Player player, PublicWaystone ws){
+        boolean result = false;
+        Statement stmt;
+        try{
+            stmt = getCon().createStatement();
+            String sql = "SELECT * FROM ratings WHERE public_waystone = '"+ ws.getLocation() +"' and player_uuid = '"+ player.getUniqueId() +"';";
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()){
+                result = true;
+            }
+            stmt.close();
+
+        }catch (Exception e){
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.out.println(e +" Failed to check if player has rated before.");
+            System.exit(0);
+        }
+        return result;
+    }
+
+    public ArrayList<Integer> getAllRatesForPubWs(PublicWaystone ws){
+        ArrayList<Integer> arrayList = new ArrayList<>();
+
+        Statement stmt;
+        try{
+            stmt = getCon().createStatement();
+            String sql = "SELECT * FROM ratings WHERE public_waystone = '"+ ws.getLocation() +"';";
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()){
+                arrayList.add(rs.getInt("rate"));
+            }
+
+            stmt.close();
+
+        }catch (Exception e){
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.out.println(e +" Failed to retrieve rate from rates table.");
+            System.exit(0);
+        }
+
+        return arrayList;
+    }
+
 
     public User getUserFromDB(String uuid) {
         Statement stmt;
@@ -208,7 +308,6 @@ public class SQLiteJDBC {
 
     public ArrayList<User> getAllUsersFromDB() {
         Statement stmt;
-//        String uuid = p.getUniqueId().toString();
         User user = null;
         ArrayList<User> userArrayList = new ArrayList<>();
         try{
@@ -305,7 +404,9 @@ public class SQLiteJDBC {
                 ws = new PublicWaystone(rs.getString("location"),
                         rs.getString("owner"),
                         rs.getString("name"),
-                        rs.getString("tp_location"));
+                        rs.getString("tp_location"),
+                        rs.getDouble("rating"),
+                        rs.getInt("cost"));
                 pubWs.add(ws);
             }
 

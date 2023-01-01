@@ -15,9 +15,11 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -94,12 +96,8 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
             if(e.getClick() == ClickType.RIGHT){
                 System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
-                if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
-                    new EditMenu(playerMenuUtility, selected).open();
-                }
-                else{
-                    player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
-                }
+                new EditMenu(playerMenuUtility, selected).open();
+                //TODO: do the check for rates
             }
             else{
                 player.playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, SoundCategory.BLOCKS, 1, 1);
@@ -400,7 +398,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
                 boolean damagedWs = !(blockTop.getType().equals(Material.LODESTONE) && blockUnder.getType().equals(Material.NETHERITE_BLOCK));
 
-                //if this is the waystone he clicked on make it lime green
+                //if this is the waystone he clicked on make it Black Concrete
                 if(playerMenuUtility.getClickedOnWs() != null){
                     if(ws.getLocation().equals(playerMenuUtility.getClickedOnWs().getLocation())){
                         //Creates the LimeConcretePowder block item
@@ -436,8 +434,20 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                     worldName = "Unknown";
                 }
 
+                if(ws.getOwner().equals(playerMenuUtility.getOwner().getUniqueId().toString())){
+                    publicMeta.addEnchant(Enchantment.DAMAGE_ALL,0, true);
+                    publicMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                }
+
                 loreArray.add(Component.text(worldName +": "+ ws.getParsedLocation(ws.getLocation()).getBlockX()+", "+ ws.getParsedLocation(ws.getLocation()).getBlockY()+", "+ws.getParsedLocation(ws.getLocation()).getBlockZ()));
+                User user = WaystonesPlugin.getPlugin().getJdbc().getUserFromDB(ws.getOwner());
+                loreArray.add(Component.text("Owner: "+ user.getUserName()));
+                loreArray.add(Component.text("Rating: "+ ws.getRating()+"/5"));
+                loreArray.add(Component.text("Cost: "+ ws.getCost() + " Diamonds"));
                 publicMeta.lore(loreArray);
+
+
+
 
                 //Stores the index of the waystone from the waystones list into the NBT meta of that file so that it can be identified when clicked.
                 publicMeta.getPersistentDataContainer().set(new NamespacedKey(WaystonesPlugin.getPlugin(), "index"), PersistentDataType.INTEGER, indexPubWs);

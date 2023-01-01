@@ -161,20 +161,26 @@ public class Ws implements CommandExecutor {
             }
             else if (args[0].equals("cancelNameChange")){
                 ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
-                if(chatInputHandler.getTextInputMap().containsKey(player)){
-                    chatInputHandler.removePlayerFromTextMap(player);
+                if(chatInputHandler.getRenameMap().containsKey(player)){
+                    chatInputHandler.removePlayerFromRenameMap(player);
                 }
             }
             else if (args[0].equals("confirmWsRemoval")){
                 ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
-                if(chatInputHandler.getChatClickMap().containsKey(player)){
-                    chatInputHandler.handleRemoveWs(player);
+                if(chatInputHandler.getRemoveMap().containsKey(player)){
+                    chatInputHandler.handleRemove(player);
                 }
             }
             else if(args[0].equals("cancelWsRemoval")){
                 ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
-                if(chatInputHandler.getChatClickMap().containsKey(player)){
-                    chatInputHandler.removePlayerFromChatClickMap(player);
+                if(chatInputHandler.getRemoveMap().containsKey(player)){
+                    chatInputHandler.removePlayerFromRemoveMap(player);
+                }
+            }
+            else if(args[0].equals("cancelCostChange")){
+                ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
+                if(chatInputHandler.getCostMap().containsKey(player)){
+                    chatInputHandler.removePlayerFromCostMap(player);
                 }
             }
             else{

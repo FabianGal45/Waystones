@@ -3,21 +3,21 @@ package eu.ovmc.waystones.waystones;
 public class PublicWaystone extends PrivateWaystone {
 
     private double rating;
-    private double cost;
-    private String category;
+    private int cost;
+//    private String category;
 
     public PublicWaystone(String location, String owner, String name, String tpLocation) {
         super(location, owner, name, tpLocation);
         rating = 0.0;
-        cost = 0.0;
-        category = null;
+        cost = 0;
+//        category = null;
     }
 
-    public PublicWaystone(String location, String owner, String name, String tpLocation, double rating, double cost, String category) {
+    public PublicWaystone(String location, String owner, String name, String tpLocation, double rating, int cost) {
         super(location, owner, name, tpLocation);
         this.rating = rating;
         this.cost = cost;
-        this.category = category;
+//        this.category = category;
     }
 
     public double getRating() {
@@ -28,19 +28,12 @@ public class PublicWaystone extends PrivateWaystone {
         this.rating = rating;
     }
 
-    public double getCost() {
+    public int getCost() {
         return cost;
     }
 
-    public void setCost(double cost) {
+    public void setCost(int cost) {
         this.cost = cost;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
 }
