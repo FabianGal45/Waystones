@@ -3,16 +3,20 @@ package eu.ovmc.waystones.menusystem.menu;
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.database.User;
+import eu.ovmc.waystones.menusystem.ChatInputHandler;
 import eu.ovmc.waystones.menusystem.PaginatedSplitMenu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -28,9 +32,9 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class WaystonesSplitMenu extends PaginatedSplitMenu {
-
 
     public WaystonesSplitMenu(PlayerMenuUtility playerMenuUtility, int page) {
         super(playerMenuUtility, page);
@@ -56,6 +60,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
         ArrayList<PrivateWaystone> privateWaystones = playerMenuUtility.getPrivateWaystones();
         ArrayList<PublicWaystone> publicWaystones = playerMenuUtility.getPublicWaystones();
+        Economy econ = WaystonesPlugin.getEcon();
 
         Material currentItem = e.getCurrentItem().getType();
 
@@ -68,6 +73,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             NamespacedKey namespacedKey = new NamespacedKey(WaystonesPlugin.getPlugin(), "index");
             int index = Objects.requireNonNull(itemMeta.getPersistentDataContainer().get(namespacedKey,PersistentDataType.INTEGER));
             PrivateWaystone selected = privateWaystones.get(index);
+            playerMenuUtility.setSelected(selected);
 
 //            System.out.println(WaystonesPlugin.getPlugin().getDescription().getVersion());
 
@@ -76,6 +82,37 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             }
             else{
                 player.playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, SoundCategory.BLOCKS, 1, 1);
+
+                //Check for nearby players and ask them if they want to be teleported
+
+                Location waystoneLocation = playerMenuUtility.getClickedOnWs().getParsedLocation(playerMenuUtility.getClickedOnWs().getLocation());
+                List<Player> tpaPlayerList = new ArrayList<>();
+                for(Player p : Bukkit.getOnlinePlayers()){
+                    //if in the same world
+                    if(p.getLocation().getWorld().equals(waystoneLocation.getWorld())){
+                        double distance = p.getLocation().distance(waystoneLocation);
+                        if(p != player && p.getWorld() == waystoneLocation.getWorld() &&  distance < 5){
+                            System.out.println("Player Nearby detected!");
+                            System.out.println("Distance: " + distance);
+                            tpaPlayerList.add(p);
+                        }
+                    }
+                }
+
+                ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
+                //if there are nearby players
+                if(tpaPlayerList.size() > 0){
+                    player.sendMessage(Component.text("Do you want to teleport with nearby players? ", NamedTextColor.YELLOW)
+                            .append(Component.text(" [✔] ", NamedTextColor.GREEN).decorate(TextDecoration.BOLD)
+                                    .hoverEvent(HoverEvent.showText(Component.text("Accept")))
+                                    .clickEvent(ClickEvent.runCommand("/ws confirmTpWithOthers")))
+                            .append(Component.text(" [X]", NamedTextColor.DARK_RED).decorate(TextDecoration.BOLD)
+                                    .hoverEvent(HoverEvent.showText(Component.text("Cancel")))
+                                    .clickEvent(ClickEvent.runCommand("/ws cancelTpWithOthers"))));
+                    playerMenuUtility.setTpaList(tpaPlayerList);
+                    chatInputHandler.addToTpaMap(player, playerMenuUtility);
+                }
+
                 Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WaystonesPlugin.getPlugin(), new Runnable() { //add some delay before teleporting
                     @Override
                     public void run() {
@@ -86,7 +123,6 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             }
         }
         else if(currentItem.equals(Material.NETHERITE_BLOCK)){
-            player.sendMessage("You Clicked Netherite block!");
             //Grab the index from the NBT data of the block
             ItemMeta itemMeta = e.getCurrentItem().getItemMeta();
             NamespacedKey namespacedKey = new NamespacedKey(WaystonesPlugin.getPlugin(), "index");
@@ -96,18 +132,56 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
             if(e.getClick() == ClickType.RIGHT){
                 System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
-                new EditMenu(playerMenuUtility, selected).open();
-                //TODO: do the check for rates
+                //if the player is the owner of the PublicWaystone then open the right menu
+                if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
+                    new PublicWaystoneEditMenu(playerMenuUtility, selected).open();
+                }else{
+                    if(!WaystonesPlugin.getPlugin().getJdbc().hasPlayerRated(player,selected)){
+                        new PublicWaystoneRateEditMenu(playerMenuUtility, selected).open();
+                    }else{
+                        player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
+                    }
+                }
             }
             else{
                 player.playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, SoundCategory.BLOCKS, 1, 1);
-                Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WaystonesPlugin.getPlugin(), new Runnable() {
-                    @Override
-                    public void run() {
-                        //safety feature
-                        selected.safeTeleport(player);
+
+                //if the player is not the owner of the waystone make him pay the cost
+                if(!player.getUniqueId().toString().equals(selected.getOwner())){
+                    //pay the cost before teleporting
+                    EconomyResponse withdraw = econ.withdrawPlayer(player,selected.getCost());
+                    OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(selected.getOwner()));
+                    EconomyResponse deposit = econ.depositPlayer(owner, selected.getCost());
+
+                    if(withdraw.transactionSuccess() && deposit.transactionSuccess()){
+                        if(selected.getCost()>0){
+                            player.sendMessage(Component.text("You have paid ", NamedTextColor.GRAY)
+                                    .append(Component.text(selected.getCost() + " Diamonds",NamedTextColor.AQUA))
+                                    .append(Component.text(" to ", NamedTextColor.GRAY))
+                                    .append(Component.text(Objects.requireNonNull(owner.getName()))));
+                        }
+                        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WaystonesPlugin.getPlugin(), new Runnable() {
+                            @Override
+                            public void run() {
+                                //safety feature
+                                selected.safeTeleport(player);
+                            }
+                        },5);
+                    }else{
+                        player.sendMessage(Component.text("You don't have ", NamedTextColor.RED)
+                                .append(Component.text(selected.getCost() + " Diamonds")));
                     }
-                },5);
+                }else{
+                    Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WaystonesPlugin.getPlugin(), new Runnable() {
+                        @Override
+                        public void run() {
+                            //safety feature
+                            selected.safeTeleport(player);
+                        }
+                    },5);
+                }
+
+
             }
 
 
@@ -131,11 +205,25 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
             if(e.getClick() == ClickType.RIGHT){
                 System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
-                if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
-                    new EditMenu(playerMenuUtility, selected).open();
+                //if the player is the owner of the PublicWaystone then open the right menu
+                if(selected instanceof PublicWaystone){
+                    if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
+                        new PublicWaystoneEditMenu(playerMenuUtility, selected).open();
+                    }else{
+                        if(!WaystonesPlugin.getPlugin().getJdbc().hasPlayerRated(player, (PublicWaystone) selected)){
+                            new PublicWaystoneRateEditMenu(playerMenuUtility, selected).open();
+                        }else{
+                            player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
+                        }
+                    }
                 }
                 else{
-                    player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
+                    if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
+                        new EditMenu(playerMenuUtility, selected).open();
+                    }
+                    else{
+                        player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
+                    }
                 }
             }
             else{
@@ -247,6 +335,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
         ArrayList<PrivateWaystone> privateWaystones = playerMenuUtility.getPrivateWaystones();
         ArrayList<PublicWaystone> publicWaystones = playerMenuUtility.getPublicWaystones();
+        Economy econ = WaystonesPlugin.getEcon();
 
         //loop for each slot available to private waystones (7)
         for(int i = 0; i < MAX_PRIVATE; i++) {
@@ -277,7 +366,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                         //if there is still space, add a grey dye
 //                        System.out.println("indexPrivWs: "+ indexPrivWs + " size: "+ privateWaystones.size() + " PU: "+ pu + " allowed: "+user.getAllowedPrivWs());
                         if(indexPrivWs < MAX_PRIVATE*(page+1) && user.getAllowedPrivWs() == indexPrivWs){
-                            Economy econ = WaystonesPlugin.getEcon();
+
                             DecimalFormat formatter = new DecimalFormat("#,###");
 
                             ItemStack grayDye = new ItemStack(Material.GRAY_DYE);
@@ -466,4 +555,5 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
         addMenuPageButtons(publicWaystones.size());
     }
+
 }

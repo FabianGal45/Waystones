@@ -14,6 +14,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.List;
 
 //The Owner of the waystones
 public class PlayerMenuUtility {
@@ -24,6 +25,8 @@ public class PlayerMenuUtility {
     private PrivateWaystone clickedOnWs;//This is the physical waystone a player clicked on
     private User user;
     private VotingPluginUser votingPluginUser;
+    private List<Player> tpaList;
+    private PrivateWaystone selected;
 
     public PlayerMenuUtility(OfflinePlayer owner) {
         this.owner = Bukkit.getPlayer(owner.getUniqueId());
@@ -75,5 +78,21 @@ public class PlayerMenuUtility {
 
     public VotingPluginUser getVotingPluginUser() {
         return votingPluginUser;
+    }
+
+    public List<Player> getTpaList() {
+        return tpaList;
+    }
+
+    public void setTpaList(List<Player> tpaList) {
+        this.tpaList = tpaList;
+    }
+
+    public PrivateWaystone getSelected() {
+        return selected;
+    }
+
+    public void setSelected(PrivateWaystone selected) {
+        this.selected = selected;
     }
 }

@@ -233,7 +233,7 @@ public class SQLiteJDBC {
         }
     }
 
-    public boolean checkIfPlayerRated(Player player, PublicWaystone ws){
+    public boolean hasPlayerRated(Player player, PublicWaystone ws){
         boolean result = false;
         Statement stmt;
         try{

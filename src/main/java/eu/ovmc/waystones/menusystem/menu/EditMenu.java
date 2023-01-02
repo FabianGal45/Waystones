@@ -34,12 +34,7 @@ public class EditMenu extends Menu {
 
     @Override
     public Component getMenuName() {
-        if(playerMenuUtility.getOwner().getUniqueId().toString().equals(selected.getOwner()) || playerMenuUtility.getOwner().hasPermission("waystones.admin")) {
-            return Component.text("Edit: " + selected.getName());
-        }
-        else{
-            return Component.text("Rate: " + selected.getName());
-        }
+        return Component.text("Edit: " + selected.getName());
     }
 
     @Override
@@ -112,66 +107,19 @@ public class EditMenu extends Menu {
         // addToArray(startingLocation)
         // for(items - 1) { addToArray(startingLocation + 2) }
 
-        if(selected instanceof PublicWaystone){ // if the waystone is a public waystone
-            //If the player is the owner of the waystone they are trying to edit
-            if(playerMenuUtility.getOwner().getUniqueId().toString().equals(selected.getOwner()) || playerMenuUtility.getOwner().hasPermission("waystones.admin")){
-                ItemStack nameTag = new ItemStack(Material.NAME_TAG);
-                ItemMeta nameTagMeta = nameTag.getItemMeta();
-                TextComponent ntName = Component.text("Rename");
-                nameTagMeta.displayName(ntName);
-                nameTag.setItemMeta(nameTagMeta);
-                inventory.setItem(11, nameTag);
+        ItemStack nameTag = new ItemStack(Material.NAME_TAG);
+        ItemMeta nameTagMeta = nameTag.getItemMeta();
+        TextComponent ntName = Component.text("Rename");
+        nameTagMeta.displayName(ntName);
+        nameTag.setItemMeta(nameTagMeta);
+        inventory.setItem(12, nameTag);
 
-                ItemStack diamond = new ItemStack(Material.DIAMOND);
-                ItemMeta dMeta = diamond.getItemMeta();
-                TextComponent dName = Component.text("Cost");
-                dMeta.displayName(dName);
-                List<Component> loreArray = new ArrayList<>();
-                loreArray.add(Component.text("Cost: "+ ((PublicWaystone)selected).getCost() + " Diamonds"));
-                dMeta.lore(loreArray);
-                diamond.setItemMeta(dMeta);
-                inventory.setItem(13, diamond);
-
-                ItemStack redstpmeBlock = new ItemStack(Material.REDSTONE_BLOCK);
-                ItemMeta rbMeta = redstpmeBlock.getItemMeta();
-                TextComponent rbName = Component.text("Remove");
-                rbMeta.displayName(rbName);
-                redstpmeBlock.setItemMeta(rbMeta);
-                inventory.setItem(15, redstpmeBlock);
-            }
-            else{
-                for(int i=1;i<=5;i++){
-                    ItemStack star = new ItemStack(Material.NETHER_STAR);
-                    ItemMeta sMeta = star.getItemMeta();
-                    TextComponent sName;
-                    if(i==1){
-                        sName = Component.text(i +" Star");
-                    }
-                    else {
-                        sName = Component.text(i +" Stars");
-                    }
-                    sMeta.displayName(sName);
-                    sMeta.getPersistentDataContainer().set(new NamespacedKey(WaystonesPlugin.getPlugin(), "index"), PersistentDataType.INTEGER, i);
-                    star.setItemMeta(sMeta);
-                    inventory.setItem((10 + i), star);
-                }
-            }
-        }
-        else{ // if the Waystone is a Private waystone
-            ItemStack nameTag = new ItemStack(Material.NAME_TAG);
-            ItemMeta nameTagMeta = nameTag.getItemMeta();
-            TextComponent ntName = Component.text("Rename");
-            nameTagMeta.displayName(ntName);
-            nameTag.setItemMeta(nameTagMeta);
-            inventory.setItem(12, nameTag);
-
-            ItemStack redstoneBlock = new ItemStack(Material.REDSTONE_BLOCK);
-            ItemMeta rbMeta = redstoneBlock.getItemMeta();
-            TextComponent rbName = Component.text("Remove");
-            rbMeta.displayName(rbName);
-            redstoneBlock.setItemMeta(rbMeta);
-            inventory.setItem(14, redstoneBlock);
-        }
+        ItemStack redstoneBlock = new ItemStack(Material.REDSTONE_BLOCK);
+        ItemMeta rbMeta = redstoneBlock.getItemMeta();
+        TextComponent rbName = Component.text("Remove");
+        rbMeta.displayName(rbName);
+        redstoneBlock.setItemMeta(rbMeta);
+        inventory.setItem(14, redstoneBlock);
 
     }
 

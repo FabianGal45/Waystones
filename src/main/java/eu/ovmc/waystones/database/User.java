@@ -34,11 +34,14 @@ public class User {
     public long getCostOfNextWs(){
         int priceMultiplier = WaystonesPlugin.getPlugin().getConfig().getInt("PriceMultiplier");
         int startPrice = WaystonesPlugin.getPlugin().getConfig().getInt("StartPrice");
+        int maxPrice = WaystonesPlugin.getPlugin().getConfig().getInt("MaxPrice");
         long total = 0;
 
         for(int i=0;i<=purchasedPrivateWs; i++){
             if(i==0){
                 total = startPrice;
+            }else if(total>=maxPrice){
+                break;
             }else{
                 total = total*priceMultiplier;
             }

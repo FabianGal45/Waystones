@@ -183,6 +183,30 @@ public class Ws implements CommandExecutor {
                     chatInputHandler.removePlayerFromCostMap(player);
                 }
             }
+            else if(args[0].equals("confirmTpWithOthers")){
+                ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
+                if(chatInputHandler.getTpaMap().containsKey(player)){
+                    chatInputHandler.handleTpa(player);
+                }
+            }
+            else if(args[0].equals("cancelTpWithOthers")){
+                ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
+                if(chatInputHandler.getTpaMap().containsKey(player)){
+                    chatInputHandler.removePlayerFromTpaList(player);
+                }
+            }
+            else if(args[0].equals("confirmTPA")){
+                ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
+                if(chatInputHandler.getTpaAcceptMap().containsKey(player)){
+                    chatInputHandler.handleTpaAccept(player);
+                }
+            }
+            else if(args[0].equals("cancelTPA")){
+                ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
+                if(chatInputHandler.getTpaAcceptMap().containsKey(player)){
+                    chatInputHandler.removePlayerFromTpaAcceptList(player);
+                }
+            }
             else{
                 player.sendMessage(Component.text("This command does not exist", NamedTextColor.DARK_RED));
             }

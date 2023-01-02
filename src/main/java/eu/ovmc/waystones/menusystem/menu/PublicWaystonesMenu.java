@@ -85,10 +85,13 @@ public class PublicWaystonesMenu extends PaginatedMenu {
             if(e.getClick() == ClickType.RIGHT){
                 System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
                 if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
-                    new EditMenu(playerMenuUtility, selected).open();
-                }
-                else{
-                    player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
+                    new PublicWaystoneEditMenu(playerMenuUtility, selected).open();
+                }else{
+                    if(!WaystonesPlugin.getPlugin().getJdbc().hasPlayerRated(player,selected)){
+                        new PublicWaystoneRateEditMenu(playerMenuUtility, selected).open();
+                    }else{
+                        player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
+                    }
                 }
             }
             else{
@@ -112,10 +115,13 @@ public class PublicWaystonesMenu extends PaginatedMenu {
             if(e.getClick() == ClickType.RIGHT){
                 System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
                 if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
-                    new EditMenu(playerMenuUtility, selected).open();
-                }
-                else{
-                    player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
+                    new PublicWaystoneEditMenu(playerMenuUtility, selected).open();
+                }else{
+                    if(!WaystonesPlugin.getPlugin().getJdbc().hasPlayerRated(player,selected)){
+                        new PublicWaystoneRateEditMenu(playerMenuUtility, selected).open();
+                    }else{
+                        player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
+                    }
                 }
             }
             else{
