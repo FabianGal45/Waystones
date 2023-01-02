@@ -54,7 +54,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
-        System.out.println("WaystonesSplitMenu - Thread: "+ Thread.currentThread().getName()+"; "+Thread.currentThread().getName());
+//        System.out.println("WaystonesSplitMenu - Thread: "+ Thread.currentThread().getName()+"; "+Thread.currentThread().getName());
 
         Player player = (Player) e.getWhoClicked();
 
@@ -92,8 +92,8 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                     if(p.getLocation().getWorld().equals(waystoneLocation.getWorld())){
                         double distance = p.getLocation().distance(waystoneLocation);
                         if(p != player && p.getWorld() == waystoneLocation.getWorld() &&  distance < 5){
-                            System.out.println("Player Nearby detected!");
-                            System.out.println("Distance: " + distance);
+//                            System.out.println("Player Nearby detected!");
+//                            System.out.println("Distance: " + distance);
                             tpaPlayerList.add(p);
                         }
                     }
@@ -127,11 +127,11 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             ItemMeta itemMeta = e.getCurrentItem().getItemMeta();
             NamespacedKey namespacedKey = new NamespacedKey(WaystonesPlugin.getPlugin(), "index");
             int index = Objects.requireNonNull(itemMeta.getPersistentDataContainer().get(namespacedKey,PersistentDataType.INTEGER));
-            System.out.println("NBT: index: "+index);
+//            System.out.println("NBT: index: "+index);
             PublicWaystone selected = publicWaystones.get(index);
 
             if(e.getClick() == ClickType.RIGHT){
-                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
+//                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
                 //if the player is the owner of the PublicWaystone then open the right menu
                 if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
                     new PublicWaystoneEditMenu(playerMenuUtility, selected).open();
@@ -280,11 +280,11 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             }
         }
         else if(currentItem.equals(Material.ARROW)){//Make it more precise player can click on any arrow including personal inventory.
-            System.out.println("Next page was selected");
+//            System.out.println("Next page was selected");
             player.playSound(player.getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 1, 2);
 
             User user = playerMenuUtility.getUser();
-            System.out.println(">>>> "+ (user.getAllowedPrivWs())+ " < "+ (MAX_PRIVATE * (page + 1)));
+//            System.out.println(">>>> "+ (user.getAllowedPrivWs())+ " < "+ (MAX_PRIVATE * (page + 1)));
             if(user.getAllowedPrivWs() < (MAX_PRIVATE * (page + 1))){ //get allowed < page max
                 if(adminOpenedMenu == null){ //if this menu has no admin assigned that might have oppened it then run it for the player
                     page = page + 1;
@@ -305,24 +305,24 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             }
 
         }
-        else if (currentItem.equals(Material.RECOVERY_COMPASS)) {
-            User user = playerMenuUtility.getUser();
-            int purchased = user.getPurchasedPrivateWs();
-            int total;
-            SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
-
-            if(e.getClick().isRightClick()){
-                total = purchased +1;
-                user.setPurchasedPrivateWs(total);
-                jdbc.updateUser(user);
-            }else if(e.getClick().isLeftClick()){
-                total = purchased -1;
-                user.setPurchasedPrivateWs(total);
-                jdbc.updateUser(user);
-            }
-
-            super.open();
-        }
+//        else if (currentItem.equals(Material.RECOVERY_COMPASS)) {
+//            User user = playerMenuUtility.getUser();
+//            int purchased = user.getPurchasedPrivateWs();
+//            int total;
+//            SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
+//
+//            if(e.getClick().isRightClick()){
+//                total = purchased +1;
+//                user.setPurchasedPrivateWs(total);
+//                jdbc.updateUser(user);
+//            }else if(e.getClick().isLeftClick()){
+//                total = purchased -1;
+//                user.setPurchasedPrivateWs(total);
+//                jdbc.updateUser(user);
+//            }
+//
+//            super.open();
+//        }
 
 //        super.close();
 

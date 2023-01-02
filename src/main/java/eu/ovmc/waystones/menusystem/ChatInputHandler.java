@@ -102,7 +102,7 @@ public class ChatInputHandler {
         PrivateWaystone selected = ((EditMenu)COST_MAP.get(player)).getSelected();
 
         if(selected instanceof PublicWaystone){
-            System.out.println("Detected a change in price for a Public Waystone");
+//            System.out.println("Detected a change in price for a Public Waystone");
             PublicWaystone selectedPublicWs = (PublicWaystone) selected;
 
             if(isInt(e.getMessage())){
@@ -175,11 +175,11 @@ public class ChatInputHandler {
     private void openPreviousMenu(Menu menu){
 
         if(Bukkit.isPrimaryThread()){
-            System.out.println("PRIMARY THREAD!!");
+//            System.out.println("PRIMARY THREAD!!");
             menu.open();
         }
         else{
-            System.out.println("NOT PRIMARY THREAD!!");
+//            System.out.println("NOT PRIMARY THREAD!!");
             //Running this synchronously & Opening back the edit menu
             //Places this thread on hold which is async, waits for the menu to open on the main thread, then continues back to this thread
             final CountDownLatch latch = new CountDownLatch(1);

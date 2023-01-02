@@ -46,7 +46,7 @@ public abstract class PaginatedMenu extends Menu {
     }
 
     public void addMenuPageButtons(int pubWsSize){
-        System.out.println("pubWsSize: "+ pubWsSize +" " + (pubWsSize - prevIndexPubWs -1 ) + " > "+ (maxPublicWs * (page+1)) );
+//        System.out.println("pubWsSize: "+ pubWsSize +" " + (pubWsSize - prevIndexPubWs -1 ) + " > "+ (maxPublicWs * (page+1)) );
         if(pubWsSize - prevIndexPubWs - 1 > maxPublicWs * (page+1)){
             inventory.setItem(50, makeItem(Material.ARROW, "Next Page"));
         }

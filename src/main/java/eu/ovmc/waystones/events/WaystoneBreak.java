@@ -60,7 +60,7 @@ public class WaystoneBreak implements Listener {
             //if the waystone exists in the database
             else if(jdbc.getWaystone(blockAbove.getLocation().toString()) != null){
                 player.sendMessage("You broke the base of a waystone. Disabling...");
-                System.out.println("Location: "+ blockAbove.getLocation());
+//                System.out.println("Location: "+ blockAbove.getLocation());
                 jdbc.remWs(ws);
             }
         }

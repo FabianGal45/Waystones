@@ -44,7 +44,7 @@ public class EditMenu extends Menu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
-        System.out.println("EditMenu - Thread: "+ Thread.currentThread().getName()+"; "+Thread.currentThread().getName());
+//        System.out.println("EditMenu - Thread: "+ Thread.currentThread().getName()+"; "+Thread.currentThread().getName());
         Player player = (Player) e.getWhoClicked();
         Material currentItem = e.getCurrentItem().getType();
         ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();

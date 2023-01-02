@@ -64,7 +64,7 @@ public class PublicWaystonesMenu extends PaginatedMenu {
             }
         }
         else if(currentItem.equals(Material.ARROW)){//Make it more precise player can click on any arrow including personal inventory.
-            System.out.println("Next page was selected");
+//            System.out.println("Next page was selected");
             player.playSound(player.getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 1, 2);
             page = page + 1;
             if (adminOpenedMenu == null) {
@@ -79,11 +79,11 @@ public class PublicWaystonesMenu extends PaginatedMenu {
             ItemMeta itemMeta = e.getCurrentItem().getItemMeta();
             NamespacedKey namespacedKey = new NamespacedKey(WaystonesPlugin.getPlugin(), "index");
             int index = Objects.requireNonNull(itemMeta.getPersistentDataContainer().get(namespacedKey,PersistentDataType.INTEGER));
-            System.out.println("NBT: index: "+index);
+//            System.out.println("NBT: index: "+index);
             PublicWaystone selected = publicWaystones.get(index);
 
             if(e.getClick() == ClickType.RIGHT){
-                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
+//                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
                 if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
                     new PublicWaystoneEditMenu(playerMenuUtility, selected).open();
                 }else{
@@ -109,11 +109,11 @@ public class PublicWaystonesMenu extends PaginatedMenu {
             ItemMeta itemMeta = e.getCurrentItem().getItemMeta();
             NamespacedKey namespacedKey = new NamespacedKey(WaystonesPlugin.getPlugin(), "index");
             int index = Objects.requireNonNull(itemMeta.getPersistentDataContainer().get(namespacedKey,PersistentDataType.INTEGER));
-            System.out.println("NBT: index: "+index);
+//            System.out.println("NBT: index: "+index);
             PublicWaystone selected = publicWaystones.get(index);
 
             if(e.getClick() == ClickType.RIGHT){
-                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
+//                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
                 if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
                     new PublicWaystoneEditMenu(playerMenuUtility, selected).open();
                 }else{
@@ -148,11 +148,11 @@ public class PublicWaystonesMenu extends PaginatedMenu {
         ArrayList<PublicWaystone> publicWaystones = playerMenuUtility.getPublicWaystones();
 
         for(int i = 0; i < maxPublicWs; i++) {
-            System.out.println("indexPubWs: "+ indexPubWs + " = prevIndexPubWs: "+ prevIndexPubWs+" * page: "+ page + " + i:"+ i);
+//            System.out.println("indexPubWs: "+ indexPubWs + " = prevIndexPubWs: "+ prevIndexPubWs+" * page: "+ page + " + i:"+ i);
             indexPubWs = (maxPublicWs * page) + i + (prevIndexPubWs+1);
-            System.out.println("Index PUB: "+indexPubWs + " Page: "+ page);
+//            System.out.println("Index PUB: "+indexPubWs + " Page: "+ page);
             if(indexPubWs >= publicWaystones.size()){
-                System.out.println("STOP!");
+//                System.out.println("STOP!");
                 indexPubWs--;
                 break;
             }

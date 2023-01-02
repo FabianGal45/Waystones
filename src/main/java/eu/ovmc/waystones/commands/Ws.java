@@ -49,7 +49,7 @@ public class Ws implements CommandExecutor {
                             SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
 
                             if(target.isOnline()){
-                                System.out.println("UUID Online " + target.getUniqueId());
+//                                System.out.println("UUID Online " + target.getUniqueId());
 
                                 PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(target.getPlayer());
                                 User user = playerMenuUtility.getUser();
@@ -91,7 +91,7 @@ public class Ws implements CommandExecutor {
                             SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
 
                             if(target.isOnline()){
-                                System.out.println("UUID Online " + target.getUniqueId());
+//                                System.out.println("UUID Online " + target.getUniqueId());
 
                                 PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(target.getPlayer());
                                 User user = playerMenuUtility.getUser();
@@ -222,7 +222,7 @@ public class Ws implements CommandExecutor {
                         SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
 
                         if (target.isOnline()) {
-                            System.out.println("UUID Online " + target.getUniqueId());
+//                            System.out.println("UUID Online " + target.getUniqueId());
 
                             PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(target.getPlayer());
                             User user = playerMenuUtility.getUser();
@@ -263,7 +263,7 @@ public class Ws implements CommandExecutor {
                         SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
 
                         if (target.isOnline()) {
-                            System.out.println("UUID Online " + target.getUniqueId());
+//                            System.out.println("UUID Online " + target.getUniqueId());
 
                             PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(target.getPlayer());
                             User user = playerMenuUtility.getUser();
@@ -306,7 +306,7 @@ public class Ws implements CommandExecutor {
                         SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
 
                         if(target.isOnline()){
-                            System.out.println("UUID Online " + target.getUniqueId());
+//                            System.out.println("UUID Online " + target.getUniqueId());
 
                             PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(target.getPlayer());
                             User user = playerMenuUtility.getUser();
@@ -353,7 +353,7 @@ public class Ws implements CommandExecutor {
                         SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
 
                         if(target.isOnline()){
-                            System.out.println("UUID Online " + target.getUniqueId());
+//                            System.out.println("UUID Online " + target.getUniqueId());
 
                             PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(target.getPlayer());
                             User user = playerMenuUtility.getUser();

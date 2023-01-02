@@ -163,7 +163,7 @@ public class SQLiteJDBC {
                 String location = ws.getLocation();
                 String owner = ws.getOwner();
                 String name = ws.getName();
-                System.out.println("Reg - TP loc: "+ws.getTpLocation());
+//                System.out.println("Reg - TP loc: "+ws.getTpLocation());
                 String tpLocation = ws.getTpLocation();
 
                 pstmt.setString(1, location);
@@ -437,7 +437,7 @@ public class SQLiteJDBC {
                     " SET private_ws = " + privateCount + ", public_ws = "+ publicCount +  ", purchased_private_ws = "+ purchasedPrivateWs + ", acquired_private_ws = " + acquiredPrivateWs +", acquired_public_ws = " + acquiredPublicWs +
                     " WHERE uuid = '" + user.getUuid() +"'";
             stmt.executeUpdate(sql);
-            System.out.println("User "+ user.getUuid() +" updated!");
+//            System.out.println("User "+ user.getUuid() +" updated!");
             stmt.close();
         }catch (Exception e){
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -562,7 +562,7 @@ public class SQLiteJDBC {
                 //Delete the waystone
                 sql = "DELETE FROM private_waystones WHERE location = '"+ loc +"'";
                 stmt.executeUpdate(sql);
-                System.out.println("Waystone removed.");
+//                System.out.println("Waystone removed.");
             }
 
             sql = "SELECT * FROM public_waystones WHERE location = '"+ ws.getLocation() +"'";
@@ -574,7 +574,7 @@ public class SQLiteJDBC {
                 //Delete the waystone
                 sql = "DELETE FROM public_waystones WHERE location = '"+ loc +"'";
                 stmt.executeUpdate(sql);
-                System.out.println("Waystone removed.");
+//                System.out.println("Waystone removed.");
             }
 
 

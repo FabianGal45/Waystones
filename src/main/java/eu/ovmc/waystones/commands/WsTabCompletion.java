@@ -37,7 +37,7 @@ public class WsTabCompletion implements TabCompleter {
 //            for(int i = 0; i < players.length; i++){
 //                playerNames.add(players[i].getName());
 //            }
-                System.out.println("Arg 0: "+args[0]);
+//                System.out.println("Arg 0: "+args[0]);
 
                 //adding the users that are registered in the database
                 SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
@@ -51,7 +51,7 @@ public class WsTabCompletion implements TabCompleter {
             else if(args[0].equals("add") && args.length == 2){
                 List<String> arguments = new ArrayList<>();
 
-                System.out.println("Arg 0: "+args[0]);
+//                System.out.println("Arg 0: "+args[0]);
                 arguments.add("private");
                 arguments.add("public");
 

@@ -37,7 +37,7 @@ public abstract class Menu implements InventoryHolder {
     public abstract void setMenuItems();
 
     public void open(){
-        System.out.println("Menu - Thread: "+ Thread.currentThread().getName()+"; "+Thread.currentThread().getName());
+//        System.out.println("Menu - Thread: "+ Thread.currentThread().getName()+"; "+Thread.currentThread().getName());
         inventory = Bukkit.createInventory(this, getSlots(), getMenuName());
 
         this.setMenuItems();
