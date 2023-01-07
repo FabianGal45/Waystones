@@ -28,6 +28,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import javax.naming.Name;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -371,25 +372,33 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
                             ItemStack grayDye = new ItemStack(Material.GRAY_DYE);
                             ItemMeta grayMeta = grayDye.getItemMeta();
-                            grayMeta.displayName(Component.text("Buy more").color(NamedTextColor.GRAY));
+                            grayMeta.displayName(Component.text("Buy more").color(NamedTextColor.WHITE));
                             List<Component> loreArray = new ArrayList<>();
 
                             double discount = user.getDiscount(playerMenuUtility);
 
                             if(discount>0){
-                                Component oldPrice = Component.text(formatter.format(user.getCostOfNextWs()),NamedTextColor.RED).decoration(TextDecoration.STRIKETHROUGH, true);
-                                Component newPrice = Component.text(" "+econ.format(Math.round(user.getCostOfNextWs() * (1-discount))), NamedTextColor.WHITE).decoration(TextDecoration.STRIKETHROUGH, false);
+                                Component discountComp = Component.text("-" +Math.round(discount*100)+"% ",NamedTextColor.AQUA);
 
-                                loreArray.add(Component.text("Cost: ", NamedTextColor.GRAY).decoration(TextDecoration.STRIKETHROUGH,false)
+                                Component oldPrice = Component.text(formatter.format(user.getCostOfNextWs()),NamedTextColor.DARK_GRAY)
+                                        .decoration(TextDecoration.STRIKETHROUGH, true);
+
+                                Component newPrice = Component.text(" "+econ.format(Math.round(user.getCostOfNextWs() * (1-discount))), NamedTextColor.AQUA)
+                                        .decoration(TextDecoration.STRIKETHROUGH, false);
+
+                                Component displayWithDiscount = Component.text("Cost: ",NamedTextColor.GRAY)
+                                        .append(discountComp)
                                         .append(oldPrice)
-                                        .append(newPrice));
-                                loreArray.add(Component.text("Discount: ",NamedTextColor.GRAY).append(Component.text(Math.round(discount*100)+"%",NamedTextColor.WHITE)));
+                                        .append(newPrice);
+
+                                loreArray.add(displayWithDiscount);
                             }
                             else{
-                                loreArray.add(Component.text("Cost: ", NamedTextColor.GRAY).append(Component.text(econ.format(user.getCostOfNextWs()), NamedTextColor.WHITE)));
+                                loreArray.add(Component.text("Cost: ", NamedTextColor.GRAY)
+                                        .append(Component.text(econ.format(user.getCostOfNextWs()), NamedTextColor.WHITE)));
                             }
                             loreArray.add(Component.text(""));
-                            loreArray.add(Component.text("1 vote = 1% discount", NamedTextColor.GRAY));
+                            loreArray.add(Component.text("1 Vote = 1 Point = 1% Discount", NamedTextColor.DARK_GRAY));
                             loreArray.add(Component.text("Balance: ", NamedTextColor.DARK_GRAY).append(Component.text(econ.format(econ.getBalance(playerMenuUtility.getOwner())), NamedTextColor.DARK_GRAY)));
                             grayMeta.lore(loreArray);
                             grayDye.setItemMeta(grayMeta);
@@ -454,9 +463,21 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                 else{
                     worldName = "Unknown";
                 }
+                Component location = Component.text(worldName +": ", NamedTextColor.DARK_PURPLE)
+                        .append(Component.text(ws.getParsedLocation(ws.getLocation()).getBlockX()+", "+ ws.getParsedLocation(ws.getLocation()).getBlockY()+", "+ws.getParsedLocation(ws.getLocation()).getBlockZ(), NamedTextColor.LIGHT_PURPLE));
 
+                Component blank = Component.text("");
 
-                loreArray.add(Component.text(worldName +": "+ ws.getParsedLocation(ws.getLocation()).getBlockX()+", "+ ws.getParsedLocation(ws.getLocation()).getBlockY()+", "+ws.getParsedLocation(ws.getLocation()).getBlockZ()));
+                Component lClick = Component.text("L-Click: ", NamedTextColor.DARK_GRAY)
+                        .append(Component.text("Teleport", NamedTextColor.GRAY));
+
+                Component rClick = Component.text("R-Click: ", NamedTextColor.DARK_GRAY)
+                        .append(Component.text("Edit", NamedTextColor.GRAY));
+
+                loreArray.add(location);
+                loreArray.add(blank);
+                loreArray.add(lClick);
+                loreArray.add(rClick);
                 ptivateWsMeta.lore(loreArray);
 
                 //Stores the index of the waystone from the waystones list into the NBT meta of that file so that it can be identified when clicked.
@@ -486,6 +507,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                 Block blockUnder = ws.getParsedLocation(ws.getLocation()).subtract(0.0,1.0,0.0).getBlock();
 
                 boolean damagedWs = !(blockTop.getType().equals(Material.LODESTONE) && blockUnder.getType().equals(Material.NETHERITE_BLOCK));
+                int cost = ws.getCost();
 
                 //if this is the waystone he clicked on make it Black Concrete
                 if(playerMenuUtility.getClickedOnWs() != null){
@@ -528,11 +550,49 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                     publicMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 }
 
-                loreArray.add(Component.text(worldName +": "+ ws.getParsedLocation(ws.getLocation()).getBlockX()+", "+ ws.getParsedLocation(ws.getLocation()).getBlockY()+", "+ws.getParsedLocation(ws.getLocation()).getBlockZ()));
                 User user = WaystonesPlugin.getPlugin().getJdbc().getUserFromDB(ws.getOwner());
-                loreArray.add(Component.text("Owner: "+ user.getUserName()));
-                loreArray.add(Component.text("Rating: "+ ws.getRating()+"/5"));
-                loreArray.add(Component.text("Cost: "+ ws.getCost() + " Diamonds"));
+                Component location =Component.text(worldName +": ",NamedTextColor.DARK_PURPLE)
+                        .append(Component.text(ws.getParsedLocation(ws.getLocation()).getBlockX()+", "+ ws.getParsedLocation(ws.getLocation()).getBlockY()+", "+ws.getParsedLocation(ws.getLocation()).getBlockZ(), NamedTextColor.LIGHT_PURPLE));
+                Component owner = Component.text("Owner: ", NamedTextColor.DARK_PURPLE)
+                        .append(Component.text(user.getUserName(), NamedTextColor.LIGHT_PURPLE));
+                Component rating = Component.text("Rating: ",NamedTextColor.DARK_PURPLE)
+                        .append(Component.text(ws.getRating(), NamedTextColor.LIGHT_PURPLE)
+                                .append(Component.text("/",NamedTextColor.DARK_PURPLE))
+                                .append(Component.text("5",NamedTextColor.LIGHT_PURPLE)));
+                Component costComp = Component.text("Cost: ",NamedTextColor.DARK_PURPLE)
+                        .append(Component.text(econ.format(ws.getCost()),NamedTextColor.AQUA));
+                Component blank = Component.text("");
+
+                //Todo: consider if the player has to pay if not owner/ rate if not admin / edit the menu
+                Component lClick;
+                if(cost>0 && !playerMenuUtility.getUser().getUuid().equals(ws.getOwner())){
+                    lClick = Component.text("L-Click: ", NamedTextColor.DARK_GRAY)
+                            .append(Component.text("Pay & Teleport", NamedTextColor.GRAY));
+                }else{
+                    lClick = Component.text("L-Click: ", NamedTextColor.DARK_GRAY)
+                            .append(Component.text("Teleport", NamedTextColor.GRAY));
+                }
+
+                Component rClick;
+                if(ws.getOwner().equals(playerMenuUtility.getUser().getUuid()) || playerMenuUtility.getOwner().hasPermission("waystones.admin")){
+                    rClick = Component.text("R-Click: ", NamedTextColor.DARK_GRAY)
+                            .append(Component.text("Edit", NamedTextColor.GRAY));
+                }else{
+                    rClick = Component.text("R-Click: ", NamedTextColor.DARK_GRAY)
+                            .append(Component.text("Rate", NamedTextColor.GRAY));
+
+                }
+
+                loreArray.add(location);
+                loreArray.add(owner);
+                loreArray.add(rating);
+                if(cost>0){
+                    loreArray.add(costComp);
+                }
+                loreArray.add(blank);
+                loreArray.add(lClick);
+                loreArray.add(rClick);
+
                 publicMeta.lore(loreArray);
 
 
