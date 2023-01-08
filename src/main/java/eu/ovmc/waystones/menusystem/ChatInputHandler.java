@@ -23,41 +23,34 @@ import java.util.concurrent.CountDownLatch;
 public class ChatInputHandler {
     //This class will be handling all utility classes for all chat request-response needs
 
-    private static final HashMap<Player, Menu> RENAME_MAP = new HashMap<>();
-    private static final HashMap<Player, Menu> REMOVE_MAP = new HashMap<>();
-    private static final HashMap<Player, Menu> COST_MAP = new HashMap<>();
+    private static final HashMap<Player, PlayerMenuUtility> RENAME_MAP = new HashMap<>();
+    private static final HashMap<Player, PlayerMenuUtility> REMOVE_MAP = new HashMap<>();
+    private static final HashMap<Player, PlayerMenuUtility> COST_MAP = new HashMap<>();
     private static final HashMap<Player, PlayerMenuUtility> TPA_LIST = new HashMap<>();
     private static final HashMap<Player, PlayerMenuUtility> TPA_ACCEPT_LIST = new HashMap<>(); //the player teleporting / The initiator
     SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
 
-    public void addToRenameMap(Player player, Menu menu){
-        RENAME_MAP.put(player, menu);
+    public void addToRenameMap(Player player, PlayerMenuUtility playerMenuUtility){
+        RENAME_MAP.put(player, playerMenuUtility);
         startCountdown(RENAME_MAP,player,1200);
     }
 
-    public void addToRemoveMap(Player player, Menu menu){
-        REMOVE_MAP.put(player, menu);
+    public void addToRemoveMap(Player player, PlayerMenuUtility playerMenuUtility){
+        REMOVE_MAP.put(player, playerMenuUtility);
         startCountdown(REMOVE_MAP, player,1200);
     }
 
-    public void addToCostMap(Player player ,Menu menu){
-        COST_MAP.put(player, menu);
+    public void addToCostMap(Player player ,PlayerMenuUtility playerMenuUtility){
+        COST_MAP.put(player, playerMenuUtility);
         startCountdown(COST_MAP,player,1200);
     }
 
     public void addToTpaMap(Player player, PlayerMenuUtility playerMenuUtility){
         TPA_LIST.put(player, playerMenuUtility);
-
-        //Personalized startCountdown()
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WaystonesPlugin.getPlugin(), new Runnable() {
-            @Override
-            public void run() {
-                TPA_LIST.remove(player);
-            }
-        },300);//run after 60 seconds
+        startCountdown(TPA_LIST, player, 300);
     }
 
-    private void startCountdown(HashMap<Player, Menu> hashMap, Player player, int delay){
+    private void startCountdown(HashMap<Player, PlayerMenuUtility> hashMap, Player player, int delay){
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WaystonesPlugin.getPlugin(), new Runnable() {
             @Override
             public void run() {
@@ -68,7 +61,7 @@ public class ChatInputHandler {
 
     public void handleRename(AsyncPlayerChatEvent e){
         //Rename the waystone
-        PrivateWaystone selected = ((EditMenu) RENAME_MAP.get(e.getPlayer())).getSelected();
+        PrivateWaystone selected = (RENAME_MAP.get(e.getPlayer())).getSelected();
 
         //Set the name of the waystone with the input from player
         selected.setName(e.getMessage());
@@ -81,14 +74,15 @@ public class ChatInputHandler {
             e.getPlayer().sendMessage(Component.text("Name set to: ", NamedTextColor.GRAY)
                     .append(Component.text(selected.getName(), NamedTextColor.WHITE)));
 
-            openPreviousMenu(RENAME_MAP.get(e.getPlayer()));
+//            openPreviousMenu(RENAME_MAP.get(e.getPlayer()));
+            openSplitMenu(RENAME_MAP.get(e.getPlayer()));
             e.setCancelled(true);
         }
         RENAME_MAP.remove(e.getPlayer());
     }
 
     public void handleRemove(Player player){
-        PrivateWaystone selected = ((EditMenu) REMOVE_MAP.get(player)).getSelected();
+        PrivateWaystone selected = (REMOVE_MAP.get(player)).getSelected();
 
         jdbc.remWs(selected);
         REMOVE_MAP.remove(player);
@@ -99,7 +93,7 @@ public class ChatInputHandler {
 
     public void handleCost(AsyncPlayerChatEvent e){
         Player player = e.getPlayer();
-        PrivateWaystone selected = ((EditMenu)COST_MAP.get(player)).getSelected();
+        PrivateWaystone selected = (COST_MAP.get(player)).getSelected();
 
         if(selected instanceof PublicWaystone){
 //            System.out.println("Detected a change in price for a Public Waystone");
@@ -110,7 +104,7 @@ public class ChatInputHandler {
             }else{
                 player.sendMessage(Component.text("That was not a number that can be used. Try again", NamedTextColor.DARK_RED));
             }
-            openPreviousMenu(COST_MAP.get(player));
+            openSplitMenu(COST_MAP.get(player));
             e.setCancelled(true);
         }
         else {
@@ -142,15 +136,7 @@ public class ChatInputHandler {
         }
 
         //After 15 seconds remove all players from this request from the TPA_Accept list
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WaystonesPlugin.getPlugin(), new Runnable() {
-            @Override
-            public void run() {
-                for(Player p : playerList){
-                    TPA_ACCEPT_LIST.remove(p);
-                }
-            }
-        },300);//run after 60 seconds
-
+        startCountdown(TPA_ACCEPT_LIST, player, 300);
 
         player.sendMessage(Component.text("A request has been sent to all nearby players.", NamedTextColor.YELLOW));
         TPA_LIST.remove(player);
@@ -205,18 +191,50 @@ public class ChatInputHandler {
 
     }
 
+    private void openSplitMenu(PlayerMenuUtility playerMenuUtility){
+        if(Bukkit.isPrimaryThread()){
+//            System.out.println("PRIMARY THREAD!!");
+            new WaystonesSplitMenu(playerMenuUtility, 0).open();
+        }
+        else{
+//            System.out.println("NOT PRIMARY THREAD!!");
+            //Running this synchronously & Opening back the edit menu
+            //Places this thread on hold which is async, waits for the menu to open on the main thread, then continues back to this thread
+            final CountDownLatch latch = new CountDownLatch(1);
+            Bukkit.getScheduler().runTask(WaystonesPlugin.getPlugin(), new Runnable() {
+                @Override
+                public void run() {
+                    // Perform the synchronous operation
+
+                    //Reopen a Split menu
+                    new WaystonesSplitMenu(playerMenuUtility, 0).open();
+
+                    // When the operation is complete, count down the latch
+                    latch.countDown();
+                }
+            });
+            try {
+                // Wait for the latch to reach zero
+                latch.await();
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+    }
+
     public void removePlayerFromRenameMap(Player player){
-        openPreviousMenu(RENAME_MAP.get(player));
+        openSplitMenu(RENAME_MAP.get(player));
         RENAME_MAP.remove(player);
     }
 
     public void removePlayerFromRemoveMap(Player player){
-        openPreviousMenu(REMOVE_MAP.get(player));
+        openSplitMenu(REMOVE_MAP.get(player));
         REMOVE_MAP.remove(player);
     }
 
     public void removePlayerFromCostMap(Player player){
-        openPreviousMenu(COST_MAP.get(player));
+        openSplitMenu(COST_MAP.get(player));
         COST_MAP.remove(player);
     }
 
@@ -228,15 +246,15 @@ public class ChatInputHandler {
         TPA_ACCEPT_LIST.remove(player);
     }
 
-    public HashMap<Player, Menu> getRenameMap(){//Get the map when needed
+    public HashMap<Player, PlayerMenuUtility> getRenameMap(){//Get the map when needed
         return RENAME_MAP;
     }
 
-    public HashMap<Player, Menu> getRemoveMap(){
+    public HashMap<Player, PlayerMenuUtility> getRemoveMap(){
         return REMOVE_MAP;
     }
 
-    public HashMap<Player, Menu> getCostMap(){
+    public HashMap<Player, PlayerMenuUtility> getCostMap(){
         return COST_MAP;
     }
 

@@ -563,7 +563,6 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                         .append(Component.text(econ.format(ws.getCost()),NamedTextColor.AQUA));
                 Component blank = Component.text("");
 
-                //Todo: consider if the player has to pay if not owner/ rate if not admin / edit the menu
                 Component lClick;
                 if(cost>0 && !playerMenuUtility.getUser().getUuid().equals(ws.getOwner())){
                     lClick = Component.text("L-Click: ", NamedTextColor.DARK_GRAY)

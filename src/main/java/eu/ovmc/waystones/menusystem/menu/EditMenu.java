@@ -51,7 +51,9 @@ public class EditMenu extends Menu {
 //        SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
 
         if(currentItem.equals(Material.NAME_TAG)){ // Change name of waystone
-            chatInputHandler.addToRenameMap(player,this); //pass the player to be added to the list and the menu to be oppened later
+
+            playerMenuUtility.setSelected(selected);
+            chatInputHandler.addToRenameMap(player,playerMenuUtility); //pass the player to be added to the list and the menu to be oppened later
 
             player.sendMessage(Component.text("Enter new name: ", NamedTextColor.GRAY)
                     .append(Component.text(" [X]", NamedTextColor.DARK_RED).decorate(TextDecoration.BOLD)
@@ -61,7 +63,8 @@ public class EditMenu extends Menu {
             inventory.close();
         }
         else if(currentItem.equals(Material.REDSTONE_BLOCK)){
-            chatInputHandler.addToRemoveMap(player, this);
+            playerMenuUtility.setSelected(selected);
+            chatInputHandler.addToRemoveMap(player, playerMenuUtility);
 
             player.sendMessage(Component.text("You or anyone else will not be able to teleport or use this waystone.", NamedTextColor.RED));
 
@@ -76,7 +79,8 @@ public class EditMenu extends Menu {
             inventory.close();
         }
         else if(currentItem.equals(Material.DIAMOND)){
-            chatInputHandler.addToCostMap(player,this);
+            playerMenuUtility.setSelected(selected);
+            chatInputHandler.addToCostMap(player,playerMenuUtility);
 
             player.sendMessage(Component.text("Enter a price: ", NamedTextColor.GRAY)
                     .append(Component.text(" [X]", NamedTextColor.DARK_RED).decorate(TextDecoration.BOLD)
