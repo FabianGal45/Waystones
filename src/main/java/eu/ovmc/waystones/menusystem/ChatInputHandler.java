@@ -2,7 +2,6 @@ package eu.ovmc.waystones.menusystem;
 
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.SQLiteJDBC;
-import eu.ovmc.waystones.menusystem.menu.EditMenu;
 import eu.ovmc.waystones.menusystem.menu.WaystonesSplitMenu;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.waystones.PublicWaystone;
@@ -12,10 +11,10 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -75,7 +74,7 @@ public class ChatInputHandler {
                     .append(Component.text(selected.getName(), NamedTextColor.WHITE)));
 
 //            openPreviousMenu(RENAME_MAP.get(e.getPlayer()));
-            openSplitMenu(RENAME_MAP.get(e.getPlayer()));
+            openSplitMenuOnThread(e.getPlayer(), RENAME_MAP.get(e.getPlayer()));
             e.setCancelled(true);
         }
         RENAME_MAP.remove(e.getPlayer());
@@ -101,10 +100,12 @@ public class ChatInputHandler {
 
             if(isInt(e.getMessage())){
                 selectedPublicWs.setCost(Integer.parseInt(e.getMessage()));
+                player.sendMessage(Component.text("Cost set to: ", NamedTextColor.GRAY)
+                        .append(Component.text(e.getMessage(), NamedTextColor.WHITE)));
             }else{
                 player.sendMessage(Component.text("That was not a number that can be used. Try again", NamedTextColor.DARK_RED));
             }
-            openSplitMenu(COST_MAP.get(player));
+            openSplitMenuOnThread(e.getPlayer(), COST_MAP.get(player));
             e.setCancelled(true);
         }
         else {
@@ -191,10 +192,9 @@ public class ChatInputHandler {
 
     }
 
-    private void openSplitMenu(PlayerMenuUtility playerMenuUtility){
+    private void openSplitMenuOnThread(Player player, PlayerMenuUtility playerMenuUtility){
         if(Bukkit.isPrimaryThread()){
-//            System.out.println("PRIMARY THREAD!!");
-            new WaystonesSplitMenu(playerMenuUtility, 0).open();
+            openSplitMenu(player, playerMenuUtility);
         }
         else{
 //            System.out.println("NOT PRIMARY THREAD!!");
@@ -207,7 +207,7 @@ public class ChatInputHandler {
                     // Perform the synchronous operation
 
                     //Reopen a Split menu
-                    new WaystonesSplitMenu(playerMenuUtility, 0).open();
+                    openSplitMenu(player, playerMenuUtility);
 
                     // When the operation is complete, count down the latch
                     latch.countDown();
@@ -223,18 +223,26 @@ public class ChatInputHandler {
 
     }
 
+    private void openSplitMenu(Player player, PlayerMenuUtility playerMenuUtility){
+        Location clickedOnLocation = playerMenuUtility.getClickedOnWs().getParsedLocation(playerMenuUtility.getClickedOnWs().getLocation());
+        System.out.println("player: "+player.getLocation()+ " selected: " + clickedOnLocation + " Distance: "+ player.getLocation().distance(clickedOnLocation));
+        if(player.getLocation().distance(clickedOnLocation)<=5){
+            new WaystonesSplitMenu(playerMenuUtility, 0).open();
+        }
+    }
+
     public void removePlayerFromRenameMap(Player player){
-        openSplitMenu(RENAME_MAP.get(player));
+        openSplitMenuOnThread(player, RENAME_MAP.get(player));
         RENAME_MAP.remove(player);
     }
 
     public void removePlayerFromRemoveMap(Player player){
-        openSplitMenu(REMOVE_MAP.get(player));
+        openSplitMenuOnThread(player, REMOVE_MAP.get(player));
         REMOVE_MAP.remove(player);
     }
 
     public void removePlayerFromCostMap(Player player){
-        openSplitMenu(COST_MAP.get(player));
+        openSplitMenuOnThread(player, COST_MAP.get(player));
         COST_MAP.remove(player);
     }
 

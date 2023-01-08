@@ -92,7 +92,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                     //if in the same world
                     if(p.getLocation().getWorld().equals(waystoneLocation.getWorld())){
                         double distance = p.getLocation().distance(waystoneLocation);
-                        if(p != player && p.getWorld() == waystoneLocation.getWorld() &&  distance < 5){
+                        if(p != player && p.getWorld() == waystoneLocation.getWorld() &&  distance <= 5){
 //                            System.out.println("Player Nearby detected!");
 //                            System.out.println("Distance: " + distance);
                             tpaPlayerList.add(p);
