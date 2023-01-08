@@ -459,7 +459,7 @@ public class SQLiteJDBC {
 
                 PreparedStatement pstmt = getCon().prepareStatement(sql);
                 pstmt.setString(1, ws.getName());
-                pstmt.setString(2, ws.getLocation());
+                pstmt.setString(2, ws.getTpLocation());
                 pstmt.setDouble(3, ((PublicWaystone) ws).getCost());
                 pstmt.setDouble(4, ((PublicWaystone) ws).getRating());
                 pstmt.setString(5, ws.getLocation());

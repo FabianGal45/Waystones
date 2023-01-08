@@ -131,8 +131,9 @@ public class PrivateWaystone {
     private boolean isSpaceAbove(Location loc){
         Material above1 = loc.add(0.0,1.0,0.0).getBlock().getType();
         Material above2 = loc.add(0.0,2.0,0.0).getBlock().getType();
+        boolean spaceAbove = above1.equals(Material.AIR) && above2.equals(Material.AIR);
 
-        return above1.equals(Material.AIR) && above2.equals(Material.AIR);
+        return spaceAbove;
     }
 
     public String getTpLocation() {
