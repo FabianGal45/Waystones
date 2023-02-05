@@ -15,11 +15,14 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-//The Owner of the waystones
+//The owner of the waystone/menu
 public class PlayerMenuUtility {
 
     private Player owner;
+    private UUID ownerUUID;
+    private boolean isAdmin;
     private ArrayList<PrivateWaystone> privateWaystones;
     private ArrayList<PublicWaystone> publicWaystones;
     private PrivateWaystone clickedOnWs;//This is the physical waystone a player clicked on
@@ -28,12 +31,24 @@ public class PlayerMenuUtility {
     private List<Player> tpaList;
     private PrivateWaystone selected;
 
-    public PlayerMenuUtility(OfflinePlayer owner) {
-        this.owner = Bukkit.getPlayer(owner.getUniqueId());
+    public PlayerMenuUtility(OfflinePlayer offlineOwner) {
+        this.owner = Bukkit.getPlayer(offlineOwner.getUniqueId());
+        checkPlayerIsAdmin();
+        this.ownerUUID = offlineOwner.getUniqueId();
         SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
-        this.privateWaystones = jdbc.getAllPrivateWaystones(owner.getUniqueId().toString());
-        this.user = jdbc.getUserFromDB(owner.getUniqueId().toString());
-        votingPluginUser = new VotingPluginUser(VotingPluginMain.getPlugin(), new AdvancedCoreUser(AdvancedCorePlugin.getInstance(), owner.getUniqueId()));
+        this.privateWaystones = jdbc.getAllPrivateWaystones(ownerUUID.toString());
+        this.user = jdbc.getUserFromDB(ownerUUID.toString());
+        votingPluginUser = new VotingPluginUser(VotingPluginMain.getPlugin(), new AdvancedCoreUser(AdvancedCorePlugin.getInstance(), offlineOwner.getUniqueId()));
+    }
+
+    private void checkPlayerIsAdmin(){
+        if(owner != null){
+            if(owner.hasPermission("waystones.admin")){
+                isAdmin=true;
+            }else{
+                isAdmin=false;
+            }
+        }
     }
 
     public PrivateWaystone getClickedOnWs() {
@@ -94,5 +109,13 @@ public class PlayerMenuUtility {
 
     public void setSelected(PrivateWaystone selected) {
         this.selected = selected;
+    }
+
+    public UUID getOwnerUUID() {
+        return ownerUUID;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
     }
 }

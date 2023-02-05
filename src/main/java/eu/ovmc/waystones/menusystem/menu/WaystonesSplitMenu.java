@@ -43,9 +43,14 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
     @Override
     public Component getMenuName() {
-        String ownerUUID = playerMenuUtility.getClickedOnWs().getOwner();
-        User user = WaystonesPlugin.getPlugin().getJdbc().getUserFromDB(ownerUUID);
-        return Component.text( user.getUserName()+ "'s Waystone"); //todo fix this with openAs
+        if(playerMenuUtility.getClickedOnWs() != null){
+            String waystoneOwnerUUid = playerMenuUtility.getClickedOnWs().getOwner();
+            User user = WaystonesPlugin.getPlugin().getJdbc().getUserFromDB(waystoneOwnerUUid);
+            return Component.text( user.getUserName()+ "'s Waystone"); //todo fix this with openAs
+        }else{
+            return Component.text("OPEN AS");
+        }
+
     }
 
     @Override
@@ -79,48 +84,54 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 //            System.out.println(WaystonesPlugin.getPlugin().getDescription().getVersion());
 
             if(e.getClick() == ClickType.RIGHT){
-                new EditMenu(playerMenuUtility, selected).open();
+                if(playerMenuUtility.getOwner() != null){
+                    new EditMenu(playerMenuUtility, selected).open();
+                }
+                else{
+                    new EditMenu(playerMenuUtility, selected).openAs(adminOpenedMenu);
+                }
+
             }
             else{
-                player.playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, SoundCategory.BLOCKS, 1, 1);
-
-                //Check for nearby players and ask them if they want to be teleported
-
-                Location waystoneLocation = playerMenuUtility.getClickedOnWs().getParsedLocation(playerMenuUtility.getClickedOnWs().getLocation());
-                List<Player> tpaPlayerList = new ArrayList<>();
-                for(Player p : Bukkit.getOnlinePlayers()){
-                    //if in the same world
-                    if(p.getLocation().getWorld().equals(waystoneLocation.getWorld())){
-                        double distance = p.getLocation().distance(waystoneLocation);
-                        if(p != player && p.getWorld() == waystoneLocation.getWorld() &&  distance <= 5){
-//                            System.out.println("Player Nearby detected!");
-//                            System.out.println("Distance: " + distance);
-                            tpaPlayerList.add(p);
+                if(playerMenuUtility.getClickedOnWs() != null) {
+                    //Check for nearby players and ask them if they want to be teleported
+                    Location waystoneLocation = playerMenuUtility.getClickedOnWs().getParsedLocation(playerMenuUtility.getClickedOnWs().getLocation());
+                    List<Player> tpaPlayerList = new ArrayList<>();
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        //if in the same world
+                        if (p.getLocation().getWorld().equals(waystoneLocation.getWorld())) {
+                            double distance = p.getLocation().distance(waystoneLocation);
+                            if (p != player && p.getWorld() == waystoneLocation.getWorld() && distance <= 5) {
+                                //                            System.out.println("Player Nearby detected!");
+                                //                            System.out.println("Distance: " + distance);
+                                tpaPlayerList.add(p);
+                            }
                         }
+                    }
+
+                    ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
+                    //if there are nearby players
+                    if (tpaPlayerList.size() > 0) {
+                        player.sendMessage(Component.text("Do you want to teleport with nearby players? ", NamedTextColor.YELLOW)
+                                .append(Component.text(" [✔] ", NamedTextColor.GREEN).decorate(TextDecoration.BOLD)
+                                        .hoverEvent(HoverEvent.showText(Component.text("Accept")))
+                                        .clickEvent(ClickEvent.runCommand("/ws confirmTpWithOthers")))
+                                .append(Component.text(" [X]", NamedTextColor.DARK_RED).decorate(TextDecoration.BOLD)
+                                        .hoverEvent(HoverEvent.showText(Component.text("Cancel")))
+                                        .clickEvent(ClickEvent.runCommand("/ws cancelTpWithOthers"))));
+                        playerMenuUtility.setTpaList(tpaPlayerList);
+                        chatInputHandler.addToTpaMap(player, playerMenuUtility);
                     }
                 }
 
-                ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
-                //if there are nearby players
-                if(tpaPlayerList.size() > 0){
-                    player.sendMessage(Component.text("Do you want to teleport with nearby players? ", NamedTextColor.YELLOW)
-                            .append(Component.text(" [✔] ", NamedTextColor.GREEN).decorate(TextDecoration.BOLD)
-                                    .hoverEvent(HoverEvent.showText(Component.text("Accept")))
-                                    .clickEvent(ClickEvent.runCommand("/ws confirmTpWithOthers")))
-                            .append(Component.text(" [X]", NamedTextColor.DARK_RED).decorate(TextDecoration.BOLD)
-                                    .hoverEvent(HoverEvent.showText(Component.text("Cancel")))
-                                    .clickEvent(ClickEvent.runCommand("/ws cancelTpWithOthers"))));
-                    playerMenuUtility.setTpaList(tpaPlayerList);
-                    chatInputHandler.addToTpaMap(player, playerMenuUtility);
-                }
-
+                player.playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, SoundCategory.BLOCKS, 1, 1);
                 Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WaystonesPlugin.getPlugin(), new Runnable() { //add some delay before teleporting
                     @Override
                     public void run() {
                         //safety feature
                         selected.safeTeleport(player);
                     }
-                },5);
+                }, 5);
             }
         }
         else if(currentItem.equals(Material.NETHERITE_BLOCK)){
@@ -425,7 +436,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
                 boolean damagedWs = !(blockTop.getType().equals(Material.LODESTONE) && blockUnder.getType().equals(Material.EMERALD_BLOCK));
 
-                //if this is the waystone he openned the menu from on make it lime green
+                //if this is the waystone he opened the menu from, make it lime green
                 if(playerMenuUtility.getClickedOnWs() != null){
                     if(ws.getLocation().equals(playerMenuUtility.getClickedOnWs().getLocation())){
                         //Creates the LimeConcretePowder block item
@@ -545,7 +556,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                     worldName = "Unknown";
                 }
 
-                if(ws.getOwner().equals(playerMenuUtility.getOwner().getUniqueId().toString())){
+                if(ws.getOwner().equals(playerMenuUtility.getOwnerUUID().toString())){
                     publicMeta.addEnchant(Enchantment.DAMAGE_ALL,0, true);
                     publicMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 }
@@ -573,7 +584,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                 }
 
                 Component rClick;
-                if(ws.getOwner().equals(playerMenuUtility.getUser().getUuid()) || playerMenuUtility.getOwner().hasPermission("waystones.admin")){
+                if(ws.getOwner().equals(playerMenuUtility.getOwnerUUID().toString()) || playerMenuUtility.isAdmin()){
                     rClick = Component.text("R-Click: ", NamedTextColor.DARK_GRAY)
                             .append(Component.text("Edit", NamedTextColor.GRAY));
                 }else{

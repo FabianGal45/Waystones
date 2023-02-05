@@ -34,7 +34,7 @@ public abstract class PaginatedSplitMenu extends Menu {
 
     public void addMenuBorder(){
 
-        inventory.setItem(49, makeItem(Material.RECOVERY_COMPASS, "Death location"));
+        inventory.setItem(49, makeItem(Material.RECOVERY_COMPASS, "Death location", "Coming soon..."));
 
         for(Integer blankSlot : blankSlots) {
             ItemStack blackPanel = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
