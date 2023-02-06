@@ -2,6 +2,13 @@ package eu.ovmc.waystones.waystones;
 
 import com.google.gson.stream.JsonToken;
 import eu.ovmc.waystones.WaystonesPlugin;
+import eu.ovmc.waystones.menusystem.ChatInputHandler;
+import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -53,7 +60,7 @@ public class PrivateWaystone {
         return loc;
     }
 
-    public void safeTeleport(Player player){
+    public void safeTeleport(Player player, PlayerMenuUtility playerMenuUtility){
 
         //Teleports player above the selected waystone
         Location loc = null;
@@ -112,9 +119,22 @@ public class PrivateWaystone {
         }
         else{
             player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
-            player.sendMessage("This teleportation is unsafe!");
+            WaystonesPlugin.getPlugin().getChatInputHandler().addToUnsafeTPMap(player,playerMenuUtility);
+            player.sendMessage(Component.text("This teleportation is unsafe!", NamedTextColor.RED)
+                    .append(Component.text(" [✔] ", NamedTextColor.GREEN).decorate(TextDecoration.BOLD)
+                            .hoverEvent(HoverEvent.showText(Component.text("Accept and teleport anyways")))
+                            .clickEvent(ClickEvent.runCommand("/ws acceptUnsafeTP")))
+                    .append(Component.text(" [X]", NamedTextColor.DARK_RED).decorate(TextDecoration.BOLD)
+                            .hoverEvent(HoverEvent.showText(Component.text("Cancel")))
+                            .clickEvent(ClickEvent.runCommand("/ws cancelUnsafeTP"))));
         }
 
+    }
+
+    public void unsafeTeleport(Player player){
+        Location loc = getParsedLocation(tpLocation);
+        player.teleportAsync(loc);
+        player.playSound(loc, Sound.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.BLOCKS, 1,1);
     }
 
     private double centerCoordinate(double n){

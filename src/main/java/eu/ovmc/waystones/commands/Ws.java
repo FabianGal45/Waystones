@@ -40,6 +40,21 @@ public class Ws implements CommandExecutor {
                     player.sendMessage(Component.text("Something went wrong when purchasing a waystone", NamedTextColor.RED)); //This might never be triggered
                 }
             }
+            else if (args[0].equals("acceptUnsafeTP")) {
+                System.out.println("Command Triggered");
+                ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
+                System.out.println("ChatInputHandler: "+chatInputHandler.getUnsafeTPMap());
+                if(chatInputHandler.getUnsafeTPMap().containsKey(player)){
+                    System.out.println("Player is inside the HashMap");
+                    chatInputHandler.handleUnsafeTPAccept(player);
+                }
+            }
+            else if (args[0].equals("cancelUnsafeTP")){
+                ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
+                if(chatInputHandler.getUnsafeTPMap().containsKey(player)){
+                    chatInputHandler.removePlayerFromUnsafeTPList(player);
+                }
+            }
             else if (args[0].equals("add")) {
                 if(player.hasPermission("waystones.admin")){
                     if(args[1].equals("public")){

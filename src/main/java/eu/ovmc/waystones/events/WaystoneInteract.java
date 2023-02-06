@@ -29,7 +29,7 @@ public class WaystoneInteract implements Listener {
         // Ignoring this event if player does not click on a block https://www.spigotmc.org/threads/errors-with-playerinteractevent-and-nameable.390258/
         if (e.getClickedBlock() == null) return;
 
-        //If right clicked a LODESTONE
+        //If right-clicked a LODESTONE
         if(e.getClickedBlock().getType().equals(Material.LODESTONE) && action.equals(Action.RIGHT_CLICK_BLOCK) && !e.getPlayer().isSneaking()){
 //            System.out.println("WaystonesInteract - Thread: "+ Thread.currentThread().getName()+"; "+Thread.currentThread().getName());
 

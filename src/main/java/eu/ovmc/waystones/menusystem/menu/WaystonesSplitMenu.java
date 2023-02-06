@@ -113,7 +113,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                     //if there are nearby players
                     if (tpaPlayerList.size() > 0) {
                         player.sendMessage(Component.text("Do you want to teleport with nearby players? ", NamedTextColor.YELLOW)
-                                .append(Component.text(" [✔] ", NamedTextColor.GREEN).decorate(TextDecoration.BOLD)
+                                .append(Component.text(" [✔]", NamedTextColor.GREEN).decorate(TextDecoration.BOLD)
                                         .hoverEvent(HoverEvent.showText(Component.text("Accept")))
                                         .clickEvent(ClickEvent.runCommand("/ws confirmTpWithOthers")))
                                 .append(Component.text(" [X]", NamedTextColor.DARK_RED).decorate(TextDecoration.BOLD)
@@ -129,7 +129,8 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                     @Override
                     public void run() {
                         //safety feature
-                        selected.safeTeleport(player);
+                        selected.safeTeleport(player, playerMenuUtility);
+                        inventory.close();
                     }
                 }, 5);
             }
@@ -176,7 +177,8 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                             @Override
                             public void run() {
                                 //safety feature
-                                selected.safeTeleport(player);
+                                selected.safeTeleport(player, playerMenuUtility);
+                                inventory.close();
                             }
                         },5);
                     }else{
@@ -188,7 +190,8 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                         @Override
                         public void run() {
                             //safety feature
-                            selected.safeTeleport(player);
+                            selected.safeTeleport(player, playerMenuUtility);
+                            inventory.close();
                         }
                     },5);
                 }

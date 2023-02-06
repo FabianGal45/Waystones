@@ -27,6 +27,7 @@ public class ChatInputHandler {
     private static final HashMap<Player, PlayerMenuUtility> COST_MAP = new HashMap<>();
     private static final HashMap<Player, PlayerMenuUtility> TPA_LIST = new HashMap<>();
     private static final HashMap<Player, PlayerMenuUtility> TPA_ACCEPT_LIST = new HashMap<>(); //the player teleporting / The initiator
+    private static final HashMap<Player, PlayerMenuUtility> UNSAFE_TP_LIST = new HashMap<>();
     SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
 
     public void addToRenameMap(Player player, PlayerMenuUtility playerMenuUtility){
@@ -47,6 +48,11 @@ public class ChatInputHandler {
     public void addToTpaMap(Player player, PlayerMenuUtility playerMenuUtility){
         TPA_LIST.put(player, playerMenuUtility);
         startCountdown(TPA_LIST, player, 300);
+    }
+
+    public void addToUnsafeTPMap(Player player, PlayerMenuUtility playerMenuUtility){
+        UNSAFE_TP_LIST.put(player, playerMenuUtility);
+        startCountdown(UNSAFE_TP_LIST, player, 300);
     }
 
     private void startCountdown(HashMap<Player, PlayerMenuUtility> hashMap, Player player, int delay){
@@ -145,8 +151,19 @@ public class ChatInputHandler {
 
     public void handleTpaAccept(Player player){
         PrivateWaystone ws = TPA_ACCEPT_LIST.get(player).getSelected();
-        ws.safeTeleport(player);
+        ws.safeTeleport(player, TPA_ACCEPT_LIST.get(player));
         TPA_ACCEPT_LIST.remove(player);
+    }
+
+    public void handleUnsafeTPAccept(Player player){
+        PrivateWaystone ws = UNSAFE_TP_LIST.get(player).getSelected();
+        PrivateWaystone clickedOnWaystone = UNSAFE_TP_LIST.get(player).getClickedOnWs();
+        System.out.println("WS: "+ ws.getLocation());
+        //if the player is close to the waystone in case they want to kill then quickly tp back by accepting
+        if(player.getLocation().distance(clickedOnWaystone.getParsedLocation(clickedOnWaystone.getLocation())) < 5){
+            ws.unsafeTeleport(player);
+        }
+        UNSAFE_TP_LIST.remove(player);
     }
 
     private boolean isInt(String s){
@@ -253,6 +270,9 @@ public class ChatInputHandler {
     public void removePlayerFromTpaAcceptList(Player player){
         TPA_ACCEPT_LIST.remove(player);
     }
+    public void removePlayerFromUnsafeTPList(Player player){
+        UNSAFE_TP_LIST.remove(player);
+    }
 
     public HashMap<Player, PlayerMenuUtility> getRenameMap(){//Get the map when needed
         return RENAME_MAP;
@@ -272,5 +292,9 @@ public class ChatInputHandler {
 
     public HashMap<Player, PlayerMenuUtility> getTpaAcceptMap(){
         return TPA_ACCEPT_LIST;
+    }
+
+    public HashMap<Player, PlayerMenuUtility> getUnsafeTPMap(){
+        return UNSAFE_TP_LIST;
     }
 }

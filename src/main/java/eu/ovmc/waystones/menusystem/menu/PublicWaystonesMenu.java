@@ -100,7 +100,7 @@ public class PublicWaystonesMenu extends PaginatedMenu {
                     @Override
                     public void run() {
                         //safety feature
-                        selected.safeTeleport(player);
+                        selected.safeTeleport(player, playerMenuUtility);
                     }
                 },5);
             }
