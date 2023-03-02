@@ -24,6 +24,7 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
     private static final Logger log = Logger.getLogger("Minecraft");
     private static Economy econ = null;
+    private static boolean votingPluginInstalled = false;
 
 
 
@@ -33,6 +34,10 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
         getConfig().options().copyDefaults();
         saveDefaultConfig();
         plugin = this;
+
+        if(Bukkit.getServer().getPluginManager().getPlugin("VotingPlugin")!=null){
+            votingPluginInstalled = true;
+        }
 
         //SQLiteJDBC - Connect and create the tables.
         jdbc = new SQLiteJDBC();
@@ -104,6 +109,10 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
     }
     public ChatInputHandler getChatInputHandler() {
         return chatInputHandler;
+    }
+
+    public static boolean isVotingPluginInstalled() {
+        return votingPluginInstalled;
     }
 
     @Override

@@ -412,7 +412,9 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                                         .append(Component.text(econ.format(user.getCostOfNextWs()), NamedTextColor.WHITE)));
                             }
                             loreArray.add(Component.text(""));
-                            loreArray.add(Component.text("1 Vote = 1 Point = 1% Discount", NamedTextColor.DARK_GRAY));
+                            if(Bukkit.getServer().getPluginManager().getPlugin("VotingPlugin")!=null){ // if voting plugin has been installed.
+                                loreArray.add(Component.text("1 Vote = 1 Point = 1% Discount", NamedTextColor.DARK_GRAY));
+                            }
                             loreArray.add(Component.text("Balance: ", NamedTextColor.DARK_GRAY).append(Component.text(econ.format(econ.getBalance(playerMenuUtility.getOwner())), NamedTextColor.DARK_GRAY)));
                             grayMeta.lore(loreArray);
                             grayDye.setItemMeta(grayMeta);

@@ -6,7 +6,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -91,7 +90,15 @@ public class User {
 
     public double getDiscount(PlayerMenuUtility playerMenuUtility) {
         double discount;
-        int totalPoints = playerMenuUtility.getVotingPluginUser().getPoints();
+        int totalPoints;
+
+        //Checks to see if the Voting plugin is not installed.
+        if (!WaystonesPlugin.isVotingPluginInstalled()) {
+            totalPoints = 0;
+        }
+        else{
+            totalPoints = playerMenuUtility.getVotingPluginUser().getPoints();
+        }
 
         int maxDiscount = WaystonesPlugin.getPlugin().getConfig().getInt("MaxDiscount");
         if(totalPoints>0){
@@ -131,7 +138,9 @@ public class User {
             SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
             jdbc.updateUser(this);
 
-            playerMenuUtility.getVotingPluginUser().removePoints((int) (discount*100));
+            if(WaystonesPlugin.isVotingPluginInstalled()){
+                playerMenuUtility.getVotingPluginUser().removePoints((int) (discount*100));
+            }
 
             player.sendMessage(Component.text("You purchased a waystone for ", NamedTextColor.GREEN)
                     .append(Component.text( econ.format(cost), NamedTextColor.GREEN)));

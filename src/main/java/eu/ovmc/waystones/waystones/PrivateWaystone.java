@@ -121,7 +121,7 @@ public class PrivateWaystone {
             player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
             WaystonesPlugin.getPlugin().getChatInputHandler().addToUnsafeTPMap(player,playerMenuUtility);
             player.sendMessage(Component.text("This teleportation is unsafe!", NamedTextColor.RED)
-                    .append(Component.text(" [✔] ", NamedTextColor.GREEN).decorate(TextDecoration.BOLD)
+                    .append(Component.text(" [✔]", NamedTextColor.GREEN).decorate(TextDecoration.BOLD)
                             .hoverEvent(HoverEvent.showText(Component.text("Accept and teleport anyways")))
                             .clickEvent(ClickEvent.runCommand("/ws acceptUnsafeTP")))
                     .append(Component.text(" [X]", NamedTextColor.DARK_RED).decorate(TextDecoration.BOLD)
