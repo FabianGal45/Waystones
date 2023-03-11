@@ -6,7 +6,7 @@
 
     <groupId>eu.ovmc</groupId>
     <artifactId>Waystones</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3-Snapshot</version>
     <packaging>jar</packaging>
 
     <name>Waystones</name>

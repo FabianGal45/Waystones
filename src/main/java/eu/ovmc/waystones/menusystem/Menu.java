@@ -21,7 +21,6 @@ public abstract class Menu implements InventoryHolder {
     protected PlayerMenuUtility playerMenuUtility;
 
     protected Inventory inventory;
-
     protected Player adminOpenedMenu;
 
     public Menu(PlayerMenuUtility playerMenuUtility){

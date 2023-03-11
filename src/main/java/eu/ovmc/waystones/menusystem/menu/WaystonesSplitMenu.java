@@ -1,10 +1,9 @@
 package eu.ovmc.waystones.menusystem.menu;
 
 import eu.ovmc.waystones.WaystonesPlugin;
-import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.menusystem.ChatInputHandler;
-import eu.ovmc.waystones.menusystem.PaginatedSplitMenu;
+import eu.ovmc.waystones.menusystem.PaginatedMenu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.waystones.PublicWaystone;
@@ -29,17 +28,26 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import javax.naming.Name;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
-public class WaystonesSplitMenu extends PaginatedSplitMenu {
+public class WaystonesSplitMenu extends PaginatedMenu {
+
+    private final int MAX_PRIVATE = 7;
+    private final int MAX_PUBLIC = 14;
+    private int indexPubWs = 0;
+    private final ArrayList<Integer> PUBLIC_WS_SLOTS;
+
 
     public WaystonesSplitMenu(PlayerMenuUtility playerMenuUtility, int page) {
         super(playerMenuUtility, page);
+
+        //define new border for the blank slots aside from the default one in PaginatedMenu
+        blankSlots = new ArrayList<>();
+        Collections.addAll(blankSlots, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 35, 36, 44, 45, 46, 47, 48, 50, 51, 52, 53);
+
+        PUBLIC_WS_SLOTS = new ArrayList<>();
+        Collections.addAll(PUBLIC_WS_SLOTS, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43);
     }
 
     @Override
@@ -304,10 +312,10 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
             if(user.getAllowedPrivWs() < (MAX_PRIVATE * (page + 1))){ //get allowed < page max
                 if(adminOpenedMenu == null){ //if this menu has no admin assigned that might have oppened it then run it for the player
                     page = page + 1;
-                    new PublicWaystonesMenu(playerMenuUtility, page, indexPubWs).open();
+                    new PublicWsMenu(playerMenuUtility, page, indexPubWs).open();
                 } else{ //if there is an admin that has oppened this menu then continue openning for the admin
                     page = page + 1;
-                    new PublicWaystonesMenu(playerMenuUtility, page, indexPubWs).openAs(adminOpenedMenu);
+                    new PublicWsMenu(playerMenuUtility, page, indexPubWs).openAs(adminOpenedMenu);
                 }
             }
             else{
@@ -383,10 +391,10 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
         //loop for each slot available to private waystones (7)
         for(int i = 0; i < MAX_PRIVATE; i++) {
-            indexPrivWs = MAX_PRIVATE * page + i;//7*0+1= 1 | 7*0+2= 2 | ... | 7*1+1= 8 | 7*1+2= 9
+            prevIndexWs = MAX_PRIVATE * page + i;//7*0+1= 1 | 7*0+2= 2 | ... | 7*1+1= 8 | 7*1+2= 9
 
             //If finished placing the existing waystones, before running out of space start placing the dyes
-            if(indexPrivWs >= privateWaystones.size()){
+            if(prevIndexWs >= privateWaystones.size()){
                 User user = playerMenuUtility.getUser();
                 int pu = user.getAllowedPrivWs()-privateWaystones.size();//the amount of purchased and unused waystones
 
@@ -394,11 +402,11 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                 for(int j = 0; j< MAX_PRIVATE; j++){
 
                     //the position at which the dye to be placed
-                    int dyePos = indexPrivWs-(MAX_PRIVATE * page)+10;// If there are 5 waystones in the first menu: 5-(7*0)+10 = 15
+                    int dyePos = prevIndexWs -(MAX_PRIVATE * page)+10;// If there are 5 waystones in the first menu: 5-(7*0)+10 = 15
 
                     //if green dye have reached the pu AND the dyePos <= 16 (16 being the last available position in the GUI)
 //                    System.out.println(">>>>>  "+ indexPrivWs +" - " + privateWaystones.size() +" < pu: "+pu);
-                    if(indexPrivWs - privateWaystones.size() < pu && dyePos <= 16){
+                    if(prevIndexWs - privateWaystones.size() < pu && dyePos <= 16){
                         ItemStack limeDye = new ItemStack(Material.LIME_DYE);
                         ItemMeta limeMeta = limeDye.getItemMeta();
                         limeMeta.displayName(Component.text("Available").color(TextColor.fromCSSHexString("#93cf98")).decoration(TextDecoration.ITALIC, false));
@@ -409,7 +417,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                     else{
                         //if there is still space, add a grey dye
 //                        System.out.println("indexPrivWs: "+ indexPrivWs + " size: "+ privateWaystones.size() + " PU: "+ pu + " allowed: "+user.getAllowedPrivWs());
-                        if(indexPrivWs < MAX_PRIVATE*(page+1) && user.getAllowedPrivWs() == indexPrivWs){
+                        if(prevIndexWs < MAX_PRIVATE*(page+1) && user.getAllowedPrivWs() == prevIndexWs){
 
                             DecimalFormat formatter = new DecimalFormat("#,###");
 
@@ -450,18 +458,18 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
 
                             inventory.addItem(grayDye);
-                            indexPrivWs--;
+                            prevIndexWs--;
                         }
 //                        System.out.println("INDEX>>> "+ indexPrivWs);
                         break;
                     }
-                    indexPrivWs++;
+                    prevIndexWs++;
                 }
 //                System.out.println("INDEX>>> "+ indexPrivWs);
                 break; //If the index has reached the number of waystones.
             }
 
-            PrivateWaystone ws = privateWaystones.get(indexPrivWs);
+            PrivateWaystone ws = privateWaystones.get(prevIndexWs);
             if (ws != null){
                 ItemStack privateWs= new ItemStack(Material.EMERALD_BLOCK);
 
@@ -526,7 +534,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                 ptivateWsMeta.lore(loreArray);
 
                 //Stores the index of the waystone from the waystones list into the NBT meta of that file so that it can be identified when clicked.
-                ptivateWsMeta.getPersistentDataContainer().set(new NamespacedKey(WaystonesPlugin.getPlugin(), "index"), PersistentDataType.INTEGER, indexPrivWs);
+                ptivateWsMeta.getPersistentDataContainer().set(new NamespacedKey(WaystonesPlugin.getPlugin(), "index"), PersistentDataType.INTEGER, prevIndexWs);
 
                 //Upates the meta with the provided one
                 privateWs.setItemMeta(ptivateWsMeta);
@@ -649,7 +657,7 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
                 publicWs.setItemMeta(publicMeta);
 
                 //Add the item to the inventory
-                int pos = publicWsSlots.get(i);
+                int pos = PUBLIC_WS_SLOTS.get(i);
                 inventory.setItem(pos, publicWs);
 
             }
@@ -658,6 +666,16 @@ public class WaystonesSplitMenu extends PaginatedSplitMenu {
 
         addCompass(playerMenuUtility);
         addMenuPageButtons(publicWaystones.size());
+    }
+
+    public void addMenuPageButtons(int pubWsSize){
+        if(prevIndexWs + 1 >= MAX_PRIVATE * (page+1) || pubWsSize > MAX_PUBLIC * (page +1)){
+            inventory.setItem(50, makeItem(Material.ARROW, "Next Page"));
+        }
+        if(page != 0){
+            inventory.setItem(48, makeItem(Material.BARRIER, "Back"));
+        }
+
     }
 
 }

@@ -1,7 +1,6 @@
 package eu.ovmc.waystones.events;
 
 import eu.ovmc.waystones.database.User;
-import eu.ovmc.waystones.menusystem.PaginatedMenu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.menusystem.menu.WaystonesSplitMenu;
 import eu.ovmc.waystones.waystones.PublicWaystone;
@@ -10,8 +9,6 @@ import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.WaystonesPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

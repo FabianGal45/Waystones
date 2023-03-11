@@ -1,9 +1,8 @@
 package eu.ovmc.waystones.menusystem.menu;
 
 import eu.ovmc.waystones.WaystonesPlugin;
-import eu.ovmc.waystones.menusystem.PaginatedMenu;
+import eu.ovmc.waystones.menusystem.PaginatedPublicWsMenu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
-import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -21,10 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class PublicWaystonesMenu extends PaginatedMenu {
+public class PublicWsMenu extends PaginatedPublicWsMenu {
 
-
-    public PublicWaystonesMenu(PlayerMenuUtility playerMenuUtility, int page, int prevIndexPubWs) {
+    public PublicWsMenu(PlayerMenuUtility playerMenuUtility, int page, int prevIndexPubWs) {
         super(playerMenuUtility, page, prevIndexPubWs);
     }
 
@@ -149,7 +147,7 @@ public class PublicWaystonesMenu extends PaginatedMenu {
 
         for(int i = 0; i < maxPublicWs; i++) {
 //            System.out.println("indexPubWs: "+ indexPubWs + " = prevIndexPubWs: "+ prevIndexPubWs+" * page: "+ page + " + i:"+ i);
-            indexPubWs = (maxPublicWs * page) + i + (prevIndexPubWs+1);
+            indexPubWs = (maxPublicWs * page) + i + (prevIndexWs +1);
 //            System.out.println("Index PUB: "+indexPubWs + " Page: "+ page);
             if(indexPubWs >= publicWaystones.size()){
 //                System.out.println("STOP!");
