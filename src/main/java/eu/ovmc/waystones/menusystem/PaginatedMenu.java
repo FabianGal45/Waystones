@@ -93,4 +93,6 @@ public abstract class PaginatedMenu extends Menu {
 
         inventory.setItem(49, compassItem);
     }
+
+
 }

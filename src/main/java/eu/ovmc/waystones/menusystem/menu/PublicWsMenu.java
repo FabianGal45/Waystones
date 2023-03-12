@@ -1,7 +1,7 @@
 package eu.ovmc.waystones.menusystem.menu;
 
 import eu.ovmc.waystones.WaystonesPlugin;
-import eu.ovmc.waystones.menusystem.PaginatedPublicWsMenu;
+import eu.ovmc.waystones.menusystem.PaginatedMenu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import net.kyori.adventure.text.Component;
@@ -17,13 +17,23 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class PublicWsMenu extends PaginatedPublicWsMenu {
+public class PublicWsMenu extends PaginatedMenu {
+    private int startingPage;
+    private int maxPublicWs = 28;
+    private int indexPubWs = 0;
+    private ArrayList<Integer> publicWsSlots;
 
     public PublicWsMenu(PlayerMenuUtility playerMenuUtility, int page, int prevIndexPubWs) {
-        super(playerMenuUtility, page, prevIndexPubWs);
+        super(playerMenuUtility, page);
+
+        prevIndexWs = prevIndexPubWs;
+
+        publicWsSlots = new ArrayList<>();
+        Collections.addAll(publicWsSlots, 10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43);
     }
 
     @Override
@@ -214,5 +224,16 @@ public class PublicWsMenu extends PaginatedPublicWsMenu {
         }
 
         addMenuPageButtons(publicWaystones.size());
+    }
+
+    private void addMenuPageButtons(int pubWsSize){
+//        System.out.println("pubWsSize: "+ pubWsSize +" " + (pubWsSize - prevIndexPubWs -1 ) + " > "+ (maxPublicWs * (page+1)) );
+        if(pubWsSize - prevIndexWs - 1 > maxPublicWs * (page+1)){
+            inventory.setItem(50, makeItem(Material.ARROW, "Next Page"));
+        }
+
+        inventory.setItem(48, makeItem(Material.BARRIER, "Back"));
+
+
     }
 }

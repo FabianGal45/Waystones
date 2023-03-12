@@ -668,7 +668,7 @@ public class WaystonesSplitMenu extends PaginatedMenu {
         addMenuPageButtons(publicWaystones.size());
     }
 
-    public void addMenuPageButtons(int pubWsSize){
+    private void addMenuPageButtons(int pubWsSize){
         if(prevIndexWs + 1 >= MAX_PRIVATE * (page+1) || pubWsSize > MAX_PUBLIC * (page +1)){
             inventory.setItem(50, makeItem(Material.ARROW, "Next Page"));
         }
