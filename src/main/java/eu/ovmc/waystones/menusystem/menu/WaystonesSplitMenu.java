@@ -228,25 +228,7 @@ public class WaystonesSplitMenu extends PaginatedMenu {
             if(e.getClick() == ClickType.RIGHT){
                 System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
                 //if the player is the owner of the PublicWaystone then open the right menu
-                if(selected instanceof PublicWaystone){
-                    if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
-                        new PublicWaystoneEditMenu(playerMenuUtility, selected).open();
-                    }else{
-                        if(!WaystonesPlugin.getPlugin().getJdbc().hasPlayerRated(player, (PublicWaystone) selected)){
-                            new PublicWaystoneRateEditMenu(playerMenuUtility, selected).open();
-                        }else{
-                            player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
-                        }
-                    }
-                }
-                else{
-                    if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
-                        new EditMenu(playerMenuUtility, selected).open();
-                    }
-                    else{
-                        player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
-                    }
-                }
+                openEditMenu(player, selected);
             }
             else{
                 player.sendMessage("You are already at this location");
@@ -261,13 +243,21 @@ public class WaystonesSplitMenu extends PaginatedMenu {
             NamespacedKey namespacedKey = new NamespacedKey(WaystonesPlugin.getPlugin(), "index");
             int index = Objects.requireNonNull(itemMeta.getPersistentDataContainer().get(namespacedKey,PersistentDataType.INTEGER));
 
-            if(e.getSlot()>16){
-                PublicWaystone selected = publicWaystones.get(index);
-                player.sendMessage(Component.text("This waystone has been damaged! ("+selected.getParsedLocation(selected.getLocation()).getBlockX()+", "+selected.getParsedLocation(selected.getLocation()).getBlockY()+", "+ selected.getParsedLocation(selected.getLocation()).getBlockZ()+")",
-                        TextColor.fromHexString("#802f45")));
+            PrivateWaystone selected;
+
+            if(e.getSlot()<17){
+                selected = privateWaystones.get(index);
             }
             else{
-                PrivateWaystone selected = privateWaystones.get(index);
+                selected = publicWaystones.get(index);
+            }
+
+            if(e.getClick() == ClickType.RIGHT){
+//                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
+                //if the player is the owner of the PublicWaystone then open the right menu
+                openEditMenu(player, selected);
+            }
+            else{
                 player.sendMessage(Component.text("This waystone has been damaged! ("+selected.getParsedLocation(selected.getLocation()).getBlockX()+", "+selected.getParsedLocation(selected.getLocation()).getBlockY()+", "+ selected.getParsedLocation(selected.getLocation()).getBlockZ()+")",
                         TextColor.fromHexString("#802f45")));
             }
@@ -326,6 +316,28 @@ public class WaystonesSplitMenu extends PaginatedMenu {
                 }
             }
 
+        }
+    }
+
+    private void openEditMenu(Player player, PrivateWaystone selected) {
+        if(selected instanceof PublicWaystone){
+            if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
+                new PublicWaystoneEditMenu(playerMenuUtility, selected).open();
+            }else{
+                if(!WaystonesPlugin.getPlugin().getJdbc().hasPlayerRated(player, (PublicWaystone) selected)){
+                    new PublicWaystoneRateEditMenu(playerMenuUtility, selected).open();
+                }else{
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
+                }
+            }
+        }
+        else{
+            if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
+                new EditMenu(playerMenuUtility, selected).open();
+            }
+            else{
+                player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
+            }
         }
     }
 

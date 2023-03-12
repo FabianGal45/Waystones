@@ -95,15 +95,7 @@ public class PublicWsMenu extends PaginatedMenu {
 
             if(e.getClick() == ClickType.RIGHT){
 //                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
-                if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
-                    new PublicWaystoneEditMenu(playerMenuUtility, selected).open();
-                }else{
-                    if(!WaystonesPlugin.getPlugin().getJdbc().hasPlayerRated(player,selected)){
-                        new PublicWaystoneRateEditMenu(playerMenuUtility, selected).open();
-                    }else{
-                        player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
-                    }
-                }
+                openEditMenu(player, selected);
             }
             else{
                 player.playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, SoundCategory.BLOCKS, 1, 1);
@@ -125,15 +117,7 @@ public class PublicWsMenu extends PaginatedMenu {
 
             if(e.getClick() == ClickType.RIGHT){
 //                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
-                if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
-                    new PublicWaystoneEditMenu(playerMenuUtility, selected).open();
-                }else{
-                    if(!WaystonesPlugin.getPlugin().getJdbc().hasPlayerRated(player,selected)){
-                        new PublicWaystoneRateEditMenu(playerMenuUtility, selected).open();
-                    }else{
-                        player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
-                    }
-                }
+                openEditMenu(player, selected);
             }
             else{
                 player.sendMessage("You are already at this location");
@@ -147,10 +131,30 @@ public class PublicWsMenu extends PaginatedMenu {
             int index = Objects.requireNonNull(itemMeta.getPersistentDataContainer().get(namespacedKey,PersistentDataType.INTEGER));
 
             PublicWaystone selected = publicWaystones.get(index);
-            player.sendMessage(Component.text("This waystone has been damaged! ("+selected.getParsedLocation(selected.getLocation()).getBlockX()+", "+selected.getParsedLocation(selected.getLocation()).getBlockY()+", "+ selected.getParsedLocation(selected.getLocation()).getBlockZ()+")",
-                    TextColor.fromHexString("#802f45")));
+
+            if(e.getClick() == ClickType.RIGHT){
+//                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
+                openEditMenu(player, selected);
+            }
+            else{
+                player.sendMessage(Component.text("This waystone has been damaged! ("+selected.getParsedLocation(selected.getLocation()).getBlockX()+", "+selected.getParsedLocation(selected.getLocation()).getBlockY()+", "+ selected.getParsedLocation(selected.getLocation()).getBlockZ()+")",
+                        TextColor.fromHexString("#802f45")));
+            }
+
         }
 
+    }
+
+    private void openEditMenu(Player player, PublicWaystone selected) {
+        if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
+            new PublicWaystoneEditMenu(playerMenuUtility, selected).open();
+        }else{
+            if(!WaystonesPlugin.getPlugin().getJdbc().hasPlayerRated(player,selected)){
+                new PublicWaystoneRateEditMenu(playerMenuUtility, selected).open();
+            }else{
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
+            }
+        }
     }
 
     @Override
