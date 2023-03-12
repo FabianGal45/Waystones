@@ -61,7 +61,7 @@ public abstract class PaginatedMenu extends Menu {
     @Override
     public void setMenuItems() {}
 
-    public void commonHandlers(InventoryClickEvent e){
+    public void commonMenuHandlers(InventoryClickEvent e){
         System.out.println("Common Handler running!");
         Material currentItem = e.getCurrentItem().getType();
         Player player = (Player) e.getWhoClicked();
@@ -78,7 +78,8 @@ public abstract class PaginatedMenu extends Menu {
                         inventory1.removeItem(new ItemStack(Material.ECHO_SHARD, 1));
                     }
                 } else {
-                    player.sendMessage(Component.text("You haven't died yet. Group hug with creepers?"));
+                    player.sendMessage(Component.text("You haven't died yet. ", NamedTextColor.DARK_RED)
+                            .append(Component.text("Group hug with creepers?", NamedTextColor.RED)));
                 }
             } else {
                 player.sendMessage(Component.text("You need an ", NamedTextColor.DARK_RED)
@@ -112,6 +113,14 @@ public abstract class PaginatedMenu extends Menu {
 
             loreArray.add(Component.text(worldName+": ", NamedTextColor.DARK_PURPLE)
                     .append(Component.text(deathLocation.getBlockX()+", "+deathLocation.getBlockY()+", "+ deathLocation.getBlockZ(),NamedTextColor.LIGHT_PURPLE)));
+            loreArray.add(Component.text(""));
+            loreArray.add(Component.text("Click: ", NamedTextColor.DARK_GRAY)
+                    .append(Component.text("TP to Death Location", NamedTextColor.GRAY)));
+            loreArray.add(Component.text("Cost: ", NamedTextColor.DARK_GRAY)
+                    .append(Component.text("Echo Shard x1", NamedTextColor.GRAY)));
+        }
+        else{
+            loreArray.add(Component.text("You haven't died yet.", NamedTextColor.DARK_PURPLE));
             loreArray.add(Component.text(""));
             loreArray.add(Component.text("Click: ", NamedTextColor.DARK_GRAY)
                     .append(Component.text("TP to Death Location", NamedTextColor.GRAY)));

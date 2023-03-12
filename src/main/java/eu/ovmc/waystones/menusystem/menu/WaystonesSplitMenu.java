@@ -22,7 +22,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -70,7 +69,7 @@ public class WaystonesSplitMenu extends PaginatedMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
-//        System.out.println("WaystonesSplitMenu - Thread: "+ Thread.currentThread().getName()+"; "+Thread.currentThread().getName());
+        commonMenuHandlers(e);
 
         Player player = (Player) e.getWhoClicked();
 
@@ -210,8 +209,6 @@ public class WaystonesSplitMenu extends PaginatedMenu {
             }
 
 
-
-
         }
         else if(currentItem.equals(Material.LIME_CONCRETE) || currentItem.equals(Material.BLACK_CONCRETE)){
             //Grab the index from the NBT data of the block
@@ -329,26 +326,6 @@ public class WaystonesSplitMenu extends PaginatedMenu {
                 }
             }
 
-        }
-        else if (currentItem.equals(Material.RECOVERY_COMPASS)) {
-            Inventory inventory1 = player.getInventory();
-
-            if (inventory1.contains(Material.ECHO_SHARD)) {
-                if (player.getLastDeathLocation() != null) {//if the player has died before
-                    Location loc = WaystonesPlugin.getSafeLocation(player.getLastDeathLocation());
-                    if (loc != null) {//If the place is safe to teleport
-                        player.teleportAsync(loc);
-                        player.playSound(loc, Sound.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.BLOCKS, 1, 1);
-                        inventory1.removeItem(new ItemStack(Material.ECHO_SHARD, 1));
-                    }
-                } else {
-                    player.sendMessage(Component.text("You haven't died yet. Group hug with creepers?"));
-                }
-            } else {
-                player.sendMessage(Component.text("You need an ", NamedTextColor.DARK_RED)
-                        .append(Component.text("Echo Shard ", NamedTextColor.RED)
-                                .append(Component.text("to teleport.", NamedTextColor.DARK_RED))));
-            }
         }
     }
 

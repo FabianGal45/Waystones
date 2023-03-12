@@ -27,8 +27,6 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
     private static Economy econ = null;
     private static boolean votingPluginInstalled = false;
 
-
-
     @Override
     public void onEnable() {
         //Configuration File

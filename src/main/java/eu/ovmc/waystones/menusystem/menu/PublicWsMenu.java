@@ -50,7 +50,7 @@ public class PublicWsMenu extends PaginatedMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
-        commonHandlers(e);
+        commonMenuHandlers(e);
 
         Player player = (Player) e.getWhoClicked();
         ArrayList<PublicWaystone> publicWaystones = playerMenuUtility.getPublicWaystones();
