@@ -17,7 +17,7 @@ import java.util.List;
 
 public abstract class PaginatedMenu extends Menu {
 
-    protected int page = 0 ;
+    protected int page;
     protected int prevIndexWs;
     protected ArrayList<Integer> blankSlots;
 

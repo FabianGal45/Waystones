@@ -27,8 +27,12 @@ public class PublicWsMenu extends PaginatedMenu {
     private int indexPubWs = 0;
     private ArrayList<Integer> publicWsSlots;
 
-    public PublicWsMenu(PlayerMenuUtility playerMenuUtility, int page, int prevIndexPubWs) {
-        super(playerMenuUtility, page);
+    public PublicWsMenu(PlayerMenuUtility playerMenuUtility, int startingPage, int prevIndexPubWs) {
+        super(playerMenuUtility, startingPage);
+
+        System.out.println(">>>> Page: "+ page +"; StartingPage: "+startingPage);
+
+        this.startingPage = startingPage;
 
         prevIndexWs = prevIndexPubWs;
 
