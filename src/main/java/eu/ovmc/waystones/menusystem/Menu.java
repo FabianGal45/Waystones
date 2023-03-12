@@ -21,7 +21,7 @@ public abstract class Menu implements InventoryHolder {
     protected PlayerMenuUtility playerMenuUtility;
 
     protected Inventory inventory;
-    protected Player adminOpenedMenu;
+    protected Player oppenedByAdmin;
 
     public Menu(PlayerMenuUtility playerMenuUtility){
         this.playerMenuUtility = playerMenuUtility;
@@ -49,7 +49,7 @@ public abstract class Menu implements InventoryHolder {
 
         this.setMenuItems();
 
-        adminOpenedMenu = player;
+        oppenedByAdmin = player;
 
         player.openInventory(inventory);
     }

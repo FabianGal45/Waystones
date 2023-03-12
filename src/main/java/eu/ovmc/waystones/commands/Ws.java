@@ -3,7 +3,7 @@ package eu.ovmc.waystones.commands;
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.database.User;
-import eu.ovmc.waystones.menusystem.ChatInputHandler;
+import eu.ovmc.waystones.events.ChatInputHandler;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.menusystem.menu.WaystonesSplitMenu;
 import net.kyori.adventure.text.Component;

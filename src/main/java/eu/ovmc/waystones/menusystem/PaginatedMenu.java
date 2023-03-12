@@ -1,13 +1,17 @@
 package eu.ovmc.waystones.menusystem;
 
+import eu.ovmc.waystones.WaystonesPlugin;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -18,7 +22,6 @@ import java.util.List;
 public abstract class PaginatedMenu extends Menu {
 
     protected int page;
-    protected int prevIndexWs;
     protected ArrayList<Integer> blankSlots;
 
 
@@ -27,7 +30,7 @@ public abstract class PaginatedMenu extends Menu {
         this.page = page;
 
         blankSlots = new ArrayList<>();
-        Collections.addAll(blankSlots, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 35, 36, 44, 45, 46, 47, 48, 50, 51, 52, 53);
+        Collections.addAll(blankSlots, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 50, 51, 52, 53);
     }
 
     public void addMenuBorder(){
@@ -57,6 +60,33 @@ public abstract class PaginatedMenu extends Menu {
 
     @Override
     public void setMenuItems() {}
+
+    public void commonHandlers(InventoryClickEvent e){
+        System.out.println("Common Handler running!");
+        Material currentItem = e.getCurrentItem().getType();
+        Player player = (Player) e.getWhoClicked();
+
+        if (currentItem.equals(Material.RECOVERY_COMPASS)) {
+            Inventory inventory1 = player.getInventory();
+
+            if (inventory1.contains(Material.ECHO_SHARD)) {
+                if (player.getLastDeathLocation() != null) {//if the player has died before
+                    Location loc = WaystonesPlugin.getSafeLocation(player.getLastDeathLocation());
+                    if (loc != null) {//If the place is safe to teleport
+                        player.teleportAsync(loc);
+                        player.playSound(loc, Sound.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.BLOCKS, 1, 1);
+                        inventory1.removeItem(new ItemStack(Material.ECHO_SHARD, 1));
+                    }
+                } else {
+                    player.sendMessage(Component.text("You haven't died yet. Group hug with creepers?"));
+                }
+            } else {
+                player.sendMessage(Component.text("You need an ", NamedTextColor.DARK_RED)
+                        .append(Component.text("Echo Shard ", NamedTextColor.RED)
+                                .append(Component.text("to teleport.", NamedTextColor.DARK_RED))));
+            }
+        }
+    }
 
     public void addCompass(PlayerMenuUtility playerMenuUtility){
         Player player = playerMenuUtility.getOwner();

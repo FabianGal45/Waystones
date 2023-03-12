@@ -1,7 +1,7 @@
 package eu.ovmc.waystones.menusystem.menu;
 
 import eu.ovmc.waystones.WaystonesPlugin;
-import eu.ovmc.waystones.menusystem.ChatInputHandler;
+import eu.ovmc.waystones.events.ChatInputHandler;
 import eu.ovmc.waystones.menusystem.Menu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
@@ -20,8 +20,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class EditMenu extends Menu {

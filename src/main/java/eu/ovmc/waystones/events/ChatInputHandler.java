@@ -1,7 +1,9 @@
-package eu.ovmc.waystones.menusystem;
+package eu.ovmc.waystones.events;
 
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.SQLiteJDBC;
+import eu.ovmc.waystones.menusystem.Menu;
+import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.menusystem.menu.WaystonesSplitMenu;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.waystones.PublicWaystone;

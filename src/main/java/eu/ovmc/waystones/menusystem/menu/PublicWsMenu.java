@@ -9,9 +9,11 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -22,19 +24,15 @@ import java.util.List;
 import java.util.Objects;
 
 public class PublicWsMenu extends PaginatedMenu {
-    private int startingPage;
-    private int maxPublicWs = 28;
+    private final int MAX_PUBLIC_WS = 28;
     private int indexPubWs = 0;
     private ArrayList<Integer> publicWsSlots;
+    private int carriedIndexPubWs;
 
-    public PublicWsMenu(PlayerMenuUtility playerMenuUtility, int startingPage, int prevIndexPubWs) {
-        super(playerMenuUtility, startingPage);
+    public PublicWsMenu(PlayerMenuUtility playerMenuUtility, int page, int carriedIndexPubWs) {
+        super(playerMenuUtility, page);
 
-        System.out.println(">>>> Page: "+ page +"; StartingPage: "+startingPage);
-
-        this.startingPage = startingPage;
-
-        prevIndexWs = prevIndexPubWs;
+        this.carriedIndexPubWs = carriedIndexPubWs;
 
         publicWsSlots = new ArrayList<>();
         Collections.addAll(publicWsSlots, 10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43);
@@ -52,26 +50,28 @@ public class PublicWsMenu extends PaginatedMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
+        commonHandlers(e);
+
         Player player = (Player) e.getWhoClicked();
         ArrayList<PublicWaystone> publicWaystones = playerMenuUtility.getPublicWaystones();
         Material currentItem = e.getCurrentItem().getType();
 
         if(currentItem.equals(Material.BARRIER)){
             player.playSound(player.getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 1, 2);
-            if(page == 0){
-                if(adminOpenedMenu == null){
-                    new WaystonesSplitMenu(playerMenuUtility, startingPage-1).open();
+            if(page == 1){
+                if(oppenedByAdmin == null){
+                    new WaystonesSplitMenu(playerMenuUtility, 0).open();
                 }else{
-                    new WaystonesSplitMenu(playerMenuUtility, startingPage-1).openAs(adminOpenedMenu);
+                    new WaystonesSplitMenu(playerMenuUtility, 0).openAs(oppenedByAdmin);
                 }
             }
             else{
-                if(adminOpenedMenu == null){
+                if(oppenedByAdmin == null){
                     page = page - 1;
                     super.open();
                 }else{
                     page = page - 1;
-                    super.openAs(adminOpenedMenu);
+                    super.openAs(oppenedByAdmin);
                 }
             }
         }
@@ -79,14 +79,13 @@ public class PublicWsMenu extends PaginatedMenu {
 //            System.out.println("Next page was selected");
             player.playSound(player.getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 1, 2);
             page = page + 1;
-            if (adminOpenedMenu == null) {
+            if (oppenedByAdmin == null) {
                 super.open();
             }else{
-                super.openAs(adminOpenedMenu);
+                super.openAs(oppenedByAdmin);
             }
         }
         else if(currentItem.equals(Material.NETHERITE_BLOCK)){
-            player.sendMessage("You Clicked Netherite block!");
             //Grab the index from the NBT data of the block
             ItemMeta itemMeta = e.getCurrentItem().getItemMeta();
             NamespacedKey namespacedKey = new NamespacedKey(WaystonesPlugin.getPlugin(), "index");
@@ -159,15 +158,16 @@ public class PublicWsMenu extends PaginatedMenu {
         addMenuBorder();
         ArrayList<PublicWaystone> publicWaystones = playerMenuUtility.getPublicWaystones();
 
-        for(int i = 0; i < maxPublicWs; i++) {
-//            System.out.println("indexPubWs: "+ indexPubWs + " = prevIndexPubWs: "+ prevIndexPubWs+" * page: "+ page + " + i:"+ i);
-            indexPubWs = (maxPublicWs * page) + i + (prevIndexWs +1);
-//            System.out.println("Index PUB: "+indexPubWs + " Page: "+ page);
+        for(int i = 0; i < MAX_PUBLIC_WS; i++) {
+            indexPubWs = (MAX_PUBLIC_WS * page) + i - (carriedIndexPubWs + 1); // (28*1)+0+(0+1)=29 | (28*1)+1+(0+1)=30 | (28*1)+2+(0+1)=31
+//            System.out.println("indexPubWs: "+ indexPubWs + " = ("+ MAX_PUBLIC_WS +" * "+ page + ") + "+ i + " - ("+carriedIndexPubWs + "+ 1)  | Page: "+ page + " PublicWaystones Size: "+ publicWaystones.size());
+
             if(indexPubWs >= publicWaystones.size()){
 //                System.out.println("STOP!");
                 indexPubWs--;
                 break;
             }
+
             PublicWaystone ws = publicWaystones.get(indexPubWs);
             if (ws != null) {
                 ItemStack publicWs = new ItemStack(Material.NETHERITE_BLOCK);
@@ -210,6 +210,12 @@ public class PublicWsMenu extends PaginatedMenu {
                     worldName = "Unknown";
                 }
 
+
+                if(ws.getOwner().equals(playerMenuUtility.getOwnerUUID().toString())){
+                    publicMeta.addEnchant(Enchantment.DAMAGE_ALL,0, true);
+                    publicMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                }
+
                 loreArray.add(Component.text(worldName +": "+ ws.getParsedLocation(ws.getLocation()).getBlockX()+", "+ ws.getParsedLocation(ws.getLocation()).getBlockY()+", "+ws.getParsedLocation(ws.getLocation()).getBlockZ()));
                 publicMeta.lore(loreArray);
 
@@ -228,11 +234,12 @@ public class PublicWsMenu extends PaginatedMenu {
         }
 
         addMenuPageButtons(publicWaystones.size());
+        addCompass(playerMenuUtility);
     }
 
     private void addMenuPageButtons(int pubWsSize){
 //        System.out.println("pubWsSize: "+ pubWsSize +" " + (pubWsSize - prevIndexPubWs -1 ) + " > "+ (maxPublicWs * (page+1)) );
-        if(pubWsSize - prevIndexWs - 1 > maxPublicWs * (page+1)){
+        if(pubWsSize - 1 > MAX_PUBLIC_WS * page){
             inventory.setItem(50, makeItem(Material.ARROW, "Next Page"));
         }
 

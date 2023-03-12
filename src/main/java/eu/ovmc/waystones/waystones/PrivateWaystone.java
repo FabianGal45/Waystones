@@ -1,8 +1,6 @@
 package eu.ovmc.waystones.waystones;
 
-import com.google.gson.stream.JsonToken;
 import eu.ovmc.waystones.WaystonesPlugin;
-import eu.ovmc.waystones.menusystem.ChatInputHandler;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -12,9 +10,6 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public class PrivateWaystone {
     private String location;

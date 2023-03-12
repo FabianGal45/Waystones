@@ -2,7 +2,7 @@ package eu.ovmc.waystones.menusystem.menu;
 
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.User;
-import eu.ovmc.waystones.menusystem.ChatInputHandler;
+import eu.ovmc.waystones.events.ChatInputHandler;
 import eu.ovmc.waystones.menusystem.PaginatedMenu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
@@ -36,6 +36,7 @@ public class WaystonesSplitMenu extends PaginatedMenu {
     private final int MAX_PRIVATE = 7;
     private final int MAX_PUBLIC = 14;
     private int indexPubWs = 0;
+    private int prevIndexWs;
     private final ArrayList<Integer> PUBLIC_WS_SLOTS;
 
 
@@ -97,7 +98,7 @@ public class WaystonesSplitMenu extends PaginatedMenu {
                     new EditMenu(playerMenuUtility, selected).open();
                 }
                 else{
-                    new EditMenu(playerMenuUtility, selected).openAs(adminOpenedMenu);
+                    new EditMenu(playerMenuUtility, selected).openAs(oppenedByAdmin);
                 }
 
             }
@@ -290,41 +291,41 @@ public class WaystonesSplitMenu extends PaginatedMenu {
                 if (page == 0) {
                     player.sendMessage("This is the first page.");
                 } else {
-                    if(adminOpenedMenu == null){
+                    if(oppenedByAdmin == null){
                         page = page - 1;
                         super.open();
                     }
                     else{
                         page = page - 1;
-                        super.openAs(adminOpenedMenu);
+                        super.openAs(oppenedByAdmin);
                     }
 
                 }
 //            ArrayList<SplitMenu> GUIs = plugin.getArrGUIs();
             }
         }
-        else if(currentItem.equals(Material.ARROW)){//Make it more precise player can click on any arrow including personal inventory.
+        else if(currentItem.equals(Material.ARROW)){
 //            System.out.println("Next page was selected");
             player.playSound(player.getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 1, 2);
 
             User user = playerMenuUtility.getUser();
 //            System.out.println(">>>> "+ (user.getAllowedPrivWs())+ " < "+ (MAX_PRIVATE * (page + 1)));
             if(user.getAllowedPrivWs() < (MAX_PRIVATE * (page + 1))){ //get allowed < page max
-                if(adminOpenedMenu == null){ //if this menu has no admin assigned that might have oppened it then run it for the player
+                if(oppenedByAdmin == null){ //if this menu has no admin assigned that might have oppened it then run it for the player
                     page = page + 1;
                     new PublicWsMenu(playerMenuUtility, page, indexPubWs).open();
                 } else{ //if there is an admin that has oppened this menu then continue openning for the admin
                     page = page + 1;
-                    new PublicWsMenu(playerMenuUtility, page, indexPubWs).openAs(adminOpenedMenu);
+                    new PublicWsMenu(playerMenuUtility, page, indexPubWs).openAs(oppenedByAdmin);
                 }
             }
             else{
-                if(adminOpenedMenu == null){ //if this menu has no admin assigned that might have oppened it then run it for the player
+                if(oppenedByAdmin == null){ //if this menu has no admin assigned that might have oppened it then run it for the player
                     page = page + 1;
                     super.open();
                 } else{ //if there is an admin that has oppened this menu then continue openning for the admin
                     page = page + 1;
-                    super.openAs(adminOpenedMenu);
+                    super.openAs(oppenedByAdmin);
                 }
             }
 
@@ -332,53 +333,23 @@ public class WaystonesSplitMenu extends PaginatedMenu {
         else if (currentItem.equals(Material.RECOVERY_COMPASS)) {
             Inventory inventory1 = player.getInventory();
 
-            if(inventory1.contains(Material.ECHO_SHARD)){
-                if(player.getLastDeathLocation() !=null){//if the player has died before
+            if (inventory1.contains(Material.ECHO_SHARD)) {
+                if (player.getLastDeathLocation() != null) {//if the player has died before
                     Location loc = WaystonesPlugin.getSafeLocation(player.getLastDeathLocation());
-                    if(loc != null) {//If the place is safe to teleport
+                    if (loc != null) {//If the place is safe to teleport
                         player.teleportAsync(loc);
                         player.playSound(loc, Sound.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.BLOCKS, 1, 1);
-                        inventory1.removeItem(new ItemStack(Material.ECHO_SHARD,1));
+                        inventory1.removeItem(new ItemStack(Material.ECHO_SHARD, 1));
                     }
-                }
-                else{
+                } else {
                     player.sendMessage(Component.text("You haven't died yet. Group hug with creepers?"));
                 }
-            }
-            else{
+            } else {
                 player.sendMessage(Component.text("You need an ", NamedTextColor.DARK_RED)
                         .append(Component.text("Echo Shard ", NamedTextColor.RED)
-                        .append(Component.text("to teleport.", NamedTextColor.DARK_RED))));
+                                .append(Component.text("to teleport.", NamedTextColor.DARK_RED))));
             }
-
-
-
-
-
-
-
-
-//            User user = playerMenuUtility.getUser();
-//            int purchased = user.getPurchasedPrivateWs();
-//            int total;
-//            SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
-
-//            if(e.getClick().isRightClick()){
-//                total = purchased +1;
-//                user.setPurchasedPrivateWs(total);
-//                jdbc.updateUser(user);
-//            }else if(e.getClick().isLeftClick()){
-//                total = purchased -1;
-//                user.setPurchasedPrivateWs(total);
-//                jdbc.updateUser(user);
-//            }
-
-//            super.open(); // This will reopen/refresh the menu
         }
-
-//        super.close();
-
-
     }
 
     @Override
@@ -545,8 +516,8 @@ public class WaystonesSplitMenu extends PaginatedMenu {
         }
 
         for(int i = 0; i < MAX_PUBLIC; i++) {
-//            System.out.println("INDEX>>> "+ indexPrivWs);
             indexPubWs = MAX_PUBLIC * page + i;
+//            System.out.println("INDEX>>> "+ indexPrivWs);
 //            System.out.println("Index PUB: "+indexPubWs + " Page: "+ page);
             if(indexPubWs >= publicWaystones.size()){
                 indexPubWs--;
