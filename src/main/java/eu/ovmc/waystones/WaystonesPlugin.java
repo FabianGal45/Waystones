@@ -95,57 +95,6 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
         return econ != null;
     }
 
-    public static Location getSafeLocation(Location location){
-        //Teleports player above the selected waystone
-        Location loc = null;
-
-        for(int i = 0; i<5; i++){
-            //Centers the player on the block
-            loc = location.set(centerCoordinate(location.getX()), location.getY(), centerCoordinate(location.getZ()));
-            loc.setYaw(location.getYaw());
-            loc.setPitch(location.getPitch());
-
-            Block landingBlock = loc.getBlock().getLocation().subtract(0.0, (double) i, 0.0).getBlock();
-
-            //if there is a block to land on
-            if(!landingBlock.getType().equals(Material.AIR)){
-                //position the player once a landing block has been found
-                loc.set(landingBlock.getX()+0.5, landingBlock.getY()+1, landingBlock.getZ()+0.5);
-
-                //if the block is dangerous and there isn't enough space above for the player then it's unsafe
-                if((landingBlock.getType().equals(Material.LAVA)
-                        || landingBlock.getType().equals(Material.FIRE)
-                        || landingBlock.getType().equals(Material.NETHER_PORTAL)
-                        || landingBlock.getType().equals(Material.STONECUTTER)) || !isSpaceAbove(landingBlock.getLocation())){
-                    //UNSAFE
-                    loc = null;
-                }
-                break;
-            }
-        }
-        return loc;
-    }
-
-    private static double centerCoordinate(double n){
-        if(n < 0){
-            n = (int)n - 0.5;
-        }
-        else{
-            n = (int)n + 0.5;
-        }
-        return n;
-    }
-
-    private static boolean isSpaceAbove(Location loc){
-        Material above1 = loc.add(0.0,1.0,0.0).getBlock().getType();
-        Material above2 = loc.add(0.0,2.0,0.0).getBlock().getType();
-        boolean spaceAbove = above1.isAir() && above2.isAir();
-
-        return spaceAbove;
-    }
-
-
-
     public static WaystonesPlugin getPlugin(){
         return plugin;
     }

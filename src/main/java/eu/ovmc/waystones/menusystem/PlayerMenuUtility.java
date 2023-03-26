@@ -10,6 +10,8 @@ import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -30,6 +32,8 @@ public class PlayerMenuUtility {
     private VotingPluginUser votingPluginUser;
     private List<Player> tpaList;
     private PrivateWaystone selected;
+    private Material tpCostMaterial;
+    private Location nextTpLocation;
 
     public PlayerMenuUtility(OfflinePlayer offlineOwner) {
         this.owner = Bukkit.getPlayer(offlineOwner.getUniqueId());
@@ -119,5 +123,21 @@ public class PlayerMenuUtility {
 
     public boolean isAdmin() {
         return isAdmin;
+    }
+
+    public Material getTpCostMaterial() {
+        return tpCostMaterial;
+    }
+
+    public void setTpCostMaterial(Material tpCostMaterial) {
+        this.tpCostMaterial = tpCostMaterial;
+    }
+
+    public Location getNextTpLocation() {
+        return nextTpLocation;
+    }
+
+    public void setNextTpLocation(Location nextTpLocation) {
+        this.nextTpLocation = nextTpLocation;
     }
 }

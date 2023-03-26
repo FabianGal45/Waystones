@@ -103,7 +103,7 @@ public class PublicWsMenu extends PaginatedMenu {
                     @Override
                     public void run() {
                         //safety feature
-                        selected.safeTeleport(player, playerMenuUtility);
+                        selected.safeTeleportToWs(player, playerMenuUtility);
                     }
                 },5);
             }

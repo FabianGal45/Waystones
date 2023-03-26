@@ -54,7 +54,7 @@ public class ChatInputHandler {
 
     public void addToUnsafeTPMap(Player player, PlayerMenuUtility playerMenuUtility){
         UNSAFE_TP_LIST.put(player, playerMenuUtility);
-        startCountdown(UNSAFE_TP_LIST, player, 300);
+        startCountdown(UNSAFE_TP_LIST, player, 600);
     }
 
     private void startCountdown(HashMap<Player, PlayerMenuUtility> hashMap, Player player, int delay){
@@ -152,18 +152,23 @@ public class ChatInputHandler {
     }
 
     public void handleTpaAccept(Player player){
-        PrivateWaystone ws = TPA_ACCEPT_LIST.get(player).getSelected();
-        ws.safeTeleport(player, TPA_ACCEPT_LIST.get(player));
+        PlayerMenuUtility pmu = TPA_ACCEPT_LIST.get(player);
+        PrivateWaystone ws = pmu.getSelected();
+        ws.safeTeleportToWs(player, pmu);
         TPA_ACCEPT_LIST.remove(player);
     }
 
     public void handleUnsafeTPAccept(Player player){
-        PrivateWaystone ws = UNSAFE_TP_LIST.get(player).getSelected();
-        PrivateWaystone clickedOnWaystone = UNSAFE_TP_LIST.get(player).getClickedOnWs();
-        System.out.println("WS: "+ ws.getLocation());
-        //if the player is close to the waystone in case they want to kill then quickly tp back by accepting
-        if(player.getLocation().distance(clickedOnWaystone.getParsedLocation(clickedOnWaystone.getLocation())) < 5){
-            ws.unsafeTeleport(player);
+        PlayerMenuUtility pmu = UNSAFE_TP_LIST.get(player);
+        PrivateWaystone clickedOnWaystone = pmu.getClickedOnWs();
+
+        //This will only work if the player is close to a waystone - in case they want to kill then quickly tp back by accepting
+        if(player.getLocation().distance(TeleportHandler.getParsedLocation(clickedOnWaystone.getLocation())) < 5){
+            System.out.println("NextTP Location:" + pmu.getNextTpLocation());
+            TeleportHandler.unsafeTeleport(player, pmu.getNextTpLocation());
+        }
+        else{
+            player.sendMessage(Component.text("You are too far away from a waystone.", NamedTextColor.RED));
         }
         UNSAFE_TP_LIST.remove(player);
     }

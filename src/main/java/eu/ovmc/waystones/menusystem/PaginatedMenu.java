@@ -1,6 +1,7 @@
 package eu.ovmc.waystones.menusystem;
 
 import eu.ovmc.waystones.WaystonesPlugin;
+import eu.ovmc.waystones.events.TeleportHandler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -67,24 +68,24 @@ public abstract class PaginatedMenu extends Menu {
         Player player = (Player) e.getWhoClicked();
 
         if (currentItem.equals(Material.RECOVERY_COMPASS)) {
-            Inventory inventory1 = player.getInventory();
+            if (player.getLastDeathLocation() != null) {//if the player has died before
+                playerMenuUtility.setTpCostMaterial(Material.ECHO_SHARD);
+                TeleportHandler.safeTeleport(player, playerMenuUtility, player.getLastDeathLocation());
 
-            if (inventory1.contains(Material.ECHO_SHARD)) {
-                if (player.getLastDeathLocation() != null) {//if the player has died before
-                    Location loc = WaystonesPlugin.getSafeLocation(player.getLastDeathLocation());
-                    if (loc != null) {//If the place is safe to teleport
-                        player.teleportAsync(loc);
-                        player.playSound(loc, Sound.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.BLOCKS, 1, 1);
-                        inventory1.removeItem(new ItemStack(Material.ECHO_SHARD, 1));
-                    }
-                } else {
-                    player.sendMessage(Component.text("You haven't died yet. ", NamedTextColor.DARK_RED)
-                            .append(Component.text("Group hug with creepers?", NamedTextColor.RED)));
-                }
+
+//                    System.out.println("Last Death Location: "+ player.getLastDeathLocation());
+//                    Location loc = TeleportHandler.getSafeLocation(player.getLastDeathLocation());
+//                    if (loc != null) {//If the place is safe to teleport
+//                        player.teleportAsync(loc);
+//                        player.playSound(loc, Sound.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.BLOCKS, 1, 1);
+//                        inventory1.removeItem(new ItemStack(Material.ECHO_SHARD, 1));
+//                    }
+//                    else{
+//                        player.sendMessage(Component.text("Not safe to teleport", NamedTextColor.DARK_RED));
+//                    }
             } else {
-                player.sendMessage(Component.text("You need an ", NamedTextColor.DARK_RED)
-                        .append(Component.text("Echo Shard ", NamedTextColor.RED)
-                                .append(Component.text("to teleport.", NamedTextColor.DARK_RED))));
+                player.sendMessage(Component.text("You haven't died yet. ", NamedTextColor.DARK_RED)
+                        .append(Component.text("Group hug with creepers?", NamedTextColor.RED)));
             }
         }
     }

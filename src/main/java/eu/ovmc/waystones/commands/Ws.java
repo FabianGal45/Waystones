@@ -4,11 +4,13 @@ import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.events.ChatInputHandler;
+import eu.ovmc.waystones.events.TeleportHandler;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.menusystem.menu.WaystonesSplitMenu;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -41,13 +43,12 @@ public class Ws implements CommandExecutor {
                 }
             }
             else if (args[0].equals("acceptUnsafeTP")) {
-                System.out.println("Command Triggered");
                 ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
-                System.out.println("ChatInputHandler: "+chatInputHandler.getUnsafeTPMap());
+
                 if(chatInputHandler.getUnsafeTPMap().containsKey(player)){
-                    System.out.println("Player is inside the HashMap");
                     chatInputHandler.handleUnsafeTPAccept(player);
                 }
+
             }
             else if (args[0].equals("cancelUnsafeTP")){
                 ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();

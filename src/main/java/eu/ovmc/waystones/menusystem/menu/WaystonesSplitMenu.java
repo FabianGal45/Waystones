@@ -138,7 +138,7 @@ public class WaystonesSplitMenu extends PaginatedMenu {
                     @Override
                     public void run() {
                         //safety feature
-                        selected.safeTeleport(player, playerMenuUtility);
+                        selected.safeTeleportToWs(player, playerMenuUtility);
                         inventory.close();
                     }
                 }, 5);
@@ -186,7 +186,7 @@ public class WaystonesSplitMenu extends PaginatedMenu {
                             @Override
                             public void run() {
                                 //safety feature
-                                selected.safeTeleport(player, playerMenuUtility);
+                                selected.safeTeleportToWs(player, playerMenuUtility);
                                 inventory.close();
                             }
                         },5);
@@ -199,7 +199,7 @@ public class WaystonesSplitMenu extends PaginatedMenu {
                         @Override
                         public void run() {
                             //safety feature
-                            selected.safeTeleport(player, playerMenuUtility);
+                            selected.safeTeleportToWs(player, playerMenuUtility);
                             inventory.close();
                         }
                     },5);
