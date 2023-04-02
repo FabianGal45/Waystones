@@ -1,5 +1,7 @@
 package eu.ovmc.waystones.menusystem;
 
+import com.Zrips.CMI.CMI;
+import com.Zrips.CMI.Containers.CMIUser;
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.events.TeleportHandler;
 import net.kyori.adventure.text.Component;
@@ -63,26 +65,23 @@ public abstract class PaginatedMenu extends Menu {
     public void setMenuItems() {}
 
     public void commonMenuHandlers(InventoryClickEvent e){
-        System.out.println("Common Handler running!");
         Material currentItem = e.getCurrentItem().getType();
         Player player = (Player) e.getWhoClicked();
+        Location deathLocation;
+        if(WaystonesPlugin.isIsCmiInstalled()){ //If CMI is installed then get the death location from CMI as it is more acurate
+            CMIUser user = CMI.getInstance().getPlayerManager().getUser(player);
+            System.out.println("User: "+ user.getDeathLoc());
+            deathLocation = user.getDeathLoc();
+            System.out.println("CMI installed! ");
+        }
+        else{//Otherwise just use the spigot death location which is less acurate
+            deathLocation = player.getLastDeathLocation();
+        }
 
         if (currentItem.equals(Material.RECOVERY_COMPASS)) {
-            if (player.getLastDeathLocation() != null) {//if the player has died before
+            if (deathLocation != null) {//if the player has died before
                 playerMenuUtility.setTpCostMaterial(Material.ECHO_SHARD);
-                TeleportHandler.safeTeleport(player, playerMenuUtility, player.getLastDeathLocation());
-
-
-//                    System.out.println("Last Death Location: "+ player.getLastDeathLocation());
-//                    Location loc = TeleportHandler.getSafeLocation(player.getLastDeathLocation());
-//                    if (loc != null) {//If the place is safe to teleport
-//                        player.teleportAsync(loc);
-//                        player.playSound(loc, Sound.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.BLOCKS, 1, 1);
-//                        inventory1.removeItem(new ItemStack(Material.ECHO_SHARD, 1));
-//                    }
-//                    else{
-//                        player.sendMessage(Component.text("Not safe to teleport", NamedTextColor.DARK_RED));
-//                    }
+                TeleportHandler.safeTeleport(player, playerMenuUtility, deathLocation);
             } else {
                 player.sendMessage(Component.text("You haven't died yet. ", NamedTextColor.DARK_RED)
                         .append(Component.text("Group hug with creepers?", NamedTextColor.RED)));

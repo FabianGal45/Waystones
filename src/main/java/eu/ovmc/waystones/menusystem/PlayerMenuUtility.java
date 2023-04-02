@@ -42,7 +42,7 @@ public class PlayerMenuUtility {
         SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
         this.privateWaystones = jdbc.getAllPrivateWaystones(ownerUUID.toString());
         this.user = jdbc.getUserFromDB(ownerUUID.toString());
-        if(WaystonesPlugin.isVotingPluginInstalled()){ //IF the plugin is installed then assign the VPU
+        if(WaystonesPlugin.isIsVotingPluginInstalled()){ //IF the plugin is installed then assign the VPU
             votingPluginUser = new VotingPluginUser(VotingPluginMain.getPlugin(), new AdvancedCoreUser(AdvancedCorePlugin.getInstance(), offlineOwner.getUniqueId()));
         }
     }

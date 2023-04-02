@@ -96,5 +96,12 @@
             <version>6.9.4</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>CMI-API</groupId>
+            <artifactId>CMI-API</artifactId>
+            <version>9.3.1.5</version>
+            <scope>system</scope>
+            <systemPath>E:/Games/Minecraft/Servers/NewServer/Libraries from GITHUB/CMI-API9.3.1.5.jar</systemPath>
+        </dependency>
     </dependencies>
 </project>

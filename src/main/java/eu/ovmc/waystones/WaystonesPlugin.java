@@ -8,7 +8,6 @@ import eu.ovmc.waystones.events.ChatInputHandler;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -25,7 +24,8 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
     private static final Logger log = Logger.getLogger("Minecraft");
     private static Economy econ = null;
-    private static boolean votingPluginInstalled = false;
+    private static boolean isVotingPluginInstalled = false;
+    private static boolean isCmiInstalled = false;
 
     @Override
     public void onEnable() {
@@ -34,8 +34,13 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
         saveDefaultConfig();
         plugin = this;
 
+        //check to see if dependency plugins are installed
         if(Bukkit.getServer().getPluginManager().getPlugin("VotingPlugin")!=null){
-            votingPluginInstalled = true;
+            isVotingPluginInstalled = true;
+        }
+
+        if(Bukkit.getServer().getPluginManager().getPlugin("CMI")!=null){
+            isCmiInstalled = true;
         }
 
         //SQLiteJDBC - Connect and create the tables.
@@ -110,8 +115,11 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
         return chatInputHandler;
     }
 
-    public static boolean isVotingPluginInstalled() {
-        return votingPluginInstalled;
+    public static boolean isIsVotingPluginInstalled() {
+        return isVotingPluginInstalled;
+    }
+    public static boolean isIsCmiInstalled(){
+        return isCmiInstalled;
     }
 
     @Override

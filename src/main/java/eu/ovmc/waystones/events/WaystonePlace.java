@@ -63,7 +63,7 @@ public class WaystonePlace implements Listener {
                         if(user.canPlacePrivateWs()){
                             PrivateWaystone ws = new PrivateWaystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString(), "Private Waystone", tpLocation);
                             jdbc.regWaystone(ws, user);
-                            player.sendMessage("Private waystone registered!");
+                            player.sendMessage(Component.text("Private waystone registered!", NamedTextColor.GREEN));
                             player.playSound(e.getBlock().getLocation(), Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1, 2);
                         }
                         else{

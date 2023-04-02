@@ -93,7 +93,7 @@ public class User {
         int totalPoints;
 
         //Checks to see if the Voting plugin is not installed.
-        if (!WaystonesPlugin.isVotingPluginInstalled()) {
+        if (!WaystonesPlugin.isIsVotingPluginInstalled()) {
             totalPoints = 0;
         }
         else{
@@ -138,7 +138,7 @@ public class User {
             SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
             jdbc.updateUser(this);
 
-            if(WaystonesPlugin.isVotingPluginInstalled()){
+            if(WaystonesPlugin.isIsVotingPluginInstalled()){
                 playerMenuUtility.getVotingPluginUser().removePoints((int) (discount*100));
             }
 

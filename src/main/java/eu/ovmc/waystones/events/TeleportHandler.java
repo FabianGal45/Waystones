@@ -36,6 +36,8 @@ public class TeleportHandler { //This class is meant to keep all teleportation r
     }
 
     public static void unsafeTeleport(Player player, Location tpLocation){
+        System.out.println("Unsafe teleport: " + tpLocation);
+        System.out.println("player Death: "+ player.getLastDeathLocation());
         PlayerMenuUtility playerMenuUtility =  WaystonesPlugin.getPlayerMenuUtility(player);
         checkTpMaterialCost(player, tpLocation, playerMenuUtility);
     }
