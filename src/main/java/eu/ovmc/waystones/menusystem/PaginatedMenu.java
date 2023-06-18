@@ -70,9 +70,9 @@ public abstract class PaginatedMenu extends Menu {
         Location deathLocation;
         if(WaystonesPlugin.isIsCmiInstalled()){ //If CMI is installed then get the death location from CMI as it is more acurate
             CMIUser user = CMI.getInstance().getPlayerManager().getUser(player);
-            System.out.println("User: "+ user.getDeathLoc());
+//            System.out.println("User: "+ user.getDeathLoc());
             deathLocation = user.getDeathLoc();
-            System.out.println("CMI installed! ");
+//            System.out.println("CMI installed! ");
         }
         else{//Otherwise just use the spigot death location which is less acurate
             deathLocation = player.getLastDeathLocation();

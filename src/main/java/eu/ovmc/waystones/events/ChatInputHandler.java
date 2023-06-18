@@ -164,7 +164,7 @@ public class ChatInputHandler {
 
         //This will only work if the player is close to a waystone - in case they want to kill then quickly tp back by accepting
         if(player.getLocation().distance(TeleportHandler.getParsedLocation(clickedOnWaystone.getLocation())) < 5){
-            System.out.println("NextTP Location:" + pmu.getNextTpLocation());
+//            System.out.println("NextTP Location:" + pmu.getNextTpLocation());
             TeleportHandler.unsafeTeleport(player, pmu.getNextTpLocation());
         }
         else{
