@@ -2,7 +2,7 @@ package eu.ovmc.waystones.events;
 
 import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
-import eu.ovmc.waystones.menusystem.menu.WaystonesSplitMenu;
+import eu.ovmc.waystones.menusystem.menues.main.WaystonesSplitMenu;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.waystones.PrivateWaystone;

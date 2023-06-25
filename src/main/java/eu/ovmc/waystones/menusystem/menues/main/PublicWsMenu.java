@@ -1,8 +1,10 @@
-package eu.ovmc.waystones.menusystem.menu;
+package eu.ovmc.waystones.menusystem.menues.main;
 
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.menusystem.PaginatedMenu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
+import eu.ovmc.waystones.menusystem.menues.interactive.PublicWaystoneEditMenu;
+import eu.ovmc.waystones.menusystem.menues.interactive.PublicWaystoneRateEditMenu;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;

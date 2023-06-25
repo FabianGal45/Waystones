@@ -1,6 +1,7 @@
 package eu.ovmc.waystones.events;
 
 import eu.ovmc.waystones.WaystonesPlugin;
+import eu.ovmc.waystones.handlers.ChatInputHandler;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

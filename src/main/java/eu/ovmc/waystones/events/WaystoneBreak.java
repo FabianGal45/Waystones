@@ -35,9 +35,9 @@ public class WaystoneBreak implements Listener {
 
                     player.playSound(ws.getParsedLocation(ws.getLocation()), Sound.BLOCK_BEACON_DEACTIVATE, SoundCategory.BLOCKS, 1, 2);
                     if(ws instanceof PublicWaystone){
-                        player.sendMessage("you broke a public waystone");
+                        player.sendMessage("You broke a public waystone");
                     }else{
-                        player.sendMessage("you broke a private waystone");
+                        player.sendMessage("You broke a private waystone");
                     }
                     jdbc.remWs(ws);
 

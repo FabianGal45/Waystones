@@ -1,7 +1,7 @@
-package eu.ovmc.waystones.menusystem.menu;
+package eu.ovmc.waystones.menusystem.menues.interactive;
 
 import eu.ovmc.waystones.WaystonesPlugin;
-import eu.ovmc.waystones.events.ChatInputHandler;
+import eu.ovmc.waystones.handlers.ChatInputHandler;
 import eu.ovmc.waystones.menusystem.Menu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
@@ -23,7 +23,7 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.Objects;
 
 public class EditMenu extends Menu {
-    PrivateWaystone selected;
+    protected PrivateWaystone selected;
 
     public EditMenu(PlayerMenuUtility playerMenuUtility, PrivateWaystone selected) {
         super(playerMenuUtility);

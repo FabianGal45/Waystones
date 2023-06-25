@@ -1,4 +1,4 @@
-package eu.ovmc.waystones.menusystem.menu;
+package eu.ovmc.waystones.menusystem.menues.interactive;
 
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;

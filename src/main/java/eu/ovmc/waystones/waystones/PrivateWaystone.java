@@ -1,6 +1,6 @@
 package eu.ovmc.waystones.waystones;
 
-import eu.ovmc.waystones.events.TeleportHandler;
+import eu.ovmc.waystones.handlers.TeleportHandler;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import org.bukkit.entity.Player;
 

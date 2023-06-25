@@ -1,4 +1,4 @@
-package eu.ovmc.waystones.events;
+package eu.ovmc.waystones.handlers;
 
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;

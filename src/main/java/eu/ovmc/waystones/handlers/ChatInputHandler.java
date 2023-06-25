@@ -1,10 +1,10 @@
-package eu.ovmc.waystones.events;
+package eu.ovmc.waystones.handlers;
 
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.menusystem.Menu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
-import eu.ovmc.waystones.menusystem.menu.WaystonesSplitMenu;
+import eu.ovmc.waystones.menusystem.menues.main.WaystonesSplitMenu;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import net.kyori.adventure.text.Component;

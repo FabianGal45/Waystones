@@ -1,10 +1,13 @@
-package eu.ovmc.waystones.menusystem.menu;
+package eu.ovmc.waystones.menusystem.menues.main;
 
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.User;
-import eu.ovmc.waystones.events.ChatInputHandler;
+import eu.ovmc.waystones.handlers.ChatInputHandler;
 import eu.ovmc.waystones.menusystem.PaginatedMenu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
+import eu.ovmc.waystones.menusystem.menues.interactive.EditMenu;
+import eu.ovmc.waystones.menusystem.menues.interactive.PublicWaystoneEditMenu;
+import eu.ovmc.waystones.menusystem.menues.interactive.PublicWaystoneRateEditMenu;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import net.kyori.adventure.text.Component;

@@ -1,12 +1,6 @@
 package eu.ovmc.waystones.events;
 
-import eu.ovmc.waystones.menusystem.Menu;
-import eu.ovmc.waystones.menusystem.menu.EditMenu;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.inventory.InventoryHolder;
 
 public class CloseInventory implements Listener {
 

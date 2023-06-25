@@ -1,4 +1,4 @@
-package eu.ovmc.waystones.events;
+package eu.ovmc.waystones.handlers;
 
 import eu.ovmc.waystones.menusystem.Menu;
 import org.bukkit.event.EventHandler;
