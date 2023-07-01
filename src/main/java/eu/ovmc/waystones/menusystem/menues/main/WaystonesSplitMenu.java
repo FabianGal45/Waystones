@@ -176,14 +176,17 @@ public class WaystonesSplitMenu extends PaginatedMenu {
                     //pay the cost before teleporting
                     EconomyResponse withdraw = econ.withdrawPlayer(player,selected.getCost());
                     OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(selected.getOwner()));
-                    EconomyResponse deposit = econ.depositPlayer(owner, selected.getCost());
 
-                    if(withdraw.transactionSuccess() && deposit.transactionSuccess()){
+
+                    if(withdraw.transactionSuccess()){
                         if(selected.getCost()>0){
-                            player.sendMessage(Component.text("You have paid ", NamedTextColor.GRAY)
-                                    .append(Component.text(selected.getCost() + " Diamonds",NamedTextColor.AQUA))
-                                    .append(Component.text(" to ", NamedTextColor.GRAY))
-                                    .append(Component.text(Objects.requireNonNull(owner.getName()))));
+                            EconomyResponse deposit = econ.depositPlayer(owner, selected.getCost());
+                            if(deposit.transactionSuccess()){
+                                player.sendMessage(Component.text("You have paid ", NamedTextColor.GRAY)
+                                        .append(Component.text(selected.getCost() + " Diamonds",NamedTextColor.AQUA))
+                                        .append(Component.text(" to ", NamedTextColor.GRAY))
+                                        .append(Component.text(Objects.requireNonNull(owner.getName()))));
+                            }
                         }
                         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WaystonesPlugin.getPlugin(), new Runnable() {
                             @Override
@@ -229,7 +232,7 @@ public class WaystonesSplitMenu extends PaginatedMenu {
 
 
             if(e.getClick() == ClickType.RIGHT){
-                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
+//                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
                 //if the player is the owner of the PublicWaystone then open the right menu
                 openEditMenu(player, selected);
             }
