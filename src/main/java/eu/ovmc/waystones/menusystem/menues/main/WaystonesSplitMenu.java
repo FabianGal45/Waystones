@@ -3,8 +3,11 @@ package eu.ovmc.waystones.menusystem.menues.main;
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.handlers.ChatInputHandler;
+import eu.ovmc.waystones.handlers.TeleportHandler;
 import eu.ovmc.waystones.menusystem.PaginatedMenu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
+import eu.ovmc.waystones.menusystem.items.ItemType;
+import eu.ovmc.waystones.menusystem.items.MenuItem;
 import eu.ovmc.waystones.menusystem.menues.interactive.EditMenu;
 import eu.ovmc.waystones.menusystem.menues.interactive.PublicWaystoneEditMenu;
 import eu.ovmc.waystones.menusystem.menues.interactive.PublicWaystoneRateEditMenu;
@@ -21,11 +24,9 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -38,7 +39,7 @@ public class WaystonesSplitMenu extends PaginatedMenu {
     private final int MAX_PRIVATE = 7;
     private final int MAX_PUBLIC = 14;
     private int indexPubWs = 0;
-    private int prevIndexWs;
+    private int indexPrvWs;
     private final ArrayList<Integer> PUBLIC_WS_SLOTS;
 
 
@@ -357,10 +358,10 @@ public class WaystonesSplitMenu extends PaginatedMenu {
 
         //loop for each slot available to private waystones (7)
         for(int i = 0; i < MAX_PRIVATE; i++) {
-            prevIndexWs = MAX_PRIVATE * page + i;//7*0+1= 1 | 7*0+2= 2 | ... | 7*1+1= 8 | 7*1+2= 9
+            indexPrvWs = MAX_PRIVATE * page + i;//7*0+1= 1 | 7*0+2= 2 | ... | 7*1+1= 8 | 7*1+2= 9
 
             //If finished placing the existing waystones, before running out of space start placing the dyes
-            if(prevIndexWs >= privateWaystones.size()){
+            if(indexPrvWs >= privateWaystones.size()){
                 User user = playerMenuUtility.getUser();
                 int pu = user.getAllowedPrivWs()-privateWaystones.size();//the amount of purchased and unused waystones
 
@@ -368,11 +369,11 @@ public class WaystonesSplitMenu extends PaginatedMenu {
                 for(int j = 0; j< MAX_PRIVATE; j++){
 
                     //the position at which the dye to be placed
-                    int dyePos = prevIndexWs -(MAX_PRIVATE * page)+10;// If there are 5 waystones in the first menu: 5-(7*0)+10 = 15
+                    int dyePos = indexPrvWs -(MAX_PRIVATE * page)+10;// If there are 5 waystones in the first menu: 5-(7*0)+10 = 15
 
                     //if green dye have reached the pu AND the dyePos <= 16 (16 being the last available position in the GUI)
 //                    System.out.println(">>>>>  "+ indexPrivWs +" - " + privateWaystones.size() +" < pu: "+pu);
-                    if(prevIndexWs - privateWaystones.size() < pu && dyePos <= 16){
+                    if(indexPrvWs - privateWaystones.size() < pu && dyePos <= 16){
                         ItemStack limeDye = new ItemStack(Material.LIME_DYE);
                         ItemMeta limeMeta = limeDye.getItemMeta();
                         limeMeta.displayName(Component.text("Available").color(TextColor.fromCSSHexString("#93cf98")).decoration(TextDecoration.ITALIC, false));
@@ -383,7 +384,7 @@ public class WaystonesSplitMenu extends PaginatedMenu {
                     else{
                         //if there is still space, add a grey dye
 //                        System.out.println("indexPrivWs: "+ indexPrivWs + " size: "+ privateWaystones.size() + " PU: "+ pu + " allowed: "+user.getAllowedPrivWs());
-                        if(prevIndexWs < MAX_PRIVATE*(page+1) && user.getAllowedPrivWs() == prevIndexWs){
+                        if(indexPrvWs < MAX_PRIVATE*(page+1) && user.getAllowedPrivWs() == indexPrvWs){
 
                             DecimalFormat formatter = new DecimalFormat("#,###");
 
@@ -424,89 +425,47 @@ public class WaystonesSplitMenu extends PaginatedMenu {
 
 
                             inventory.addItem(grayDye);
-                            prevIndexWs--;
+                            indexPrvWs--;
                         }
 //                        System.out.println("INDEX>>> "+ indexPrivWs);
                         break;
                     }
-                    prevIndexWs++;
+                    indexPrvWs++;
                 }
 //                System.out.println("INDEX>>> "+ indexPrivWs);
                 break; //If the index has reached the number of waystones.
             }
 
-            PrivateWaystone ws = privateWaystones.get(prevIndexWs);
+            PrivateWaystone ws = privateWaystones.get(indexPrvWs);
             if (ws != null){
-                ItemStack privateWs= new ItemStack(Material.EMERALD_BLOCK);
-
-                Block blockTop = ws.getParsedLocation(ws.getLocation()).getBlock();
-                Block blockUnder = ws.getParsedLocation(ws.getLocation()).subtract(0.0,1.0,0.0).getBlock();
-
+                Block blockTop = TeleportHandler.getParsedLocation(ws.getLocation()).getBlock();
+                Block blockUnder = TeleportHandler.getParsedLocation(ws.getLocation()).subtract(0.0,1.0,0.0).getBlock();
                 boolean damagedWs = !(blockTop.getType().equals(Material.LODESTONE) && blockUnder.getType().equals(Material.EMERALD_BLOCK));
 
-                //if this is the waystone he opened the menu from, make it lime green
+                MenuItem prvWaystone = new MenuItem(Material.EMERALD_BLOCK, ItemType.PRIVATE_WAYSTONE, indexPrvWs);
+
+                //if this is the waystone he opened the menu from, make the item lime green
                 if(playerMenuUtility.getClickedOnWs() != null){
                     if(ws.getLocation().equals(playerMenuUtility.getClickedOnWs().getLocation())){
-                        //Creates the LimeConcretePowder block item
-                        privateWs = new ItemStack(Material.LIME_CONCRETE);
+                        prvWaystone = new MenuItem(Material.LIME_CONCRETE, ItemType.OPENED, indexPrvWs);
                     }
                     else if(damagedWs){//if waystone is damaged, mark it with a cracked stone
-                        privateWs = new ItemStack(Material.CRACKED_STONE_BRICKS);
+                        prvWaystone = new MenuItem(Material.CRACKED_STONE_BRICKS, ItemType.BROKEN, indexPrvWs);
                     }
-
                 }
-
-                ItemMeta ptivateWsMeta = privateWs.getItemMeta();
 
                 //Sets the name
-                if(ws.getName() == null){
-                    ptivateWsMeta.displayName(Component.text("Null")
-                            .decoration(TextDecoration.ITALIC, false));
-                }
-                else{
-                    ptivateWsMeta.displayName(Component.text(ws.getName())
-                            .decoration(TextDecoration.ITALIC, false));
-                }
+                prvWaystone.setItemName(ws.getName());
 
                 //Creates the lore of the item
-                List<Component> loreArray = new ArrayList<>();
-                String worldName;
-                if(ws.getParsedLocation(ws.getLocation()).getWorld().getName().equals("world")){
-                    worldName = "World";
-                } else if(ws.getParsedLocation(ws.getLocation()).getWorld().getName().equals("world_nether")) {
-                    worldName = "Nether";
-                }
-                else if(ws.getParsedLocation(ws.getLocation()).getWorld().getName().equals("world_the_end")){
-                    worldName = "End";
-                }
-                else{
-                    worldName = "Unknown";
-                }
-                Component location = Component.text(worldName +": ", NamedTextColor.DARK_PURPLE)
-                        .append(Component.text(ws.getParsedLocation(ws.getLocation()).getBlockX()+", "+ ws.getParsedLocation(ws.getLocation()).getBlockY()+", "+ws.getParsedLocation(ws.getLocation()).getBlockZ(), NamedTextColor.LIGHT_PURPLE));
+                Location location = TeleportHandler.getParsedLocation(ws.getLocation());
+                prvWaystone.composePrivateWaystoneDescription(location);
 
-                Component blank = Component.text("");
-
-                Component lClick = Component.text("L-Click: ", NamedTextColor.DARK_GRAY)
-                        .append(Component.text("Teleport", NamedTextColor.GRAY));
-
-                Component rClick = Component.text("R-Click: ", NamedTextColor.DARK_GRAY)
-                        .append(Component.text("Edit", NamedTextColor.GRAY));
-
-                loreArray.add(location);
-                loreArray.add(blank);
-                loreArray.add(lClick);
-                loreArray.add(rClick);
-                ptivateWsMeta.lore(loreArray);
-
-                //Stores the index of the waystone from the waystones list into the NBT meta of that file so that it can be identified when clicked.
-                ptivateWsMeta.getPersistentDataContainer().set(new NamespacedKey(WaystonesPlugin.getPlugin(), "index"), PersistentDataType.INTEGER, prevIndexWs);
-
-                //Upates the meta with the provided one
-                privateWs.setItemMeta(ptivateWsMeta);
+                //Set action info
+                prvWaystone.setActionInfo("Teleport", "Edit");
 
                 //Add the item to the inventory
-                inventory.addItem(privateWs);
+                inventory.addItem(prvWaystone.getDisplayItem());
             }
         }
 
@@ -520,111 +479,60 @@ public class WaystonesSplitMenu extends PaginatedMenu {
             }
             PublicWaystone ws = publicWaystones.get(indexPubWs);
             if (ws != null) {
-                ItemStack publicWs = new ItemStack(Material.NETHERITE_BLOCK);
+                MenuItem publicWs = new MenuItem(Material.NETHERITE_BLOCK, ItemType.PUBLIC_WAYSTONE, indexPubWs);
 
-                Block blockTop = ws.getParsedLocation(ws.getLocation()).getBlock();
-                Block blockUnder = ws.getParsedLocation(ws.getLocation()).subtract(0.0,1.0,0.0).getBlock();
-
+                Block blockTop = TeleportHandler.getParsedLocation(ws.getLocation()).getBlock();
+                Block blockUnder = TeleportHandler.getParsedLocation(ws.getLocation()).subtract(0.0,1.0,0.0).getBlock();
                 boolean damagedWs = !(blockTop.getType().equals(Material.LODESTONE) && blockUnder.getType().equals(Material.NETHERITE_BLOCK));
                 int cost = ws.getCost();
 
                 //if this is the waystone he clicked on make it Black Concrete
                 if(playerMenuUtility.getClickedOnWs() != null){
                     if(ws.getLocation().equals(playerMenuUtility.getClickedOnWs().getLocation())){
-                        //Creates the LimeConcretePowder block item
-                        publicWs = new ItemStack(Material.BLACK_CONCRETE);
+                        publicWs = new MenuItem(Material.BLACK_CONCRETE, ItemType.OPENED, indexPubWs);
                     }
                     else if(damagedWs){//if waystone is damaged, mark it with a cracked stone
-                        publicWs = new ItemStack(Material.CRACKED_STONE_BRICKS);
+                        publicWs = new MenuItem(Material.CRACKED_STONE_BRICKS, ItemType.BROKEN, indexPubWs);
                     }
                 }
 
-                ItemMeta publicMeta = publicWs.getItemMeta();
-
                 //Sets the name
-                if(ws.getName() == null){
-                    publicMeta.displayName(Component.text("Null").decoration(TextDecoration.ITALIC, false));
-                }
-                else{
-                    publicMeta.displayName(Component.text(ws.getName()).decoration(TextDecoration.ITALIC, false));
-                }
+                publicWs.setItemName(ws.getName());
 
-                //Creates the lore of the item
-                List<Component> loreArray = new ArrayList<>();
-                String worldName;
-                if(ws.getParsedLocation(ws.getLocation()).getWorld().getName().equals("world")){
-                    worldName = "World";
-                } else if(ws.getParsedLocation(ws.getLocation()).getWorld().getName().equals("world_nether")) {
-                    worldName = "Nether";
-                }
-                else if(ws.getParsedLocation(ws.getLocation()).getWorld().getName().equals("world_the_end")){
-                    worldName = "End";
-                }
-                else{
-                    worldName = "Unknown";
-                }
-
-                if(ws.getOwner().equals(playerMenuUtility.getOwnerUUID().toString())){
-                    publicMeta.addEnchant(Enchantment.DAMAGE_ALL,0, true);
-                    publicMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                }
-
+                //Creates the description of the item
+                Location location = TeleportHandler.getParsedLocation(ws.getLocation());
                 User user = WaystonesPlugin.getPlugin().getJdbc().getUserFromDB(ws.getOwner());
-                Component location =Component.text(worldName +": ",NamedTextColor.DARK_PURPLE)
-                        .append(Component.text(ws.getParsedLocation(ws.getLocation()).getBlockX()+", "+ ws.getParsedLocation(ws.getLocation()).getBlockY()+", "+ws.getParsedLocation(ws.getLocation()).getBlockZ(), NamedTextColor.LIGHT_PURPLE));
-                Component owner = Component.text("Owner: ", NamedTextColor.DARK_PURPLE)
-                        .append(Component.text(user.getUserName(), NamedTextColor.LIGHT_PURPLE));
-                Component rating = Component.text("Rating: ",NamedTextColor.DARK_PURPLE)
-                        .append(Component.text(ws.getRating(), NamedTextColor.LIGHT_PURPLE)
-                                .append(Component.text("/",NamedTextColor.DARK_PURPLE))
-                                .append(Component.text("5",NamedTextColor.LIGHT_PURPLE)));
-                Component costComp = Component.text("Cost: ",NamedTextColor.DARK_PURPLE)
-                        .append(Component.text(econ.format(ws.getCost()),NamedTextColor.AQUA));
-                Component blank = Component.text("");
+                publicWs.composePublicWaystoneDescription(location, user.getUserName(), ws.getRating(), ws.getCost());
 
-                Component lClick;
+                //If the current wasytone is owned by the player that oppened the menu then make it glow
+                if(ws.getOwner().equals(playerMenuUtility.getOwnerUUID().toString())){
+                    publicWs.addGlint();
+                }
+
+                //Set the Action info
+                String leftClickAction;
+                String rightClickAction;
+
+                //if there is a cost, and you are not the owner
                 if(cost>0 && !playerMenuUtility.getUser().getUuid().equals(ws.getOwner())){
-                    lClick = Component.text("L-Click: ", NamedTextColor.DARK_GRAY)
-                            .append(Component.text("Pay & Teleport", NamedTextColor.GRAY));
+                    leftClickAction = "Pay & Teleport";
                 }else{
-                    lClick = Component.text("L-Click: ", NamedTextColor.DARK_GRAY)
-                            .append(Component.text("Teleport", NamedTextColor.GRAY));
+                    leftClickAction = "Teleport";
                 }
 
-                Component rClick;
+                //if the owner is the person opening the menu
                 if(ws.getOwner().equals(playerMenuUtility.getOwnerUUID().toString()) || playerMenuUtility.isAdmin()){
-                    rClick = Component.text("R-Click: ", NamedTextColor.DARK_GRAY)
-                            .append(Component.text("Edit", NamedTextColor.GRAY));
+                    rightClickAction = "Edit";
                 }else{
-                    rClick = Component.text("R-Click: ", NamedTextColor.DARK_GRAY)
-                            .append(Component.text("Rate", NamedTextColor.GRAY));
-
+                   rightClickAction = "Rate";
                 }
-
-                loreArray.add(location);
-                loreArray.add(owner);
-                loreArray.add(rating);
-                if(cost>0){
-                    loreArray.add(costComp);
-                }
-                loreArray.add(blank);
-                loreArray.add(lClick);
-                loreArray.add(rClick);
-
-                publicMeta.lore(loreArray);
+                publicWs.setActionInfo(leftClickAction,rightClickAction);
 
 
-
-
-                //Stores the index of the waystone from the waystones list into the NBT meta of that file so that it can be identified when clicked.
-                publicMeta.getPersistentDataContainer().set(new NamespacedKey(WaystonesPlugin.getPlugin(), "index"), PersistentDataType.INTEGER, indexPubWs);
-
-                //Updates the meta with the provided one
-                publicWs.setItemMeta(publicMeta);
 
                 //Add the item to the inventory
                 int pos = PUBLIC_WS_SLOTS.get(i);
-                inventory.setItem(pos, publicWs);
+                inventory.setItem(pos, publicWs.getDisplayItem());
 
             }
 
@@ -635,7 +543,7 @@ public class WaystonesSplitMenu extends PaginatedMenu {
     }
 
     private void addMenuPageButtons(int pubWsSize){
-        if(prevIndexWs + 1 >= MAX_PRIVATE * (page+1) || pubWsSize > MAX_PUBLIC * (page +1)){
+        if(indexPrvWs + 1 >= MAX_PRIVATE * (page+1) || pubWsSize > MAX_PUBLIC * (page +1)){
             inventory.setItem(50, makeItem(Material.ARROW, "Next Page"));
         }
         if(page != 0){
