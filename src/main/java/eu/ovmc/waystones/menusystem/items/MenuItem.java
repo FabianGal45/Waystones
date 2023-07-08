@@ -1,6 +1,7 @@
 package eu.ovmc.waystones.menusystem.items;
 
 import eu.ovmc.waystones.WaystonesPlugin;
+import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -10,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -19,14 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MenuItem {
-    private ItemStack displayItem;
-    private ItemMeta displayItemMeta;
-    private ItemType menuItemType;
-    private String name;
-    private int index;
-    private List<Component> loreDescription = new ArrayList<>();
-    private PrivateWaystone referencingWaystone;
-    private int priority;
+    protected ItemStack displayItem;
+    protected ItemMeta displayItemMeta;
+    protected ItemType menuItemType;
+    protected String name;
+    protected List<Component> loreDescription = new ArrayList<>();
+    protected PrivateWaystone referencingWaystone;
+    protected int priority;
 
     //For easy items without description only a name such as back button.
     public MenuItem(Material displayItem, ItemType menuItemType, String name) {
@@ -37,17 +38,22 @@ public class MenuItem {
     }
 
     //For more complex items from the paginated menu such as Waystones
-    public MenuItem(Material displayItem, ItemType menuItemType, int index) {
+    public MenuItem(Material displayItem, ItemType menuItemType) {
         this.displayItem = new ItemStack(displayItem);
         this.displayItemMeta = this.displayItem.getItemMeta();
         this.menuItemType = menuItemType;
-        this.index = index;
-        setIndexMeta();
     }
 
-    private void setIndexMeta(){
+    //For child classes
+    public MenuItem(Material displayItem) {
+        this.displayItem = new ItemStack(displayItem);
+        this.displayItemMeta = this.displayItem.getItemMeta();
+    }
+
+    protected void saveTypeToNBT(){
         //Stores the index of the waystone from the waystones list into the NBT meta of that file so that it can be identified when clicked.
-        displayItemMeta.getPersistentDataContainer().set(new NamespacedKey(WaystonesPlugin.getPlugin(), "index"), PersistentDataType.INTEGER, index);
+        displayItemMeta.getPersistentDataContainer().set(new NamespacedKey(WaystonesPlugin.getPlugin(), "item_type"), PersistentDataType.STRING, menuItemType.toString());
+        System.out.println("Saved Menu Item Type to NBT: "+ menuItemType.toString());
     }
 
     public void setItemName(String name){
@@ -64,43 +70,6 @@ public class MenuItem {
         displayItem.setItemMeta(displayItemMeta);
     }
 
-    public void composePrivateWaystoneDescription(Location location){
-        //Creates the lore of the item
-        String worldName = getWorldName(location);
-
-        Component locText = Component.text(worldName +": ", NamedTextColor.DARK_PURPLE)
-                .append(Component.text(location.getBlockX()+", "+ location.getBlockY()+", "+location.getBlockZ(), NamedTextColor.LIGHT_PURPLE));
-
-        loreDescription.add(locText);
-        displayItemMeta.lore(loreDescription);
-        displayItem.setItemMeta(displayItemMeta);
-    }
-
-    public void composePublicWaystoneDescription(Location location, String userName, double rating, double cost){
-        String worldName = getWorldName(location);
-        Economy econ = WaystonesPlugin.getEcon();
-        String formattedCost = econ.format(cost);
-
-        Component locText = Component.text(worldName +": ",NamedTextColor.DARK_PURPLE)
-                .append(Component.text(location.getBlockX()+", "+ location.getBlockY()+", "+location.getBlockZ(), NamedTextColor.LIGHT_PURPLE));
-        Component ownerText = Component.text("Owner: ", NamedTextColor.DARK_PURPLE)
-                .append(Component.text(userName, NamedTextColor.LIGHT_PURPLE));
-        Component ratingText = Component.text("Rating: ",NamedTextColor.DARK_PURPLE)
-                .append(Component.text(rating, NamedTextColor.LIGHT_PURPLE)
-                        .append(Component.text("/",NamedTextColor.DARK_PURPLE))
-                        .append(Component.text("5",NamedTextColor.LIGHT_PURPLE)));
-        Component costText = Component.text("Cost: ",NamedTextColor.DARK_PURPLE)
-                .append(Component.text(formattedCost, NamedTextColor.AQUA));
-
-        loreDescription.add(locText);
-        loreDescription.add(ownerText);
-        loreDescription.add(ratingText);
-        if(cost > 0) {
-            loreDescription.add(costText);
-        }
-        displayItemMeta.lore(loreDescription);
-        displayItem.setItemMeta(displayItemMeta);
-    }
 
     public void addGlint(){
         displayItemMeta.addEnchant(Enchantment.DAMAGE_ALL,0, true);
@@ -108,7 +77,7 @@ public class MenuItem {
         displayItem.setItemMeta(displayItemMeta);
     }
 
-    private String getWorldName(Location location){
+    protected String getWorldName(Location location){
         String shortWorldName;
         if(location.getWorld().getName().equals("world")){
             shortWorldName = "World";

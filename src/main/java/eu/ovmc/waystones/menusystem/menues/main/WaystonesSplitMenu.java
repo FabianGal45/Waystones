@@ -7,6 +7,8 @@ import eu.ovmc.waystones.handlers.TeleportHandler;
 import eu.ovmc.waystones.menusystem.PaginatedMenu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.menusystem.items.ItemType;
+import eu.ovmc.waystones.menusystem.items.MIPrivateWaystone;
+import eu.ovmc.waystones.menusystem.items.MIPublicWaystone;
 import eu.ovmc.waystones.menusystem.items.MenuItem;
 import eu.ovmc.waystones.menusystem.menues.interactive.EditMenu;
 import eu.ovmc.waystones.menusystem.menues.interactive.PublicWaystoneEditMenu;
@@ -442,15 +444,15 @@ public class WaystonesSplitMenu extends PaginatedMenu {
                 Block blockUnder = TeleportHandler.getParsedLocation(ws.getLocation()).subtract(0.0,1.0,0.0).getBlock();
                 boolean damagedWs = !(blockTop.getType().equals(Material.LODESTONE) && blockUnder.getType().equals(Material.EMERALD_BLOCK));
 
-                MenuItem prvWaystone = new MenuItem(Material.EMERALD_BLOCK, ItemType.PRIVATE_WAYSTONE, indexPrvWs);
+                MIPrivateWaystone prvWaystone = new MIPrivateWaystone(Material.EMERALD_BLOCK, indexPrvWs);
 
                 //if this is the waystone he opened the menu from, make the item lime green
                 if(playerMenuUtility.getClickedOnWs() != null){
                     if(ws.getLocation().equals(playerMenuUtility.getClickedOnWs().getLocation())){
-                        prvWaystone = new MenuItem(Material.LIME_CONCRETE, ItemType.OPENED, indexPrvWs);
+                        prvWaystone = new MIPrivateWaystone(Material.LIME_CONCRETE, ItemType.OPENED, indexPrvWs);
                     }
                     else if(damagedWs){//if waystone is damaged, mark it with a cracked stone
-                        prvWaystone = new MenuItem(Material.CRACKED_STONE_BRICKS, ItemType.BROKEN, indexPrvWs);
+                        prvWaystone = new MIPrivateWaystone(Material.CRACKED_STONE_BRICKS, ItemType.BROKEN, indexPrvWs);
                     }
                 }
 
@@ -459,7 +461,7 @@ public class WaystonesSplitMenu extends PaginatedMenu {
 
                 //Creates the lore of the item
                 Location location = TeleportHandler.getParsedLocation(ws.getLocation());
-                prvWaystone.composePrivateWaystoneDescription(location);
+                prvWaystone.setLoreDescription(location);
 
                 //Set action info
                 prvWaystone.setActionInfo("Teleport", "Edit");
@@ -479,7 +481,7 @@ public class WaystonesSplitMenu extends PaginatedMenu {
             }
             PublicWaystone ws = publicWaystones.get(indexPubWs);
             if (ws != null) {
-                MenuItem publicWs = new MenuItem(Material.NETHERITE_BLOCK, ItemType.PUBLIC_WAYSTONE, indexPubWs);
+                MIPublicWaystone publicWs = new MIPublicWaystone(Material.NETHERITE_BLOCK, ItemType.PUBLIC_WAYSTONE, indexPubWs);
 
                 Block blockTop = TeleportHandler.getParsedLocation(ws.getLocation()).getBlock();
                 Block blockUnder = TeleportHandler.getParsedLocation(ws.getLocation()).subtract(0.0,1.0,0.0).getBlock();
@@ -489,10 +491,10 @@ public class WaystonesSplitMenu extends PaginatedMenu {
                 //if this is the waystone he clicked on make it Black Concrete
                 if(playerMenuUtility.getClickedOnWs() != null){
                     if(ws.getLocation().equals(playerMenuUtility.getClickedOnWs().getLocation())){
-                        publicWs = new MenuItem(Material.BLACK_CONCRETE, ItemType.OPENED, indexPubWs);
+                        publicWs = new MIPublicWaystone(Material.BLACK_CONCRETE, ItemType.OPENED, indexPubWs);
                     }
                     else if(damagedWs){//if waystone is damaged, mark it with a cracked stone
-                        publicWs = new MenuItem(Material.CRACKED_STONE_BRICKS, ItemType.BROKEN, indexPubWs);
+                        publicWs = new MIPublicWaystone(Material.CRACKED_STONE_BRICKS, ItemType.BROKEN, indexPubWs);
                     }
                 }
 
@@ -502,7 +504,7 @@ public class WaystonesSplitMenu extends PaginatedMenu {
                 //Creates the description of the item
                 Location location = TeleportHandler.getParsedLocation(ws.getLocation());
                 User user = WaystonesPlugin.getPlugin().getJdbc().getUserFromDB(ws.getOwner());
-                publicWs.composePublicWaystoneDescription(location, user.getUserName(), ws.getRating(), ws.getCost());
+                publicWs.setLoreDescription(location, user.getUserName(), ws.getRating(), ws.getCost());
 
                 //If the current wasytone is owned by the player that oppened the menu then make it glow
                 if(ws.getOwner().equals(playerMenuUtility.getOwnerUUID().toString())){
@@ -538,16 +540,19 @@ public class WaystonesSplitMenu extends PaginatedMenu {
 
         }
 
+        //After all the waystones have been placed, add the compass and page buttons
         addCompass(playerMenuUtility);
         addMenuPageButtons(publicWaystones.size());
     }
 
     private void addMenuPageButtons(int pubWsSize){
         if(indexPrvWs + 1 >= MAX_PRIVATE * (page+1) || pubWsSize > MAX_PUBLIC * (page +1)){
-            inventory.setItem(50, makeItem(Material.ARROW, "Next Page"));
+            MenuItem nextPageItem = new MenuItem(Material.ARROW, ItemType.PAGE_FORWARD, "Next Page");
+            inventory.setItem(50, nextPageItem.getDisplayItem());
         }
         if(page != 0){
-            inventory.setItem(48, makeItem(Material.BARRIER, "Back"));
+            MenuItem backPageItem = new MenuItem(Material.BARRIER, ItemType.PAGE_BACK, "Back");
+            inventory.setItem(48, backPageItem.getDisplayItem());
         }
 
     }

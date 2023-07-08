@@ -4,6 +4,9 @@ import com.Zrips.CMI.CMI;
 import com.Zrips.CMI.Containers.CMIUser;
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.handlers.TeleportHandler;
+import eu.ovmc.waystones.menusystem.items.ItemType;
+import eu.ovmc.waystones.menusystem.items.MIRTDeathLocation;
+import eu.ovmc.waystones.menusystem.items.MenuItem;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -90,44 +93,12 @@ public abstract class PaginatedMenu extends Menu {
         Player player = playerMenuUtility.getOwner();
         Location deathLocation = player.getLastDeathLocation();
 
-        ItemStack compassItem = new ItemStack(Material.RECOVERY_COMPASS);
-        ItemMeta compassMeta = compassItem.getItemMeta();
-        compassMeta.displayName(Component.text("Death Location").decoration(TextDecoration.ITALIC, false));
-        List<Component> loreArray = new ArrayList<>();
-        if(deathLocation != null){
-            String worldName;
-            if(deathLocation.getWorld().getName().equals("world")){
-                worldName = "World";
-            } else if(deathLocation.getWorld().getName().equals("world_nether")) {
-                worldName = "Nether";
-            }
-            else if(deathLocation.getWorld().getName().equals("world_the_end")){
-                worldName = "End";
-            }
-            else{
-                worldName = "Unknown";
-            }
+        MIRTDeathLocation compassItem = new MIRTDeathLocation(Material.RECOVERY_COMPASS, ItemType.RETURN_TO_DEATH_LOCATION, "Death Location");
 
-            loreArray.add(Component.text(worldName+": ", NamedTextColor.DARK_PURPLE)
-                    .append(Component.text(deathLocation.getBlockX()+", "+deathLocation.getBlockY()+", "+ deathLocation.getBlockZ(),NamedTextColor.LIGHT_PURPLE)));
-            loreArray.add(Component.text(""));
-            loreArray.add(Component.text("Click: ", NamedTextColor.DARK_GRAY)
-                    .append(Component.text("TP to Death Location", NamedTextColor.GRAY)));
-            loreArray.add(Component.text("Cost: ", NamedTextColor.DARK_GRAY)
-                    .append(Component.text("Echo Shard x1", NamedTextColor.GRAY)));
-        }
-        else{
-            loreArray.add(Component.text("You haven't died yet.", NamedTextColor.DARK_PURPLE));
-            loreArray.add(Component.text(""));
-            loreArray.add(Component.text("Click: ", NamedTextColor.DARK_GRAY)
-                    .append(Component.text("TP to Death Location", NamedTextColor.GRAY)));
-            loreArray.add(Component.text("Cost: ", NamedTextColor.DARK_GRAY)
-                    .append(Component.text("Echo Shard x1", NamedTextColor.GRAY)));
-        }
-        compassMeta.lore(loreArray);
-        compassItem.setItemMeta(compassMeta);
+        // Lore/description
+        compassItem.setLoreDescription(playerMenuUtility);
 
-        inventory.setItem(49, compassItem);
+        inventory.setItem(49, compassItem.getDisplayItem());
     }
 
 
