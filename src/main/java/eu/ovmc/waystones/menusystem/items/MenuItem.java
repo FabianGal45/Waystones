@@ -35,6 +35,7 @@ public class MenuItem {
         this.displayItemMeta = this.displayItem.getItemMeta();
         this.menuItemType = menuItemType;
         setItemName(name);
+        saveTypeToNBT();
     }
 
     //For more complex items from the paginated menu such as Waystones
@@ -42,18 +43,19 @@ public class MenuItem {
         this.displayItem = new ItemStack(displayItem);
         this.displayItemMeta = this.displayItem.getItemMeta();
         this.menuItemType = menuItemType;
+        saveTypeToNBT();
     }
 
-    //For child classes
-    public MenuItem(Material displayItem) {
-        this.displayItem = new ItemStack(displayItem);
-        this.displayItemMeta = this.displayItem.getItemMeta();
-    }
 
     protected void saveTypeToNBT(){
         //Stores the index of the waystone from the waystones list into the NBT meta of that file so that it can be identified when clicked.
         displayItemMeta.getPersistentDataContainer().set(new NamespacedKey(WaystonesPlugin.getPlugin(), "item_type"), PersistentDataType.STRING, menuItemType.toString());
-        System.out.println("Saved Menu Item Type to NBT: "+ menuItemType.toString());
+        displayItem.setItemMeta(displayItemMeta);
+    }
+
+    protected void saveIndexToNBT(int index){
+        //Stores the index of the waystone from the waystones list into the NBT meta of that file so that it can be identified when clicked.
+        displayItemMeta.getPersistentDataContainer().set(new NamespacedKey(WaystonesPlugin.getPlugin(), "index"), PersistentDataType.INTEGER, index);
     }
 
     public void setItemName(String name){

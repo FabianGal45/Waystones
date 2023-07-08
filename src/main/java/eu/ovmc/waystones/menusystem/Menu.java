@@ -59,6 +59,8 @@ public abstract class Menu implements InventoryHolder {
         return inventory;
     }
 
+
+    @Deprecated
     public ItemStack makeItem(Material material, String displayName, String... lore){
         ItemStack item = new ItemStack(material);
         ItemMeta itemMeta = item.getItemMeta();

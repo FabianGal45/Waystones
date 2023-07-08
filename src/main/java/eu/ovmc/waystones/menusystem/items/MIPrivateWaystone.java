@@ -1,6 +1,9 @@
 package eu.ovmc.waystones.menusystem.items;
 
 import eu.ovmc.waystones.WaystonesPlugin;
+import eu.ovmc.waystones.handlers.TeleportHandler;
+import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
+import eu.ovmc.waystones.waystones.PrivateWaystone;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
@@ -9,23 +12,33 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataType;
 
 public class MIPrivateWaystone extends MenuItem {
-    private final int INDEX;
 
-    public MIPrivateWaystone(Material displayItem, int index) {
-        super(displayItem);
-        this.INDEX = index;
-        menuItemType = ItemType.PRIVATE_WAYSTONE;
-        saveIndexToNBT();
+    protected PrivateWaystone ws;
+    protected PlayerMenuUtility playerMenuUtility;
+
+    public MIPrivateWaystone(Material displayItem, int index, PrivateWaystone ws, PlayerMenuUtility playerMenuUtility) {
+        super(displayItem, ItemType.PRIVATE_WAYSTONE);
+        this.ws = ws;
+        this.playerMenuUtility = playerMenuUtility;
+        setItemName(ws.getName());
+        saveIndexToNBT(index);
+        setLoreDescription();
+        setActionInfo("Teleport", "Edit");
     }
 
-    public MIPrivateWaystone(Material displayItem, ItemType itemType, int index) {
+    public MIPrivateWaystone(Material displayItem, ItemType itemType, int index, PrivateWaystone ws, PlayerMenuUtility playerMenuUtility) {
         super(displayItem, itemType);
-        this.INDEX = index;
-        saveIndexToNBT();
+        this.ws = ws;
+        this.playerMenuUtility = playerMenuUtility;
+        setItemName(ws.getName());
+        saveIndexToNBT(index);
+        setLoreDescription();
+        setActionInfo("Teleport", "Edit");
     }
 
-    public void setLoreDescription(Location location){
+    private void setLoreDescription(){
         //Creates the lore of the item
+        Location location = TeleportHandler.getParsedLocation(ws.getLocation());
         String worldName = getWorldName(location);
 
         Component locText = Component.text(worldName +": ", NamedTextColor.DARK_PURPLE)
@@ -34,11 +47,6 @@ public class MIPrivateWaystone extends MenuItem {
         loreDescription.add(locText);
         displayItemMeta.lore(loreDescription);
         displayItem.setItemMeta(displayItemMeta);
-    }
-
-    protected void saveIndexToNBT(){
-        //Stores the index of the waystone from the waystones list into the NBT meta of that file so that it can be identified when clicked.
-        displayItemMeta.getPersistentDataContainer().set(new NamespacedKey(WaystonesPlugin.getPlugin(), "index"), PersistentDataType.INTEGER, INDEX);
     }
 
 }

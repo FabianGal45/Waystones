@@ -1,8 +1,13 @@
 package eu.ovmc.waystones.menusystem.menues.main;
 
 import eu.ovmc.waystones.WaystonesPlugin;
+import eu.ovmc.waystones.database.User;
+import eu.ovmc.waystones.handlers.TeleportHandler;
 import eu.ovmc.waystones.menusystem.PaginatedMenu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
+import eu.ovmc.waystones.menusystem.items.ItemType;
+import eu.ovmc.waystones.menusystem.items.MIPublicWaystone;
+import eu.ovmc.waystones.menusystem.items.MenuItem;
 import eu.ovmc.waystones.menusystem.menues.interactive.PublicWaystoneEditMenu;
 import eu.ovmc.waystones.menusystem.menues.interactive.PublicWaystoneRateEditMenu;
 import eu.ovmc.waystones.waystones.PublicWaystone;
@@ -12,6 +17,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -53,12 +59,13 @@ public class PublicWsMenu extends PaginatedMenu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         commonMenuHandlers(e);
-
         Player player = (Player) e.getWhoClicked();
-        ArrayList<PublicWaystone> publicWaystones = playerMenuUtility.getPublicWaystones();
-        Material currentItem = e.getCurrentItem().getType();
 
-        if(currentItem.equals(Material.BARRIER)){
+        ItemMeta itemMeta = e.getCurrentItem().getItemMeta();
+        NamespacedKey itemTypeKey = new NamespacedKey(WaystonesPlugin.getPlugin(), "item_type");
+        ItemType currentItemType = ItemType.valueOf(itemMeta.getPersistentDataContainer().get(itemTypeKey,PersistentDataType.STRING));
+
+        if(currentItemType == ItemType.PAGE_BACK){
             player.playSound(player.getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 1, 2);
             if(page == 1){
                 if(oppenedByAdmin == null){
@@ -77,8 +84,9 @@ public class PublicWsMenu extends PaginatedMenu {
                 }
             }
         }
-        else if(currentItem.equals(Material.ARROW)){//Make it more precise player can click on any arrow including personal inventory.
-//            System.out.println("Next page was selected");
+        else if(currentItemType == ItemType.PAGE_FORWARD){
+            //Make it more precise player can click on any arrow including personal inventory.
+            //System.out.println("Next page was selected");
             player.playSound(player.getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 1, 2);
             page = page + 1;
             if (oppenedByAdmin == null) {
@@ -87,77 +95,20 @@ public class PublicWsMenu extends PaginatedMenu {
                 super.openAs(oppenedByAdmin);
             }
         }
-        else if(currentItem.equals(Material.NETHERITE_BLOCK)){
-            //Grab the index from the NBT data of the block
-            ItemMeta itemMeta = e.getCurrentItem().getItemMeta();
-            NamespacedKey namespacedKey = new NamespacedKey(WaystonesPlugin.getPlugin(), "index");
-            int index = Objects.requireNonNull(itemMeta.getPersistentDataContainer().get(namespacedKey,PersistentDataType.INTEGER));
-//            System.out.println("NBT: index: "+index);
-            PublicWaystone selected = publicWaystones.get(index);
-
-            if(e.getClick() == ClickType.RIGHT){
-//                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
-                openEditMenu(player, selected);
-            }
-            else{
-                player.playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, SoundCategory.BLOCKS, 1, 1);
-                Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(WaystonesPlugin.getPlugin(), new Runnable() {
-                    @Override
-                    public void run() {
-                        //safety feature
-                        selected.safeTeleportToWs(player, playerMenuUtility);
-                    }
-                },5);
-            }
-        }
-        else if(currentItem.equals(Material.BLACK_CONCRETE)){
-            ItemMeta itemMeta = e.getCurrentItem().getItemMeta();
-            NamespacedKey namespacedKey = new NamespacedKey(WaystonesPlugin.getPlugin(), "index");
-            int index = Objects.requireNonNull(itemMeta.getPersistentDataContainer().get(namespacedKey,PersistentDataType.INTEGER));
-//            System.out.println("NBT: index: "+index);
-            PublicWaystone selected = publicWaystones.get(index);
-
-            if(e.getClick() == ClickType.RIGHT){
-//                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
-                openEditMenu(player, selected);
-            }
-            else{
-                player.sendMessage("You are already at this location");
-                player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
-            }
-        }
-        else if(currentItem.equals(Material.CRACKED_STONE_BRICKS)){
-            //Grab the index from the NBT data of the block
-            ItemMeta itemMeta = e.getCurrentItem().getItemMeta();
-            NamespacedKey namespacedKey = new NamespacedKey(WaystonesPlugin.getPlugin(), "index");
-            int index = Objects.requireNonNull(itemMeta.getPersistentDataContainer().get(namespacedKey,PersistentDataType.INTEGER));
-
-            PublicWaystone selected = publicWaystones.get(index);
-
-            if(e.getClick() == ClickType.RIGHT){
-//                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
-                openEditMenu(player, selected);
-            }
-            else{
-                player.sendMessage(Component.text("This waystone has been damaged! ("+selected.getParsedLocation(selected.getLocation()).getBlockX()+", "+selected.getParsedLocation(selected.getLocation()).getBlockY()+", "+ selected.getParsedLocation(selected.getLocation()).getBlockZ()+")",
-                        TextColor.fromHexString("#802f45")));
-            }
-
-        }
 
     }
 
-    private void openEditMenu(Player player, PublicWaystone selected) {
-        if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
-            new PublicWaystoneEditMenu(playerMenuUtility, selected).open();
-        }else{
-            if(!WaystonesPlugin.getPlugin().getJdbc().hasPlayerRated(player,selected)){
-                new PublicWaystoneRateEditMenu(playerMenuUtility, selected).open();
-            }else{
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
-            }
-        }
-    }
+//    private void openEditMenu(Player player, PublicWaystone selected) {
+//        if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
+//            new PublicWaystoneEditMenu(playerMenuUtility, selected).open();
+//        }else{
+//            if(!WaystonesPlugin.getPlugin().getJdbc().hasPlayerRated(player,selected)){
+//                new PublicWaystoneRateEditMenu(playerMenuUtility, selected).open();
+//            }else{
+//                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
+//            }
+//        }
+//    }
 
     @Override
     public void setMenuItems() {
@@ -176,67 +127,24 @@ public class PublicWsMenu extends PaginatedMenu {
 
             PublicWaystone ws = publicWaystones.get(indexPubWs);
             if (ws != null) {
-                ItemStack publicWs = new ItemStack(Material.NETHERITE_BLOCK);
-
+                MIPublicWaystone publicWs = new MIPublicWaystone(Material.NETHERITE_BLOCK, indexPubWs, ws, playerMenuUtility);
                 Block blockTop = ws.getParsedLocation(ws.getLocation()).getBlock();
                 Block blockUnder = ws.getParsedLocation(ws.getLocation()).subtract(0.0,1.0,0.0).getBlock();
-
                 boolean damagedWs = !(blockTop.getType().equals(Material.LODESTONE) && blockUnder.getType().equals(Material.NETHERITE_BLOCK));
 
-                //if this is the waystone he clicked on make it lime green
+                //Changes the Menu item type based on if it is damaged or the selected waystone
                 if(playerMenuUtility.getClickedOnWs() != null) {
                     if (ws.getLocation().equals(playerMenuUtility.getClickedOnWs().getLocation())) {
-                        //Creates the LimeConcretePowder block item
-                        publicWs = new ItemStack(Material.BLACK_CONCRETE);
-                    } else if (damagedWs) {//if waystone is damaged, mark it with a cracked stone
-                        publicWs = new ItemStack(Material.CRACKED_STONE_BRICKS);
-                    } else {
-                        //Creates the Emerald block item
-                        publicWs = new ItemStack(Material.NETHERITE_BLOCK);
+                        publicWs = new MIPublicWaystone(Material.BLACK_CONCRETE, ItemType.OPENED_PUBLIC_WAYSTONE, indexPubWs, ws, playerMenuUtility);
+                    } else if (damagedWs) {
+                        publicWs = new MIPublicWaystone(Material.CRACKED_STONE_BRICKS, ItemType.OPENED_PUBLIC_WAYSTONE, indexPubWs, ws, playerMenuUtility);
                     }
                 }
 
-                ItemMeta publicMeta = publicWs.getItemMeta();
-
-                //Sets the name
-                publicMeta.displayName(Component.text("Public Waystone").decoration(TextDecoration.ITALIC, false));
-
-                //Creates the lore of the item
-                List<Component> loreArray = new ArrayList<>();
-                String worldName;
-                if(ws.getParsedLocation(ws.getLocation()).getWorld().getName().equals("world")){
-                    worldName = "World";
-                } else if(ws.getParsedLocation(ws.getLocation()).getWorld().getName().equals("world_nether")) {
-                    worldName = "Nether";
-                }
-                else if(ws.getParsedLocation(ws.getLocation()).getWorld().getName().equals("world_the_end")){
-                    worldName = "End";
-                }
-                else{
-                    worldName = "Unknown";
-                }
-
-
-                if(ws.getOwner().equals(playerMenuUtility.getOwnerUUID().toString())){
-                    publicMeta.addEnchant(Enchantment.DAMAGE_ALL,0, true);
-                    publicMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                }
-
-                loreArray.add(Component.text(worldName +": "+ ws.getParsedLocation(ws.getLocation()).getBlockX()+", "+ ws.getParsedLocation(ws.getLocation()).getBlockY()+", "+ws.getParsedLocation(ws.getLocation()).getBlockZ()));
-                publicMeta.lore(loreArray);
-
-                //Stores the index of the waystone from the waystones list into the NBT meta of that file so that it can be identified when clicked.
-                publicMeta.getPersistentDataContainer().set(new NamespacedKey(WaystonesPlugin.getPlugin(), "index"), PersistentDataType.INTEGER, indexPubWs);
-
-                //Upates the meta with the provided one
-                publicWs.setItemMeta(publicMeta);
-
                 //Add the item to the inventory
                 int pos = publicWsSlots.get(i);
-                inventory.setItem(pos, publicWs);
-
+                inventory.setItem(pos, publicWs.getDisplayItem());
             }
-
         }
 
         addMenuPageButtons(publicWaystones.size());
@@ -246,10 +154,12 @@ public class PublicWsMenu extends PaginatedMenu {
     private void addMenuPageButtons(int pubWsSize){
 //        System.out.println("pubWsSize: "+ pubWsSize +" " + (pubWsSize - prevIndexPubWs -1 ) + " > "+ (maxPublicWs * (page+1)) );
         if(pubWsSize - 1 > MAX_PUBLIC_WS * page){
-            inventory.setItem(50, makeItem(Material.ARROW, "Next Page"));
+            MenuItem nextPage = new MenuItem(Material.ARROW, ItemType.PAGE_FORWARD, "Next Page");
+            inventory.setItem(50, nextPage.getDisplayItem());
         }
 
-        inventory.setItem(48, makeItem(Material.BARRIER, "Back"));
+        MenuItem backPage = new MenuItem(Material.BARRIER, ItemType.PAGE_BACK, "Back");
+        inventory.setItem(48, backPage.getDisplayItem());
 
 
     }
