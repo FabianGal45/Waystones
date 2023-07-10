@@ -102,15 +102,15 @@ public class MenuItem {
             Component blank = Component.text("");
             loreDescription.add(blank);
 
-            if(leftClickActionInfo!=null){
+            if(leftClickActionInfo != null){
                 Component lClick = Component.text("L-Click: ", NamedTextColor.DARK_GRAY)
                         .append(Component.text(leftClickActionInfo, NamedTextColor.GRAY));
                 loreDescription.add(lClick);
             }
 
-            if(rightClickActionInfo!=null){
+            if(rightClickActionInfo != null){
                 Component rClick = Component.text("R-Click: ", NamedTextColor.DARK_GRAY)
-                        .append(Component.text("Edit", NamedTextColor.GRAY));
+                        .append(Component.text(rightClickActionInfo, NamedTextColor.GRAY));
                 loreDescription.add(rClick);
             }
 

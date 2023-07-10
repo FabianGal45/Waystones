@@ -155,9 +155,9 @@ public abstract class PaginatedMenu extends Menu {
                 if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
                     new PublicWaystoneEditMenu(playerMenuUtility, selected).open();
                 }else{
-                    if(!WaystonesPlugin.getPlugin().getJdbc().hasPlayerRated(player,selected)){
+                    if(!WaystonesPlugin.getPlugin().getJdbc().hasPlayerRated(player,selected)){//player hasn't rated the waystone
                         new PublicWaystoneRateEditMenu(playerMenuUtility, selected).open();
-                    }else{
+                    }else{//player has already rated the waystons
                         player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 1, (float) 0.1);
                     }
                 }

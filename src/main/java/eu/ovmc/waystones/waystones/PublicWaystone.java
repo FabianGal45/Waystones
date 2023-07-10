@@ -4,20 +4,20 @@ public class PublicWaystone extends PrivateWaystone {
 
     private double rating;
     private int cost;
-//    private String category;
+    private String category;
 
-    public PublicWaystone(String location, String owner, String name, String tpLocation) {
-        super(location, owner, name, tpLocation);
-        rating = 0.0;
-        cost = 0;
-//        category = null;
-    }
-
-    public PublicWaystone(String location, String owner, String name, String tpLocation, double rating, int cost) {
-        super(location, owner, name, tpLocation);
+    public PublicWaystone(String location, String owner, String name, String tpLocation, int priority, String customItem, double rating, int cost, String category) {
+        super(location, owner, name, tpLocation, priority, customItem);
         this.rating = rating;
         this.cost = cost;
-//        this.category = category;
+        this.category = category;
+    }
+
+    public PublicWaystone(int id, String location, String owner, String name, String tpLocation, int priority, String customItem, double rating, int cost, String category) {
+        super(id, location, owner, name, tpLocation, priority, customItem);
+        this.rating = rating;
+        this.cost = cost;
+        this.category = category;
     }
 
     public double getRating() {

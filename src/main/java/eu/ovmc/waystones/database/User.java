@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 
 public class User {
 
+    private int id;
     private String uuid;
     private String userName;
     private int privateWs;
@@ -20,7 +21,8 @@ public class User {
     private int acquiredPrivateWs;
     private int acquiredPublicWs;
 
-    public User(String uuid, String userName, int privateWs, int publicWs, int purchasedPrivateWs, int acquiredPrivateWs, int acquiredPublicWs) {
+    public User(int id, String uuid, String userName, int privateWs, int publicWs, int purchasedPrivateWs, int acquiredPrivateWs, int acquiredPublicWs) {
+        this.id = id;
         this.uuid = uuid;
         this.userName = userName;
         this.privateWs = privateWs;
@@ -70,6 +72,10 @@ public class User {
         return canPlace;
     }
 
+
+    public int getId() {
+        return id;
+    }
 
     public int getAllowedPrivWs(){
         int freePrivateWs = WaystonesPlugin.getPlugin().getConfig().getInt("FreePrivateWs"); //from confing.yml
