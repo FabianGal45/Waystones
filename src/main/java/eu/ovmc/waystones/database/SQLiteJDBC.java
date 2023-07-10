@@ -4,10 +4,13 @@ import eu.ovmc.waystones.waystones.PublicWaystone;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class SQLiteJDBC {
     private Connection con;
+    private static final DecimalFormat df = new DecimalFormat("0.00");
+
     public Connection getCon(){
 
         //If there is a connection created then return that connection.
@@ -206,10 +209,11 @@ public class SQLiteJDBC {
         }
     }
 
+
     public void regRate(PublicWaystone ws, Player player, int rate){
         try{
 
-            //Query to insert data into tutorials_data table
+            //Update the ratings table
             String query = "INSERT INTO ratings (" +
                     "pub_ws_id,"+
                     "player_id," +
@@ -226,11 +230,12 @@ public class SQLiteJDBC {
             pstmt.execute();
             pstmt.close();
 
-            //Start calculating the final rate based on all entries.
+            //Start calculating the final rate based on all entries. Then update the Public waystones table
             ArrayList<Integer> ratesList = getAllRatesForPubWs(ws);
 
             int a = 0, b = 0, c = 0, d = 0, e = 0, r = ratesList.size();
             for(Integer i :ratesList){
+                System.out.println("RatesList: "+ ratesList.size()+ ", "+i);
                 if(i==1){
                     a++;
                 } else if (i==2){
@@ -245,7 +250,7 @@ public class SQLiteJDBC {
             }
 
             double finalRate = (double)(a+2*b+3*c+4*d+5*e)/r;
-            ws.setRating(finalRate);
+            ws.setRating(Double.parseDouble(df.format(finalRate)));
             updateWaystone(ws);
 
         }catch (Exception e){
@@ -282,7 +287,7 @@ public class SQLiteJDBC {
         Statement stmt;
         try{
             stmt = getCon().createStatement();
-            String sql = "SELECT * FROM ratings WHERE pub_ws_id = '"+ ws.getLocation() +"';";
+            String sql = "SELECT * FROM ratings WHERE pub_ws_id = '"+ ws.getId() +"';";
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
                 arrayList.add(rs.getInt("rate"));
@@ -501,6 +506,7 @@ public class SQLiteJDBC {
     public void updateWaystone(PrivateWaystone ws){
 
         if(ws instanceof PublicWaystone){
+            System.out.println("PUBWS: Rating: "+ ((PublicWaystone) ws).getRating() );
             try{
                 String sql = "UPDATE public_waystones" +
                         " SET name = ?, tp_location = ?, cost = ?, rating = ?" +

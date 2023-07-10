@@ -4,6 +4,7 @@ import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.handlers.TeleportHandler;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
+import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -89,8 +90,12 @@ public class MIPublicWaystone extends MenuItem{
         //if the owner is the person opening the menu
         if(ws.getOwner().equals(playerMenuUtility.getOwnerUUID().toString()) || playerMenuUtility.isAdmin()){
             rightClickAction = "Edit";
-        }else{
+        }
+        else if(!WaystonesPlugin.getPlugin().getJdbc().hasPlayerRated(playerMenuUtility.getOwner(),ws)){//if the player hasn't rated before
             rightClickAction = "Rate";
+        }
+        else{
+            rightClickAction = null;
         }
         setActionInfo(leftClickAction,rightClickAction);
     }

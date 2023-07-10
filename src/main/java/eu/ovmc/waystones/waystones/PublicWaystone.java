@@ -25,6 +25,7 @@ public class PublicWaystone extends PrivateWaystone {
     }
 
     public void setRating(double rating) {
+        System.out.println("rating set to: " +rating);
         this.rating = rating;
     }
 

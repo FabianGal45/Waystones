@@ -125,8 +125,6 @@ public class WaystonesSplitMenu extends PaginatedMenu {
         }
     }
 
-
-
     @Override
     public void setMenuItems() {
         addMenuBorder();

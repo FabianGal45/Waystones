@@ -122,6 +122,7 @@ public class PlayerMenuUtility {
     }
 
     public boolean isAdmin() {
+        checkPlayerIsAdmin();
         return isAdmin;
     }
 
