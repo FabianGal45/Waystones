@@ -3,6 +3,10 @@ import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import org.bukkit.entity.Player;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -81,14 +85,6 @@ public class SQLiteJDBC {
             stmt.executeUpdate(sql);
             stmt.close();
 
-            //Prints the table names to console to check if they exist
-            DatabaseMetaData meta = getCon().getMetaData();
-            ResultSet resultSet = meta.getTables(null, null, null, new String[]{"TABLE"});
-            while(resultSet.next()){
-                String tableName = resultSet.getString("TABLE_NAME");
-                System.out.println("JDBC> This table exists: "+ tableName);
-            }
-
 
         }catch (Exception e){
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -99,17 +95,64 @@ public class SQLiteJDBC {
 
     public void checkForDBupdate(){
         //check to see if there are values missing in the current database
+        try{
+            DatabaseMetaData metaData = con.getMetaData();
+            ResultSet columns = metaData.getColumns(null, null, "private_waystones","id");
 
-        //IF values are missing create a backup of the current database
+            if(columns.next()){
+                System.out.println("Column id exists in table private waystone. No update required");
+            }
+            else{
+                //IF values are missing create a backup of the current database
+                String databasePath = "plugins/Waystones/waystones.sqlite.db";
+                String backupPath = "plugins/Waystones/waystones_backup.sqlite.db";
 
-        //Change the names of the current tables to "old_table"
+                File originalFile = new File(databasePath);
+                File backupFile = new File(backupPath);
+                Files.copy(originalFile.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-        //Create the new tables
-        createTables();
+                //Change the names of the current tables to "old_table"
+                // Retrieve table information
+                ResultSet tables = metaData.getTables(null, null, null, new String[]{"TABLE"});
+                while (tables.next()) {
+                    String tableName = tables.getString("TABLE_NAME");
+                    System.out.println("[][][]>> table name before: "+tableName);
 
-        //Copy the data from the old table into the new tables
+                    Statement stmt = getCon().createStatement();
+                    String sql = "ALTER TABLE "+ tableName +" RENAME TO old_"+tableName;
+                    stmt.executeUpdate(sql);
+                    stmt.close();
+                }
 
-        //drop the old tables
+                tables = metaData.getTables(null, null, null, new String[]{"TABLE"});
+                while(tables.next()){
+                    String tableName = tables.getString("TABLE_NAME");
+                    System.out.println("[][][]>> table name after: "+tableName);
+                }
+
+                //Create the new tables
+                createTables();
+                System.out.println("Created updated tables");
+
+                //Copy the data from the old table into the new tables //todo <<<<<<<<<<<<<
+
+
+                //drop the old tables
+
+
+                //close metasata
+                columns.close();
+                tables.close();
+            }
+        }catch (SQLException | IOException e){
+            e.printStackTrace();
+        }
+
+
+
+
+
+
 
 
     }

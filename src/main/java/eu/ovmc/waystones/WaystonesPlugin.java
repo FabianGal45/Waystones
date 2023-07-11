@@ -47,6 +47,7 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
         //SQLiteJDBC - Connect and create the tables.
         jdbc = new SQLiteJDBC();
         jdbc.createTables();
+        jdbc.checkForDBupdate();
 
         //Create the chat input handler here so that it doesn't get created multiple times in other classes and make the use of static hashmap redundant / Removes the need of creating multiple slots in memory for the same class.
         chatInputHandler = new ChatInputHandler();
