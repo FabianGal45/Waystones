@@ -79,7 +79,7 @@ public class Ws implements CommandExecutor {
 
 
                             }else{
-                                User user = jdbc.getUserFromDB(target.getUniqueId().toString());
+                                User user = jdbc.getUserFromUuid(target.getUniqueId().toString());
                                 if(user != null){
                                     try{
                                         user.setAcquiredPublicWs(user.getAcquiredPublicWs() + Integer.parseInt(args[3]));
@@ -126,7 +126,7 @@ public class Ws implements CommandExecutor {
 
 
                             }else{
-                                User user = jdbc.getUserFromDB(target.getUniqueId().toString());
+                                User user = jdbc.getUserFromUuid(target.getUniqueId().toString());
                                 if(user != null){
                                     try{
                                         user.setAcquiredPrivateWs(user.getAcquiredPrivateWs() + Integer.parseInt(args[3]));
@@ -150,29 +150,29 @@ public class Ws implements CommandExecutor {
                     player.sendMessage(Component.text("You do not have permission.", NamedTextColor.DARK_RED));
                 }
             }
-            else if (args[0].equals("open")){
-                if(player.hasPermission("waystones.admin")){
-
-                    SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
-                    OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
-                    User user = jdbc.getUserFromDB(target.getUniqueId().toString());
-
-                    //if user exists in the database open a split menu as the player
-                    if(user != null){
-                        PlayerMenuUtility playerMenuUtility = new PlayerMenuUtility(target);
-                        playerMenuUtility.setPrivateWaystones(jdbc.getAllPrivateWaystones(target.getUniqueId().toString()));
-                        playerMenuUtility.setPublicWaystones(jdbc.getAllPublicWaystones());
-
-                        new WaystonesSplitMenu(playerMenuUtility, 0).openAs(player);
-
-                    }else{
-                        player.sendMessage("This user does not exist in the database.");
-                    }
-                }
-                else{
-                    player.sendMessage(Component.text("You do not have permission.", NamedTextColor.DARK_RED));
-                }
-            }
+//            else if (args[0].equals("open")){
+//                if(player.hasPermission("waystones.admin")){
+//
+//                    SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
+//                    OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+//                    User user = jdbc.getUserFromUuid(target.getUniqueId().toString());
+//
+//                    //if user exists in the database open a split menu as the player
+//                    if(user != null){
+//                        PlayerMenuUtility playerMenuUtility = new PlayerMenuUtility(target);
+//                        playerMenuUtility.setPrivateWaystones(jdbc.getAllPrivateWaystones(target.getUniqueId().toString()));
+//                        playerMenuUtility.setPublicWaystones(jdbc.getAllPublicWaystones());
+//
+//                        new WaystonesSplitMenu(playerMenuUtility, 0).openAs(player);
+//
+//                    }else{
+//                        player.sendMessage("This user does not exist in the database.");
+//                    }
+//                }
+//                else{
+//                    player.sendMessage(Component.text("You do not have permission.", NamedTextColor.DARK_RED));
+//                }
+//            }
             else if (args[0].equals("cancelNameChange")){
                 ChatInputHandler chatInputHandler = WaystonesPlugin.getPlugin().getChatInputHandler();
                 if(chatInputHandler.getRenameMap().containsKey(player)){
@@ -254,7 +254,7 @@ public class Ws implements CommandExecutor {
                             }
 
                         } else {
-                            User user = jdbc.getUserFromDB(target.getUniqueId().toString());
+                            User user = jdbc.getUserFromUuid(target.getUniqueId().toString());
                             if (user != null) {
                                 try {
                                     user.setAcquiredPublicWs(Integer.parseInt(args[3]));
@@ -292,7 +292,7 @@ public class Ws implements CommandExecutor {
 
 
                         } else {
-                            User user = jdbc.getUserFromDB(target.getUniqueId().toString());
+                            User user = jdbc.getUserFromUuid(target.getUniqueId().toString());
                             if (user != null) {
                                 try {
                                     user.setAcquiredPrivateWs(Integer.parseInt(args[3]));
@@ -341,7 +341,7 @@ public class Ws implements CommandExecutor {
 
 
                         }else{
-                            User user = jdbc.getUserFromDB(target.getUniqueId().toString());
+                            User user = jdbc.getUserFromUuid(target.getUniqueId().toString());
                             if(user != null){
                                 try{
                                     user.setAcquiredPublicWs(user.getAcquiredPublicWs() + Integer.parseInt(args[3]));
@@ -388,7 +388,7 @@ public class Ws implements CommandExecutor {
 
 
                         }else{
-                            User user = jdbc.getUserFromDB(target.getUniqueId().toString());
+                            User user = jdbc.getUserFromUuid(target.getUniqueId().toString());
                             if(user != null){
                                 try{
                                     user.setAcquiredPrivateWs(user.getAcquiredPrivateWs() + Integer.parseInt(args[3]));

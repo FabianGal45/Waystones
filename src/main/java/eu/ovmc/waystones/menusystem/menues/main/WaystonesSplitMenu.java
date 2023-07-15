@@ -2,34 +2,20 @@ package eu.ovmc.waystones.menusystem.menues.main;
 
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.User;
-import eu.ovmc.waystones.handlers.ChatInputHandler;
 import eu.ovmc.waystones.handlers.TeleportHandler;
 import eu.ovmc.waystones.menusystem.PaginatedMenu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.menusystem.items.*;
-import eu.ovmc.waystones.menusystem.menues.interactive.EditMenu;
-import eu.ovmc.waystones.menusystem.menues.interactive.PublicWaystoneEditMenu;
-import eu.ovmc.waystones.menusystem.menues.interactive.PublicWaystoneRateEditMenu;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.text.DecimalFormat;
 import java.util.*;
 
 public class WaystonesSplitMenu extends PaginatedMenu {
@@ -55,8 +41,8 @@ public class WaystonesSplitMenu extends PaginatedMenu {
     @Override
     public Component getMenuName() {
         if(playerMenuUtility.getClickedOnWs() != null){
-            String waystoneOwnerUUid = playerMenuUtility.getClickedOnWs().getOwner();
-            User user = WaystonesPlugin.getPlugin().getJdbc().getUserFromDB(waystoneOwnerUUid);
+            int userId = playerMenuUtility.getClickedOnWs().getUserId();
+            User user = WaystonesPlugin.getPlugin().getJdbc().getUser(userId);
             return Component.text( user.getUserName()+ "'s Waystone"); //todo fix this with openAs
         }else{
             return Component.text("OPEN AS");

@@ -46,9 +46,10 @@ public class WaystoneInteract implements Listener {
                 }
 
                 //Check if the user exists if not register him.
-                User user = jdbc.getUserFromDB(player.getUniqueId().toString());
+                User user = jdbc.getUserFromUuid(player.getUniqueId().toString());
                 if(user == null){
                     jdbc.regPlayer(player);
+                    user = jdbc.getUserFromUuid(player.getUniqueId().toString()); //gets the updated user with the ID
                 }
 
                 //TESTING
@@ -59,7 +60,7 @@ public class WaystoneInteract implements Listener {
                 if(ws != null){
                     e.setCancelled(true);
                     PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(player);
-                    playerMenuUtility.setPrivateWaystones(jdbc.getAllPrivateWaystones(player.getUniqueId().toString()));
+                    playerMenuUtility.setPrivateWaystones(jdbc.getAllPrivateWaystones(user.getId()));
                     playerMenuUtility.setPublicWaystones(jdbc.getAllPublicWaystones());
                     playerMenuUtility.setClickedOnWs(ws);
 

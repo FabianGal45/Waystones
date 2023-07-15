@@ -1,6 +1,5 @@
 package eu.ovmc.waystones.events;
 
-import co.aikar.util.JSONUtil;
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.waystones.PublicWaystone;
@@ -8,7 +7,6 @@ import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -21,8 +19,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
-
-import java.awt.*;
 
 public class WaystonePlace implements Listener {
 //    https://www.spigotmc.org/wiki/using-the-event-api/
@@ -45,13 +41,13 @@ public class WaystonePlace implements Listener {
             if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || blockUnder.getType().equals(Material.NETHERITE_BLOCK)){
                 //get user data from users table
                 SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
-                User user = jdbc.getUserFromDB(player.getUniqueId().toString());
+                User user = jdbc.getUserFromUuid(player.getUniqueId().toString());
 
-                //if player does not exists
+                //if player does not exist
                 if(user == null){
                     //Register new player
                     jdbc.regPlayer(player);
-                    user = jdbc.getUserFromDB(player.getUniqueId().toString());//once registered, store the user object so that it doesn't satay null and crash when trying to update the user.
+                    user = jdbc.getUserFromUuid(player.getUniqueId().toString());//once registered, store the user object so that it doesn't satay null and crash when trying to update the user.
                 }
 
                 //If waystone does not already exists in the database at this location register it. Otherwise just let it use the old data
@@ -61,7 +57,7 @@ public class WaystonePlace implements Listener {
                     String tpLocation = player.getLocation().toString();
                     if(blockUnder.getType().equals(Material.EMERALD_BLOCK)){
                         if(user.canPlacePrivateWs()){
-                            PrivateWaystone ws = new PrivateWaystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString(), "Private Waystone", tpLocation, 0, null);
+                            PrivateWaystone ws = new PrivateWaystone(e.getBlock().getLocation().toString(), user.getId(), "Private Waystone", tpLocation, 0, null);
                             jdbc.regWaystone(ws, user);
                             player.sendMessage(Component.text("Private waystone registered!", NamedTextColor.GREEN));
                             player.playSound(e.getBlock().getLocation(), Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1, 2);
@@ -81,7 +77,7 @@ public class WaystonePlace implements Listener {
                     else if(blockUnder.getType().equals(Material.NETHERITE_BLOCK)){
                         if (user.canPlacePublicWs()){
                             player.playSound(e.getBlock().getLocation(), Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1, 2);
-                            PublicWaystone ws = new PublicWaystone(e.getBlock().getLocation().toString(), e.getPlayer().getUniqueId().toString(), "Public Waystone", tpLocation, 0, null, 0.0, 0,null);
+                            PublicWaystone ws = new PublicWaystone(e.getBlock().getLocation().toString(), user.getId(), "Public Waystone", tpLocation, 0, null, 0.0, 0,null);
                             jdbc.regWaystone(ws, user);
                             player.sendMessage("Public waystone registered!");
                         }else{
@@ -109,13 +105,13 @@ public class WaystonePlace implements Listener {
             if(blockAbove.getType().equals(Material.LODESTONE)){
                 //get user data from users table
 
-                User user = jdbc.getUserFromDB(player.getUniqueId().toString());
+                User user = jdbc.getUserFromUuid(player.getUniqueId().toString());
 
                 //if player does not exists
                 if(user == null){
                     //Register new player
                     jdbc.regPlayer(player);
-                    user = jdbc.getUserFromDB(player.getUniqueId().toString());//once registered, store the user object so that it doesn't satay null and crash when trying to update the user.
+                    user = jdbc.getUserFromUuid(player.getUniqueId().toString());//once registered, store the user object so that it doesn't satay null and crash when trying to update the user.
                 }
 
                 //If waystone does not already exists in the database at this location register it. Otherwise just let it use the old data
@@ -125,7 +121,7 @@ public class WaystonePlace implements Listener {
                     tpLocation = player.getLocation().toString();
                     if(e.getBlock().getType().equals(Material.EMERALD_BLOCK)){
                         if(user.canPlacePrivateWs()){
-                            PrivateWaystone ws = new PrivateWaystone(blockAbove.getLocation().toString(), e.getPlayer().getUniqueId().toString(), "Private Waystone", tpLocation, 0, null);
+                            PrivateWaystone ws = new PrivateWaystone(blockAbove.getLocation().toString(), user.getId(), "Private Waystone", tpLocation, 0, null);
                             jdbc.regWaystone(ws, user);
                             player.playSound(e.getBlock().getLocation(), Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1, 2);
                             player.sendMessage("Private waystone registered!");
@@ -143,7 +139,7 @@ public class WaystonePlace implements Listener {
                     }
                     else if(e.getBlock().getType().equals(Material.NETHERITE_BLOCK)){
                         player.playSound(e.getBlock().getLocation(), Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1, 2);
-                        PublicWaystone ws = new PublicWaystone(blockAbove.getLocation().toString(), e.getPlayer().getUniqueId().toString(), "Public Waystone", tpLocation, 0, null, 0.0, 0,null);
+                        PublicWaystone ws = new PublicWaystone(blockAbove.getLocation().toString(), user.getId(), "Public Waystone", tpLocation, 0, null, 0.0, 0,null);
                         jdbc.regWaystone(ws, user);
                         player.sendMessage("Public waystone registered!");
                     }

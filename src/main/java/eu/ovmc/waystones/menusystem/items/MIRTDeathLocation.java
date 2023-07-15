@@ -15,7 +15,7 @@ public class MIRTDeathLocation extends MenuItem{
 
 
     public void setLoreDescription(PlayerMenuUtility playerMenuUtility){
-        Player player = playerMenuUtility.getOwner();
+        Player player = playerMenuUtility.getPlayer();
         Location deathLocation = player.getLastDeathLocation();
 
 

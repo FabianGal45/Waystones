@@ -4,7 +4,6 @@ import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.handlers.TeleportHandler;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
-import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -24,7 +23,7 @@ public class MIPublicWaystone extends MenuItem{
         setItemName(ws.getName());
         setLoreDescription();
         setActionInfo();
-        if(ws.getOwner().equals(playerMenuUtility.getOwnerUUID().toString())){//If the current wasytone is owned by the player that oppened the menu then make it glow
+        if(ws.getUserId() == playerMenuUtility.getUser().getId()){//If the current wasytone is owned by the player that oppened the menu then make it glow
             addGlint();
         }
     }
@@ -37,14 +36,14 @@ public class MIPublicWaystone extends MenuItem{
         setItemName(ws.getName());
         setLoreDescription();
         setActionInfo();
-        if(ws.getOwner().equals(playerMenuUtility.getOwnerUUID().toString())){//If the current wasytone is owned by the player that oppened the menu then make it glow
+        if(ws.getUserId() == playerMenuUtility.getUser().getId()){//If the current wasytone is owned by the player that oppened the menu then make it glow
             addGlint();
         }
     }
 
     private void setLoreDescription(){
         Location location = TeleportHandler.getParsedLocation(ws.getLocation());
-        User user = WaystonesPlugin.getPlugin().getJdbc().getUserFromDB(ws.getOwner());
+        User user = WaystonesPlugin.getPlugin().getJdbc().getUser(ws.getUserId());
         String userName = user.getUserName();
         String worldName = getWorldName(location);
         Economy econ = WaystonesPlugin.getEcon();
@@ -81,17 +80,17 @@ public class MIPublicWaystone extends MenuItem{
         int cost = ws.getCost();
 
         //if there is a cost, and you are not the owner
-        if(cost>0 && !playerMenuUtility.getUser().getUuid().equals(ws.getOwner())){
+        if(cost>0 && !playerMenuUtility.getUser().getUuid().equals(ws.getUserId())){
             leftClickAction = "Pay & Teleport";
         }else{
             leftClickAction = "Teleport";
         }
 
         //if the owner is the person opening the menu
-        if(ws.getOwner().equals(playerMenuUtility.getOwnerUUID().toString()) || playerMenuUtility.isAdmin()){
+        if(ws.getUserId() == playerMenuUtility.getUser().getId() || playerMenuUtility.isAdmin()){
             rightClickAction = "Edit";
         }
-        else if(!WaystonesPlugin.getPlugin().getJdbc().hasPlayerRated(playerMenuUtility.getOwner(),ws)){//if the player hasn't rated before
+        else if(!WaystonesPlugin.getPlugin().getJdbc().hasPlayerRated(playerMenuUtility.getPlayer(),ws)){//if the player hasn't rated before
             rightClickAction = "Rate";
         }
         else{

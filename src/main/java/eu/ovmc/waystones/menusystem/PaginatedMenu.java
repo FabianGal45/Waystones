@@ -91,7 +91,7 @@ public abstract class PaginatedMenu extends Menu {
 //            System.out.println(WaystonesPlugin.getPlugin().getDescription().getVersion());
 
             if(e.getClick() == ClickType.RIGHT){
-                if(playerMenuUtility.getOwner() != null){
+                if(playerMenuUtility.getPlayer() != null){
                     new EditMenu(playerMenuUtility, selected).open();
                 }
                 else{
@@ -152,7 +152,7 @@ public abstract class PaginatedMenu extends Menu {
             if(e.getClick() == ClickType.RIGHT){
 //                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
                 //if the player is the owner of the PublicWaystone then open the right menu
-                if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
+                if(player.getUniqueId().toString().equals(selected.getUser().getUuid()) || player.hasPermission("waystones.admin")){
                     new PublicWaystoneEditMenu(playerMenuUtility, selected).open();
                 }else{
                     if(!WaystonesPlugin.getPlugin().getJdbc().hasPlayerRated(player,selected)){//player hasn't rated the waystone
@@ -166,10 +166,10 @@ public abstract class PaginatedMenu extends Menu {
                 player.playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, SoundCategory.BLOCKS, 1, 1);
 
                 //if the player is not the owner of the waystone make him pay the cost
-                if(!player.getUniqueId().toString().equals(selected.getOwner())){
+                if(!player.getUniqueId().toString().equals(selected.getUser().getUuid())){
                     //pay the cost before teleporting
                     EconomyResponse withdraw = econ.withdrawPlayer(player,selected.getCost());
-                    OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(selected.getOwner()));
+                    OfflinePlayer owner = Bukkit.getOfflinePlayer(UUID.fromString(selected.getUser().getUuid()));
 
 
                     if(withdraw.transactionSuccess()){
@@ -222,7 +222,6 @@ public abstract class PaginatedMenu extends Menu {
             else{
                 selected = publicWaystones.get(index);
             }
-
 
             if(e.getClick() == ClickType.RIGHT){
 //                System.out.println("Player: "+ player.getUniqueId() + " selected owner: "+ selected.getOwner());
@@ -293,7 +292,7 @@ public abstract class PaginatedMenu extends Menu {
 
     private void openEditMenu(Player player, PrivateWaystone selected) {
         if(selected instanceof PublicWaystone){
-            if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
+            if(player.getUniqueId().toString().equals(selected.getUser().getUuid()) || player.hasPermission("waystones.admin")){
                 new PublicWaystoneEditMenu(playerMenuUtility, selected).open();
             }else{
                 if(!WaystonesPlugin.getPlugin().getJdbc().hasPlayerRated(player, (PublicWaystone) selected)){
@@ -304,7 +303,7 @@ public abstract class PaginatedMenu extends Menu {
             }
         }
         else{
-            if(player.getUniqueId().toString().equals(selected.getOwner()) || player.hasPermission("waystones.admin")){
+            if(player.getUniqueId().toString().equals(selected.getUser().getUuid()) || player.hasPermission("waystones.admin")){
                 new EditMenu(playerMenuUtility, selected).open();
             }
             else{

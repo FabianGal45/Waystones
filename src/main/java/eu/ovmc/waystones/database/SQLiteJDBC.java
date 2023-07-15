@@ -54,18 +54,18 @@ public class SQLiteJDBC {
             sql = "CREATE TABLE IF NOT EXISTS private_waystones " + //Creates the private_waystones table
                     "(id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     " location TEXT," +
-                    " owner TEXT," +
+                    " user_id INTEGER," +
                     " name TEXT," +
                     " tp_location TEXT," +
                     " priority INTEGER," +
                     " custom_item TEXT," +
-                    " FOREIGN KEY (owner)" +
+                    " FOREIGN KEY (user_id)" +
                     "  REFERENCES users(id))";
             stmt.executeUpdate(sql);
             sql = "CREATE TABLE IF NOT EXISTS public_waystones " +  //Creates the public_waystones table
                     "(id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     " location TEXT," +
-                    " owner TEXT," +
+                    " user_id INTEGER," +
                     " name TEXT," +
                     " tp_location TEXT," +
                     " priority INTEGER," +
@@ -73,12 +73,12 @@ public class SQLiteJDBC {
                     " cost REAL," +
                     " rating REAL," +
                     " category TEXT," +
-                    " FOREIGN KEY (owner)" +
+                    " FOREIGN KEY (user_id)" +
                     "  REFERENCES users(id))";
             stmt.executeUpdate(sql);
             sql = "CREATE TABLE IF NOT EXISTS ratings " +  //Creates the ratings table
                     "(pub_ws_id INTEGER," +
-                    " player_id INTEGER," +
+                    " user_id INTEGER," +
                     " rate INTEGER," +
                     " FOREIGN KEY (pub_ws_id)" +
                     "  REFERENCES public_waystones(id))";
@@ -188,19 +188,19 @@ public class SQLiteJDBC {
                 //Query to insert data into tutorials_data table
                 String query = "INSERT INTO public_waystones (" +
                         "location," +
-                        "owner," +
+                        "user_id," +
                         "name," +
                         "tp_location) VALUES(?, ?, ?, ?)";
 
                 //Creating the preparedStatement object
                 PreparedStatement pstmt = getCon().prepareStatement(query);
                 String location = ws.getLocation();
-                String owner = ws.getOwner();
+                int userId = ws.getUserId();
                 String name = ws.getName();
                 String tpLocation = ws.getTpLocation();
 
                 pstmt.setString(1, location);
-                pstmt.setString(2, owner);
+                pstmt.setInt(2, userId);
                 pstmt.setString(3, name);
                 pstmt.setString(4, tpLocation);
 
@@ -222,20 +222,20 @@ public class SQLiteJDBC {
                 //Query to insert data into tutorials_data table
                 String query = "INSERT INTO private_waystones (" +
                         "location," +
-                        "owner," +
+                        "user_id," +
                         "name," +
                         "tp_location) VALUES(?, ?, ?, ?)";
 
                 //Creating the preparedStatement object
                 PreparedStatement pstmt = getCon().prepareStatement(query);
                 String location = ws.getLocation();
-                String owner = ws.getOwner();
+                int userId = ws.getUserId();
                 String name = ws.getName();
 //                System.out.println("Reg - TP loc: "+ws.getTpLocation());
                 String tpLocation = ws.getTpLocation();
 
                 pstmt.setString(1, location);
-                pstmt.setString(2, owner);
+                pstmt.setInt(2, userId);
                 pstmt.setString(3, name);
                 pstmt.setString(4, tpLocation);
                 pstmt.execute();
@@ -259,13 +259,13 @@ public class SQLiteJDBC {
             //Update the ratings table
             String query = "INSERT INTO ratings (" +
                     "pub_ws_id,"+
-                    "player_id," +
+                    "user_id," +
                     "rate) VALUES(?, ?, ?)";
 
             //Creating the preparedStatement object
             PreparedStatement pstmt = getCon().prepareStatement(query);
             String playerUUID = String.valueOf(player.getUniqueId());
-            int userId = getUserFromDB(playerUUID).getId();
+            int userId = getUserFromUuid(playerUUID).getId();
 
             pstmt.setInt(1, ws.getId());
             pstmt.setInt(2, userId);
@@ -307,9 +307,9 @@ public class SQLiteJDBC {
         boolean result = false;
         Statement stmt;
         try{
-            int userId = getUserFromDB(player.getUniqueId().toString()).getId();
+            int userId = getUserFromUuid(player.getUniqueId().toString()).getId();
             stmt = getCon().createStatement();
-            String sql = "SELECT * FROM ratings WHERE pub_ws_id = '"+ ws.getId() +"' and player_id = '"+ userId +"';";
+            String sql = "SELECT * FROM ratings WHERE pub_ws_id = '"+ ws.getId() +"' and user_id = '"+ userId +"';";
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
                 result = true;
@@ -347,14 +347,13 @@ public class SQLiteJDBC {
         return arrayList;
     }
 
-
-    public User getUserFromDB(String uuid) {
+    public User getUser(int id) {
         Statement stmt;
 //        String uuid = p.getUniqueId().toString();
         User user = null;
         try{
             stmt = getCon().createStatement();
-            String sql = "SELECT * FROM users WHERE uuid = '"+ uuid +"'";
+            String sql = "SELECT * FROM users WHERE id = '"+ id +"'";
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
                 user = new User(rs.getInt("id"),
@@ -376,6 +375,31 @@ public class SQLiteJDBC {
         }
 
         return user;
+    }
+
+    public int getUserIdFromUUid(String uuid){
+        Statement stmt;
+        int userId = 0;
+        try{
+            stmt = getCon().createStatement();
+            String sql = "SELECT * FROM users WHERE uuid = '"+ uuid +"'";
+            ResultSet rs = stmt.executeQuery(sql);
+            while(rs.next()){
+                userId = rs.getInt("id");
+            }
+
+            stmt.close();
+        }catch (Exception e){
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.out.println(e +" Failed to retrieve user from users table.");
+            System.exit(0);
+        }
+
+        return userId;
+    }
+
+    public User getUserFromUuid(String uuid) {
+        return getUser(getUserIdFromUUid(uuid));
     }
 
     public ArrayList<User> getAllUsersFromDB() {
@@ -420,7 +444,7 @@ public class SQLiteJDBC {
             while(rs.next()){
                 ws = new PrivateWaystone(rs.getInt("id"),
                         rs.getString("location"),
-                        rs.getString("owner"),
+                        rs.getInt("user_id"),
                         rs.getString("name"),
                         rs.getString("tp_location"),
                         rs.getInt("priority"),
@@ -432,7 +456,7 @@ public class SQLiteJDBC {
             while(rs.next()){
                 ws = new PublicWaystone(rs.getInt("id"),
                         rs.getString("location"),
-                        rs.getString("owner"),
+                        rs.getInt("user_id"),
                         rs.getString("name"),
                         rs.getString("tp_location"),
                         rs.getInt("priority"),
@@ -454,19 +478,19 @@ public class SQLiteJDBC {
         return ws;
     }
 
-    public ArrayList<PrivateWaystone> getAllPrivateWaystones(String uuid){
+    public ArrayList<PrivateWaystone> getAllPrivateWaystones(int id){
         ArrayList<PrivateWaystone> privWs = new ArrayList<>();
         PrivateWaystone ws = null;
         Statement stmt;
 
         try{
             stmt = getCon().createStatement();
-            String sql = "SELECT * FROM private_waystones WHERE owner = '"+ uuid +"';";
+            String sql = "SELECT * FROM private_waystones WHERE user_id = '"+ id +"';";
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
                 ws = new PrivateWaystone(rs.getInt("id"),
                         rs.getString("location"),
-                        rs.getString("owner"),
+                        rs.getInt("user_id"),
                         rs.getString("name"),
                         rs.getString("tp_location"),
                         rs.getInt("priority"),
@@ -497,7 +521,7 @@ public class SQLiteJDBC {
             while(rs.next()){
                 ws = new PublicWaystone(rs.getInt("id"),
                         rs.getString("location"),
-                        rs.getString("owner"),
+                        rs.getInt("user_id"),
                         rs.getString("name"),
                         rs.getString("tp_location"),
                         rs.getInt("priority"),
@@ -605,7 +629,7 @@ public class SQLiteJDBC {
             stmt = getCon().createStatement();
             String sql = "SELECT COUNT(location) AS recordCount" +
                     " FROM private_waystones " +
-                    " WHERE owner = '" + user.getUuid() +"'";
+                    " WHERE user_id = '" + user.getUuid() +"'";
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
                 num = rs.getInt("recordCount");
@@ -627,7 +651,7 @@ public class SQLiteJDBC {
             stmt = getCon().createStatement();
             String sql = "SELECT COUNT(location) AS recordCount" +
                     " FROM public_waystones " +
-                    " WHERE owner = '" + user.getUuid() +"'";
+                    " WHERE user_id = '" + user.getUuid() +"'";
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
                 num = rs.getInt("recordCount");
@@ -650,12 +674,12 @@ public class SQLiteJDBC {
             stmt = getCon().createStatement();
             String sql = "SELECT * FROM private_waystones WHERE location = '"+ ws.getLocation() +"'";
             ResultSet rs = stmt.executeQuery(sql);
-            String owner = null;
+            int userId = 0;
             String loc = null;
 
             //Store the values so that I can update the user after removing a waystone.
             while(rs.next()){
-                owner = rs.getString("owner");
+                userId = rs.getInt("user_id");
                 loc = rs.getString("location");
 
                 //Delete the waystone
@@ -667,7 +691,7 @@ public class SQLiteJDBC {
             sql = "SELECT * FROM public_waystones WHERE location = '"+ ws.getLocation() +"'";
             rs = stmt.executeQuery(sql);
             while(rs.next()){
-                owner = rs.getString("owner");
+                userId = rs.getInt("user_id");
                 loc = rs.getString("location");
 
                 //Delete the waystone
@@ -678,8 +702,8 @@ public class SQLiteJDBC {
 
 
 
-            //update the owner of the waystone with the new number of waystones
-            User user = getUserFromDB(owner);
+            //update the user_id of the waystone with the new number of waystones
+            User user = getUser(userId);
             updateUser(user);
 
             stmt.close();

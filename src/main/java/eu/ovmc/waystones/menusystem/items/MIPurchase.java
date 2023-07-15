@@ -51,7 +51,7 @@ public class MIPurchase extends MenuItem {
         if(Bukkit.getServer().getPluginManager().getPlugin("VotingPlugin")!=null){ // if voting plugin has been installed.
             loreDescription.add(Component.text("1 Vote = 1 Point = 1% Discount", NamedTextColor.DARK_GRAY));
         }
-        loreDescription.add(Component.text("Balance: ", NamedTextColor.DARK_GRAY).append(Component.text(econ.format(econ.getBalance(playerMenuUtility.getOwner())), NamedTextColor.DARK_GRAY)));
+        loreDescription.add(Component.text("Balance: ", NamedTextColor.DARK_GRAY).append(Component.text(econ.format(econ.getBalance(playerMenuUtility.getPlayer())), NamedTextColor.DARK_GRAY)));
         displayItemMeta.lore(loreDescription);
         displayItem.setItemMeta(displayItemMeta);
     }

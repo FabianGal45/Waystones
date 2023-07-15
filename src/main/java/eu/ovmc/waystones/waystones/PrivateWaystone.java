@@ -1,5 +1,7 @@
 package eu.ovmc.waystones.waystones;
 
+import eu.ovmc.waystones.WaystonesPlugin;
+import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.handlers.TeleportHandler;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import org.bukkit.entity.Player;
@@ -7,7 +9,7 @@ import org.bukkit.entity.Player;
 public class PrivateWaystone extends TeleportHandler{
     private int id;
     private String location;
-    private String owner;
+    private int userId;
     private String name;
     private String tpLocation;
     private int priority;
@@ -15,19 +17,19 @@ public class PrivateWaystone extends TeleportHandler{
 
     //Constructors
 
-    public PrivateWaystone(String location, String owner, String name, String tpLocation, int priority, String customItem) {
+    public PrivateWaystone(String location, int userId, String name, String tpLocation, int priority, String customItem) {
         this.location = location;
-        this.owner = owner;
+        this.userId = userId;
         this.name = name;
         this.tpLocation = tpLocation;
         this.priority = priority;
         this.customItem = customItem;
     }
 
-    public PrivateWaystone(int id, String location, String owner, String name, String tpLocation, int priority, String customItem) {
+    public PrivateWaystone(int id, String location, int userId, String name, String tpLocation, int priority, String customItem) {
         this.id = id;
         this.location = location;
-        this.owner = owner;
+        this.userId = userId;
         this.name = name;
         this.tpLocation = tpLocation;
         this.priority = priority;
@@ -78,12 +80,16 @@ public class PrivateWaystone extends TeleportHandler{
         this.location = location;
     }
 
-    public String getOwner() {
-        return owner;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setOwner(String owner) {
-        this.owner = owner;
+    public User getUser(){
+        return WaystonesPlugin.getPlugin().getJdbc().getUser(userId);
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getName() {

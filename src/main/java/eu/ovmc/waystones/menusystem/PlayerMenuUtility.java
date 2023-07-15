@@ -22,8 +22,7 @@ import java.util.UUID;
 //The owner of the waystone/menu
 public class PlayerMenuUtility {
 
-    private Player owner;
-    private UUID ownerUUID;
+    private Player player;
     private boolean isAdmin;
     private ArrayList<PrivateWaystone> privateWaystones;
     private ArrayList<PublicWaystone> publicWaystones;
@@ -35,21 +34,20 @@ public class PlayerMenuUtility {
     private Material tpCostMaterial;
     private Location nextTpLocation;
 
-    public PlayerMenuUtility(OfflinePlayer offlineOwner) {
-        this.owner = Bukkit.getPlayer(offlineOwner.getUniqueId());
+    public PlayerMenuUtility(OfflinePlayer offlinePlayer) {
+        this.player = Bukkit.getPlayer(offlinePlayer.getUniqueId());
         checkPlayerIsAdmin();
-        this.ownerUUID = offlineOwner.getUniqueId();
         SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
-        this.privateWaystones = jdbc.getAllPrivateWaystones(ownerUUID.toString());
-        this.user = jdbc.getUserFromDB(ownerUUID.toString());
+        this.user = jdbc.getUserFromUuid(offlinePlayer.getUniqueId().toString());
+        this.privateWaystones = jdbc.getAllPrivateWaystones(user.getId());
         if(WaystonesPlugin.isIsVotingPluginInstalled()){ //IF the plugin is installed then assign the VPU
-            votingPluginUser = new VotingPluginUser(VotingPluginMain.getPlugin(), new AdvancedCoreUser(AdvancedCorePlugin.getInstance(), offlineOwner.getUniqueId()));
+            votingPluginUser = new VotingPluginUser(VotingPluginMain.getPlugin(), new AdvancedCoreUser(AdvancedCorePlugin.getInstance(), offlinePlayer.getUniqueId()));
         }
     }
 
     private void checkPlayerIsAdmin(){
-        if(owner != null){
-            if(owner.hasPermission("waystones.admin")){
+        if(player != null){
+            if(player.hasPermission("waystones.admin")){
                 isAdmin=true;
             }else{
                 isAdmin=false;
@@ -81,12 +79,12 @@ public class PlayerMenuUtility {
         this.publicWaystones = publicWaystones;
     }
 
-    public Player getOwner() {
-        return owner;
+    public Player getPlayer() {
+        return player;
     }
 
-    public void setOwner(Player owner) {
-        this.owner = owner;
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 
     public User getUser() {
@@ -117,9 +115,6 @@ public class PlayerMenuUtility {
         this.selected = selected;
     }
 
-    public UUID getOwnerUUID() {
-        return ownerUUID;
-    }
 
     public boolean isAdmin() {
         checkPlayerIsAdmin();

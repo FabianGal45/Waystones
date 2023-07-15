@@ -127,7 +127,7 @@ public class User {
         boolean success;
         long cost = getCostOfNextWs();
         double discount = getDiscount(playerMenuUtility);
-        Player player = playerMenuUtility.getOwner();
+        Player player = playerMenuUtility.getPlayer();
 
         if(discount>0){
             cost = Math.round(cost * (1-discount));
