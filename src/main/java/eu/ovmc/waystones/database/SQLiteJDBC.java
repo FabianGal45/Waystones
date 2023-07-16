@@ -103,20 +103,27 @@ public class SQLiteJDBC {
                 System.out.println("Column id exists in table private waystone. No update required");
             }
             else{
+                System.out.println("Column id Does not exist in table private waystone. Updating Database..");
                 //IF values are missing create a backup of the current database
                 String databasePath = "plugins/Waystones/waystones.sqlite.db";
                 String backupPath = "plugins/Waystones/waystones_backup.sqlite.db";
 
-                File originalFile = new File(databasePath);
-                File backupFile = new File(backupPath);
-                Files.copy(originalFile.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                try{
+                    File originalFile = new File(databasePath);
+                    File backupFile = new File(backupPath);
+                    Files.copy(originalFile.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
+                catch (IOException e){
+                    e.printStackTrace();
+                    System.out.println("Failed to create Database backup.");
+                }
+
 
                 //Change the names of the current tables to "old_table"
                 // Retrieve table information
                 ResultSet tables = metaData.getTables(null, null, null, new String[]{"TABLE"});
                 while (tables.next()) {
                     String tableName = tables.getString("TABLE_NAME");
-                    System.out.println("[][][]>> table name before: "+tableName);
 
                     Statement stmt = getCon().createStatement();
                     String sql = "ALTER TABLE "+ tableName +" RENAME TO old_"+tableName;
@@ -124,36 +131,55 @@ public class SQLiteJDBC {
                     stmt.close();
                 }
 
-                tables = metaData.getTables(null, null, null, new String[]{"TABLE"});
-                while(tables.next()){
-                    String tableName = tables.getString("TABLE_NAME");
-                    System.out.println("[][][]>> table name after: "+tableName);
-                }
-
                 //Create the new tables
                 createTables();
-                System.out.println("Created updated tables");
 
-                //Copy the data from the old table into the new tables //todo <<<<<<<<<<<<<
+                //Copy the data from the old table into the new tables
+                Statement stmt = getCon().createStatement();
+                String moveUsers = "INSERT INTO users (uuid, user_name, private_ws, public_ws, purchased_private_ws, acquired_private_ws, acquired_private_ws) " +
+                        "SELECT uuid, user_name, private_ws, public_ws, purchased_private_ws, acquired_private_ws, acquired_private_ws FROM old_users;";
+
+                String movePrivateWaystones = "INSERT INTO private_waystones (location, user_id, name, tp_location) " +
+                        "SELECT location, users.id, name, tp_location " +
+                        "FROM old_private_waystones INNER JOIN users " +
+                        "ON old_private_waystones.owner = users.uuid;";
+
+                String movePublicWaystones = "INSERT INTO public_waystones (location, user_id, name, tp_location, cost, rating) " +
+                        "SELECT location, users.id, name, tp_location, cost, rating " +
+                        "FROM old_public_waystones INNER JOIN users " +
+                        "ON old_public_waystones.owner = users.uuid;";
+
+                String moveRatings = "INSERT INTO ratings (pub_ws_id, user_id, rate) " +
+                        "SELECT public_waystones.id, users.id, old_ratings.rate " +
+                        "FROM ((old_ratings " +
+                        "INNER JOIN users ON old_ratings.player_uuid = users.uuid) " +
+                        "INNER JOIN public_waystones ON old_ratings.public_waystone = public_waystones.location);";
+
+
+                stmt.executeUpdate(moveUsers);
+                stmt.executeUpdate(movePrivateWaystones);
+                stmt.executeUpdate(movePublicWaystones);
+                stmt.executeUpdate(moveRatings);
 
 
                 //drop the old tables
+                String dropTables = "DROP TABLE old_ratings; " +
+                        "DROP TABLE old_public_waystones; " +
+                        "DROP TABLE old_private_waystones; " +
+                        "DROP TABLE old_users; ";
+                stmt.executeUpdate(dropTables);
 
 
                 //close metasata
+                stmt.close();
                 columns.close();
                 tables.close();
+                System.out.println("Database Update Complete.");
             }
-        }catch (SQLException | IOException e){
+        }catch (SQLException e){
             e.printStackTrace();
+            System.out.println("Something went wrong when updating the Database.");
         }
-
-
-
-
-
-
-
 
     }
 
@@ -698,6 +724,8 @@ public class SQLiteJDBC {
                 sql = "DELETE FROM public_waystones WHERE location = '"+ loc +"'";
                 stmt.executeUpdate(sql);
 //                System.out.println("Waystone removed.");
+
+                //TODO: Remove any ratings associated with this Public waystone.
             }
 
 
