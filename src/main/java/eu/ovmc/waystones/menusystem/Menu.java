@@ -41,6 +41,7 @@ public abstract class Menu implements InventoryHolder {
 
         this.setMenuItems();
 
+        playerMenuUtility.updatePublicWaystones();
         playerMenuUtility.getPlayer().openInventory(inventory);
     }
 

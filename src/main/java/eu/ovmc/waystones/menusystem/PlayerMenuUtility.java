@@ -9,15 +9,10 @@ import eu.ovmc.waystones.database.SQLiteJDBC;
 import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.waystones.PublicWaystone;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 //The owner of the waystone/menu
 public class PlayerMenuUtility {
@@ -25,7 +20,8 @@ public class PlayerMenuUtility {
     private Player player;
     private boolean isAdmin;
     private ArrayList<PrivateWaystone> privateWaystones;
-    private ArrayList<PublicWaystone> publicWaystones;
+    private ArrayList<PublicWaystone> publicWaystones = new ArrayList<>();
+    private Queue<PublicWaystone> pubWsPriorityQ = new PriorityQueue<>();
     private PrivateWaystone clickedOnWs;//This is the physical waystone a player clicked on
     private User user;
     private VotingPluginUser votingPluginUser;
@@ -33,16 +29,48 @@ public class PlayerMenuUtility {
     private PrivateWaystone selected;
     private Material tpCostMaterial;
     private Location nextTpLocation;
+    private SQLiteJDBC JDBC;
 
     public PlayerMenuUtility(OfflinePlayer offlinePlayer) {
+        this.JDBC = WaystonesPlugin.getPlugin().getJdbc();
         this.player = Bukkit.getPlayer(offlinePlayer.getUniqueId());
+        this.user = JDBC.getUserFromUuid(offlinePlayer.getUniqueId().toString());
         checkPlayerIsAdmin();
-        SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
-        this.user = jdbc.getUserFromUuid(offlinePlayer.getUniqueId().toString());
-        this.privateWaystones = jdbc.getAllPrivateWaystones(user.getId());
+        updatePrivateWaystones();
+        updatePublicWaystones();
+        checkVPU(offlinePlayer);
+    }
+
+    private void checkVPU(OfflinePlayer offlinePlayer){
         if(WaystonesPlugin.isIsVotingPluginInstalled()){ //IF the plugin is installed then assign the VPU
             votingPluginUser = new VotingPluginUser(VotingPluginMain.getPlugin(), new AdvancedCoreUser(AdvancedCorePlugin.getInstance(), offlinePlayer.getUniqueId()));
         }
+    }
+    public void updatePrivateWaystones(){
+        this.privateWaystones = JDBC.getAllPrivateWaystones(user.getId());
+    }
+    public void updatePublicWaystones(){
+        this.pubWsPriorityQ.clear();
+        this.publicWaystones.clear();
+        this.pubWsPriorityQ.addAll(JDBC.getAllPublicWaystones());
+        while(!pubWsPriorityQ.isEmpty()){
+            publicWaystones.add(pubWsPriorityQ.poll());
+        }
+    }
+
+    public void test(){
+        while(!pubWsPriorityQ.isEmpty()){
+            PublicWaystone pubws = pubWsPriorityQ.poll();
+            System.out.println("Value: "+ pubws.getRating() + " Name: "+ pubws.getName());
+        }
+
+        System.out.println("nnnnnn ////as/d/a/sd/a/s/da///// /// // // // ");
+
+        for(PublicWaystone pubws:publicWaystones){
+            System.out.println("Value: "+ pubws.getRating() + " Name: "+ pubws.getName());
+        }
+
+        updatePublicWaystones();
     }
 
     private void checkPlayerIsAdmin(){
@@ -135,5 +163,13 @@ public class PlayerMenuUtility {
 
     public void setNextTpLocation(Location nextTpLocation) {
         this.nextTpLocation = nextTpLocation;
+    }
+
+    public Queue<PublicWaystone> getPubWsPriorityQ() {
+        return pubWsPriorityQ;
+    }
+
+    public void setPubWsPriorityQ(Queue<PublicWaystone> pubWsPriorityQ) {
+        this.pubWsPriorityQ = pubWsPriorityQ;
     }
 }

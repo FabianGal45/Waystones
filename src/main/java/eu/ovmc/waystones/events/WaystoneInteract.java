@@ -60,8 +60,7 @@ public class WaystoneInteract implements Listener {
                 if(ws != null){
                     e.setCancelled(true);
                     PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(player);
-                    playerMenuUtility.setPrivateWaystones(jdbc.getAllPrivateWaystones(user.getId()));
-                    playerMenuUtility.setPublicWaystones(jdbc.getAllPublicWaystones());
+                    playerMenuUtility.updatePrivateWaystones();
                     playerMenuUtility.setClickedOnWs(ws);
 
                     if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || (blockUnder.getType().equals(Material.NETHERITE_BLOCK) && ws instanceof PublicWaystone)){

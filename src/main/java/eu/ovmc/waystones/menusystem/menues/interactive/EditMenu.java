@@ -98,6 +98,7 @@ public class EditMenu extends Menu {
 
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, SoundCategory.BLOCKS, 1, (float) 1);
 
+            playerMenuUtility.updatePublicWaystones();
             inventory.close();
         }
 

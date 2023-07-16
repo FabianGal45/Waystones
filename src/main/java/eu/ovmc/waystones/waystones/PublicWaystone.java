@@ -1,6 +1,8 @@
 package eu.ovmc.waystones.waystones;
 
-public class PublicWaystone extends PrivateWaystone {
+import org.jetbrains.annotations.NotNull;
+
+public class PublicWaystone extends PrivateWaystone implements Comparable<PublicWaystone> {
 
     private double rating;
     private int cost;
@@ -36,5 +38,11 @@ public class PublicWaystone extends PrivateWaystone {
     public void setCost(int cost) {
         this.cost = cost;
     }
+
+    @Override
+    public int compareTo(@NotNull PublicWaystone o) {
+        return Double.compare(o.rating, this.rating);
+    }
+
 
 }

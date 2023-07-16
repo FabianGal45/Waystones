@@ -118,7 +118,6 @@ public class WaystonesSplitMenu extends PaginatedMenu {
         ArrayList<PrivateWaystone> privateWaystones = playerMenuUtility.getPrivateWaystones();
         ArrayList<PublicWaystone> publicWaystones = playerMenuUtility.getPublicWaystones();
 
-
         //loop for each slot available to private waystones (7)
         for(int i = 0; i < MAX_PRIVATE; i++) {
             indexPrvWs = MAX_PRIVATE * page + i;//7*0+1= 1 | 7*0+2= 2 | ... | 7*1+1= 8 | 7*1+2= 9

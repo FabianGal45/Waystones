@@ -655,7 +655,7 @@ public class SQLiteJDBC {
             stmt = getCon().createStatement();
             String sql = "SELECT COUNT(location) AS recordCount" +
                     " FROM private_waystones " +
-                    " WHERE user_id = '" + user.getUuid() +"'";
+                    " WHERE user_id = '" + user.getId() +"'";
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
                 num = rs.getInt("recordCount");
@@ -677,7 +677,7 @@ public class SQLiteJDBC {
             stmt = getCon().createStatement();
             String sql = "SELECT COUNT(location) AS recordCount" +
                     " FROM public_waystones " +
-                    " WHERE user_id = '" + user.getUuid() +"'";
+                    " WHERE user_id = '" + user.getId() +"'";
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
                 num = rs.getInt("recordCount");
