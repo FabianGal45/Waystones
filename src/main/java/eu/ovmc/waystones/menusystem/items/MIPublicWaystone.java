@@ -49,6 +49,7 @@ public class MIPublicWaystone extends MenuItem{
         Economy econ = WaystonesPlugin.getEcon();
         int cost = ws.getCost();
         double rating = ws.getRating();
+        int rates = ws.getRates();
         String formattedCost = econ.format(cost);
 
 
@@ -60,12 +61,15 @@ public class MIPublicWaystone extends MenuItem{
                 .append(Component.text(rating, NamedTextColor.LIGHT_PURPLE)
                         .append(Component.text("/",NamedTextColor.DARK_PURPLE))
                         .append(Component.text("5",NamedTextColor.LIGHT_PURPLE)));
+        Component ratesText = Component.text("Rates: ",NamedTextColor.DARK_PURPLE)
+                .append(Component.text(rates, NamedTextColor.LIGHT_PURPLE));
         Component costText = Component.text("Cost: ",NamedTextColor.DARK_PURPLE)
                 .append(Component.text(formattedCost, NamedTextColor.AQUA));
 
         loreDescription.add(locText);
         loreDescription.add(ownerText);
         loreDescription.add(ratingText);
+        loreDescription.add(ratesText);
         if(cost > 0) {
             loreDescription.add(costText);
         }

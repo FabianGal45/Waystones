@@ -77,7 +77,7 @@ public class WaystonePlace implements Listener {
                     else if(blockUnder.getType().equals(Material.NETHERITE_BLOCK)){
                         if (user.canPlacePublicWs()){
                             player.playSound(e.getBlock().getLocation(), Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1, 2);
-                            PublicWaystone ws = new PublicWaystone(e.getBlock().getLocation().toString(), user.getId(), "Public Waystone", tpLocation, 0, null, 0.0, 0,null);
+                            PublicWaystone ws = new PublicWaystone(e.getBlock().getLocation().toString(), user.getId(), "Public Waystone", tpLocation, 0, null, 0.0, 0, 0,null);
                             jdbc.regWaystone(ws, user);
                             player.sendMessage("Public waystone registered!");
                         }else{
@@ -139,7 +139,7 @@ public class WaystonePlace implements Listener {
                     }
                     else if(e.getBlock().getType().equals(Material.NETHERITE_BLOCK)){
                         player.playSound(e.getBlock().getLocation(), Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1, 2);
-                        PublicWaystone ws = new PublicWaystone(blockAbove.getLocation().toString(), user.getId(), "Public Waystone", tpLocation, 0, null, 0.0, 0,null);
+                        PublicWaystone ws = new PublicWaystone(blockAbove.getLocation().toString(), user.getId(), "Public Waystone", tpLocation, 0, null, 0.0, 0, 0,null);
                         jdbc.regWaystone(ws, user);
                         player.sendMessage("Public waystone registered!");
                     }

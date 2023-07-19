@@ -34,16 +34,19 @@ public class WaystoneInteract implements Listener {
 
             //if block under is EMERALD_BLOCK or NETHERITE_BLOCK
             if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || blockUnder.getType().equals(Material.NETHERITE_BLOCK)) {
-                SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
-                String loc = e.getClickedBlock().getLocation().toString();
-                PrivateWaystone ws = jdbc.getWaystone(loc);
-                Player player = e.getPlayer();
-
                 //Cancels the action of the left hand. Without this the following code will trigger twice.  https://www.spigotmc.org/threads/playerinteractevent-fires-twice-for-right-clicking.301622/
                 if(e.getHand().equals(EquipmentSlot.OFF_HAND)) {
                     e.setCancelled(true);
                     return;
                 }
+
+                SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
+                String loc = e.getClickedBlock().getLocation().toString();
+                System.out.println("Interracting...");
+                PrivateWaystone ws = jdbc.getWaystone(loc);
+                Player player = e.getPlayer();
+
+
 
                 //Check if the user exists if not register him.
                 User user = jdbc.getUserFromUuid(player.getUniqueId().toString());

@@ -460,14 +460,19 @@ public class SQLiteJDBC {
     }
 
     public PrivateWaystone getWaystone(String location){
+        System.out.println("Get Waystone: "+ location);
         PrivateWaystone ws = null;
 
         Statement stmt;
+        Statement stmt2;
         try{
             stmt = getCon().createStatement();
+            stmt2 = getCon().createStatement();
             String sql = "SELECT * FROM private_waystones WHERE location = '"+ location +"'";
             ResultSet rs = stmt.executeQuery(sql);
+
             while(rs.next()){
+                System.out.printf("Getting private waystone..");
                 ws = new PrivateWaystone(rs.getInt("id"),
                         rs.getString("location"),
                         rs.getInt("user_id"),
@@ -479,21 +484,32 @@ public class SQLiteJDBC {
 
             sql = "SELECT * FROM public_waystones WHERE location = '"+ location +"'";
             rs = stmt.executeQuery(sql);
+
             while(rs.next()){
-                ws = new PublicWaystone(rs.getInt("id"),
-                        rs.getString("location"),
-                        rs.getInt("user_id"),
-                        rs.getString("name"),
-                        rs.getString("tp_location"),
-                        rs.getInt("priority"),
-                        rs.getString("custom_item"),
-                        rs.getDouble("rating"),
-                        rs.getInt("cost"),
-                        rs.getString("category"));
+                System.out.println("Getting Public Waystoine..");
+                int ws_id = rs.getInt("id");
+                String ws_location = rs.getString("location");
+                int ws_user_id = rs.getInt("user_id");
+                String ws_name = rs.getString("name");
+                String ws_tp_location = rs.getString("tp_location");
+                int ws_priority = rs.getInt("priority");
+                String ws_custom_item = rs.getString("custom_item");
+                double ws_rating = rs.getDouble("rating");
+                int ws_rates = 0;
+                int ws_cost = rs.getInt("cost");
+                String ws_category = rs.getString("category");
+
+                //check how many rates this waystone has
+                sql = "SELECT COUNT(pub_ws_id) count FROM ratings WHERE pub_ws_id = '"+ ws_id +"'";
+                ResultSet count = stmt2.executeQuery(sql);
+                while(count.next()){
+                    ws_rates = count.getInt("count");
+                }
+
+                ws = new PublicWaystone(ws_id,ws_location,ws_user_id,ws_name,ws_tp_location,ws_priority,ws_custom_item,ws_rating,ws_rates,ws_cost,ws_category);
             }
-
-
             stmt.close();
+            stmt2.close();
 
         }catch (Exception e){
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
@@ -536,6 +552,7 @@ public class SQLiteJDBC {
     }
 
     public ArrayList<PublicWaystone> getAllPublicWaystones(){
+        System.out.println("GET all Public Waystones.... ");
         ArrayList<PublicWaystone> pubWs = new ArrayList<>();
         PublicWaystone ws = null;
         Statement stmt;
@@ -545,19 +562,10 @@ public class SQLiteJDBC {
             String sql = "SELECT * FROM public_waystones;";
             ResultSet rs = stmt.executeQuery(sql);
             while(rs.next()){
-                ws = new PublicWaystone(rs.getInt("id"),
-                        rs.getString("location"),
-                        rs.getInt("user_id"),
-                        rs.getString("name"),
-                        rs.getString("tp_location"),
-                        rs.getInt("priority"),
-                        rs.getString("custom_item"),
-                        rs.getDouble("rating"),
-                        rs.getInt("cost"),
-                        rs.getString("category"));
+                String ws_location = rs.getString("location");
+                ws = (PublicWaystone) getWaystone(ws_location);
                 pubWs.add(ws);
             }
-
             stmt.close();
 
         }catch (Exception e){
