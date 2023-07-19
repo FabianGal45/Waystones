@@ -460,7 +460,6 @@ public class SQLiteJDBC {
     }
 
     public PrivateWaystone getWaystone(String location){
-        System.out.println("Get Waystone: "+ location);
         PrivateWaystone ws = null;
 
         Statement stmt;
@@ -472,7 +471,6 @@ public class SQLiteJDBC {
             ResultSet rs = stmt.executeQuery(sql);
 
             while(rs.next()){
-                System.out.printf("Getting private waystone..");
                 ws = new PrivateWaystone(rs.getInt("id"),
                         rs.getString("location"),
                         rs.getInt("user_id"),
@@ -486,7 +484,6 @@ public class SQLiteJDBC {
             rs = stmt.executeQuery(sql);
 
             while(rs.next()){
-                System.out.println("Getting Public Waystoine..");
                 int ws_id = rs.getInt("id");
                 String ws_location = rs.getString("location");
                 int ws_user_id = rs.getInt("user_id");
@@ -552,7 +549,6 @@ public class SQLiteJDBC {
     }
 
     public ArrayList<PublicWaystone> getAllPublicWaystones(){
-        System.out.println("GET all Public Waystones.... ");
         ArrayList<PublicWaystone> pubWs = new ArrayList<>();
         PublicWaystone ws = null;
         Statement stmt;
@@ -746,7 +742,7 @@ public class SQLiteJDBC {
 
         }catch (Exception e){
             System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-            System.out.println(e +" Failed to delete wasytone.");
+            System.out.println(e +" Failed to delete waystone.");
             System.exit(0);
         }
     }
