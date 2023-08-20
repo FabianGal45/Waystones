@@ -4,6 +4,7 @@ import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.database.User;
 import eu.ovmc.waystones.handlers.TeleportHandler;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
+import eu.ovmc.waystones.waystones.PubWsCategory;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -15,8 +16,8 @@ public class MIPublicWaystone extends MenuItem{
     private PublicWaystone ws;
     private PlayerMenuUtility playerMenuUtility;
 
-    public MIPublicWaystone(Material displayItem, int index, PublicWaystone ws, PlayerMenuUtility playerMenuUtility) {
-        super(displayItem, ItemType.PUBLIC_WAYSTONE);
+    public MIPublicWaystone(PubWsCategory category, int index, PublicWaystone ws, PlayerMenuUtility playerMenuUtility) {
+        super(category.getMaterial(), ItemType.PUBLIC_WAYSTONE);
         this.ws = ws;
         this.playerMenuUtility = playerMenuUtility;
         saveIndexToNBT(index);
@@ -28,8 +29,8 @@ public class MIPublicWaystone extends MenuItem{
         }
     }
 
-    public MIPublicWaystone(Material displayItem, ItemType itemType, int index, PublicWaystone ws, PlayerMenuUtility playerMenuUtility) {
-        super(displayItem, itemType);
+    public MIPublicWaystone(PubWsCategory category, ItemType itemType, int index, PublicWaystone ws, PlayerMenuUtility playerMenuUtility) {
+        super(category.getMaterial(), itemType);
         this.ws = ws;
         this.playerMenuUtility = playerMenuUtility;
         saveIndexToNBT(index);

@@ -603,10 +603,9 @@ public class SQLiteJDBC {
     public void updateWaystone(PrivateWaystone ws){
 
         if(ws instanceof PublicWaystone){
-            System.out.println("PUBWS: Rating: "+ ((PublicWaystone) ws).getRating() );
             try{
                 String sql = "UPDATE public_waystones" +
-                        " SET name = ?, tp_location = ?, cost = ?, rating = ?" +
+                        " SET name = ?, tp_location = ?, cost = ?, rating = ?, custom_item = ?, category = ?" +
                         " WHERE location = ?;";
 
 
@@ -615,7 +614,9 @@ public class SQLiteJDBC {
                 pstmt.setString(2, ws.getTpLocation());
                 pstmt.setDouble(3, ((PublicWaystone) ws).getCost());
                 pstmt.setDouble(4, ((PublicWaystone) ws).getRating());
-                pstmt.setString(5, ws.getLocation());
+                pstmt.setString(5, ws.getCustomItem());
+                pstmt.setString(6, ((PublicWaystone) ws).getCategory());
+                pstmt.setString(7, ws.getLocation());
 
                 pstmt.execute();
                 pstmt.close();

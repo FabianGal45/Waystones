@@ -50,9 +50,14 @@ public class PlayerMenuUtility {
         this.privateWaystones = JDBC.getAllPrivateWaystones(user.getId());
     }
     public void updatePublicWaystones(){
+        //Clear the queues
         this.pubWsPriorityQ.clear();
         this.publicWaystones.clear();
+
+        //add all waystones into the priority queue which sorts them by
         this.pubWsPriorityQ.addAll(JDBC.getAllPublicWaystones());
+
+        //add into the main array list starting from the first item in the sorted queue until the last one.
         while(!pubWsPriorityQ.isEmpty()){
             publicWaystones.add(pubWsPriorityQ.poll());
         }

@@ -3,6 +3,7 @@ package eu.ovmc.waystones.menusystem.items;
 import eu.ovmc.waystones.WaystonesPlugin;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
+import eu.ovmc.waystones.waystones.PubWsCategory;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -56,6 +57,12 @@ public class MenuItem {
     protected void saveIndexToNBT(int index){
         //Stores the index of the waystone from the waystones list into the NBT meta of that file so that it can be identified when clicked.
         displayItemMeta.getPersistentDataContainer().set(new NamespacedKey(WaystonesPlugin.getPlugin(), "index"), PersistentDataType.INTEGER, index);
+    }
+
+    protected void saveCategoryToNBT(PubWsCategory category){
+        //Stores the Category of the item into the NBT meta of that file so that it can be identified when clicked.
+        displayItemMeta.getPersistentDataContainer().set(new NamespacedKey(WaystonesPlugin.getPlugin(), "item_category"), PersistentDataType.STRING, category.toString());
+        displayItem.setItemMeta(displayItemMeta);
     }
 
     public void setItemName(String name){

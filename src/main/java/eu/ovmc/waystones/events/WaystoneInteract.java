@@ -42,7 +42,6 @@ public class WaystoneInteract implements Listener {
 
                 SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
                 String loc = e.getClickedBlock().getLocation().toString();
-                System.out.println("Interracting...");
                 PrivateWaystone ws = jdbc.getWaystone(loc);
                 Player player = e.getPlayer();
 

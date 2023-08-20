@@ -7,6 +7,7 @@ import eu.ovmc.waystones.menusystem.PaginatedMenu;
 import eu.ovmc.waystones.menusystem.PlayerMenuUtility;
 import eu.ovmc.waystones.menusystem.items.*;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
+import eu.ovmc.waystones.waystones.PubWsCategory;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
@@ -166,10 +167,10 @@ public class WaystonesSplitMenu extends PaginatedMenu {
 
                 MIPrivateWaystone prvWaystone = new MIPrivateWaystone(Material.EMERALD_BLOCK, indexPrvWs, ws, playerMenuUtility);
 
-                //if this is the waystone he opened the menu from, make the item lime green
+                //if this is the waystone he opened the menu from, make the item ender eye
                 if(playerMenuUtility.getClickedOnWs() != null){
                     if(ws.getLocation().equals(playerMenuUtility.getClickedOnWs().getLocation())){
-                        prvWaystone = new MIPrivateWaystone(Material.LIME_CONCRETE, ItemType.OPENED_PRIVATE_WAYSTONE, indexPrvWs, ws, playerMenuUtility);
+                        prvWaystone = new MIPrivateWaystone(Material.ENDER_EYE, ItemType.OPENED_PRIVATE_WAYSTONE, indexPrvWs, ws, playerMenuUtility);
                     }
                     else if(damagedWs){//if waystone is damaged, mark it with a cracked stone
                         prvWaystone = new MIPrivateWaystone(Material.CRACKED_STONE_BRICKS, ItemType.BROKEN, indexPrvWs, ws, playerMenuUtility);
@@ -196,14 +197,23 @@ public class WaystonesSplitMenu extends PaginatedMenu {
                 Block blockUnder = TeleportHandler.getParsedLocation(ws.getLocation()).subtract(0.0,1.0,0.0).getBlock();
                 boolean damagedWs = !(blockTop.getType().equals(Material.LODESTONE) && blockUnder.getType().equals(Material.NETHERITE_BLOCK));
 
-                MIPublicWaystone publicWs = new MIPublicWaystone(Material.NETHERITE_BLOCK, indexPubWs, ws, playerMenuUtility);
-                //if this is the waystone he clicked on make it Black Concrete
+                //set the block based on the category assigned.
+                MIPublicWaystone publicWs;
+                if(ws.getCategory() !=null){
+                    publicWs = new MIPublicWaystone(PubWsCategory.valueOf(ws.getCategory()), indexPubWs, ws, playerMenuUtility);
+                }
+                else {
+                    publicWs = new MIPublicWaystone(PubWsCategory.DEFAULT, indexPubWs, ws, playerMenuUtility);
+                }
+
+
+                //if this is the waystone the player clicked on make it Black Concrete
                 if(playerMenuUtility.getClickedOnWs() != null){
                     if(ws.getLocation().equals(playerMenuUtility.getClickedOnWs().getLocation())){
-                        publicWs = new MIPublicWaystone(Material.BLACK_CONCRETE, ItemType.OPENED_PUBLIC_WAYSTONE, indexPubWs, ws, playerMenuUtility);
+                        publicWs = new MIPublicWaystone(PubWsCategory.SELECTED, ItemType.OPENED_PUBLIC_WAYSTONE, indexPubWs, ws, playerMenuUtility);
                     }
                     else if(damagedWs){//if waystone is damaged, mark it with a cracked stone
-                        publicWs = new MIPublicWaystone(Material.CRACKED_STONE_BRICKS, ItemType.BROKEN, indexPubWs, ws, playerMenuUtility);
+                        publicWs = new MIPublicWaystone(PubWsCategory.BROKEN, ItemType.BROKEN, indexPubWs, ws, playerMenuUtility);
                     }
                 }
 

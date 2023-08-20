@@ -22,7 +22,7 @@ public class PublicWaystoneRateEditMenu extends EditMenu {
 
     @Override
     public void setMenuItems() {
-        fillWithBlack();
+        fillAllWithBlack();
         for(int i=1;i<=5;i++){
             ItemStack star = new ItemStack(Material.NETHER_STAR);
             ItemMeta sMeta = star.getItemMeta();

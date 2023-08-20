@@ -12,5 +12,6 @@ public enum ItemType {
     PURCHASE,
     AVAILABLE_WAYSTONES,
     SELECTED,
-    BLANK;
+    BLANK,
+    CATEGORY;
 }

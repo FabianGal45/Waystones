@@ -88,6 +88,9 @@ public class EditMenu extends Menu {
                             .clickEvent(ClickEvent.runCommand("/ws cancelCostChange"))));
             inventory.close();
         }
+        else if(currentItem.equals(Material.NETHERITE_BLOCK)){
+            new CategoryMenu(playerMenuUtility,(PublicWaystone) selected).open();
+        }
         else if (currentItem.equals(Material.NETHER_STAR)){
             //Grab the index stored in the item metadata
             ItemMeta itemMeta = e.getCurrentItem().getItemMeta();
@@ -98,7 +101,6 @@ public class EditMenu extends Menu {
 
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, SoundCategory.BLOCKS, 1, (float) 1);
 
-            playerMenuUtility.updatePublicWaystones();
             inventory.close();
         }
 
@@ -106,7 +108,7 @@ public class EditMenu extends Menu {
 
     @Override
     public void setMenuItems() {
-        fillWithBlack();
+        fillAllWithBlack();
         //Formula for spreading the items evenly in the inventory
         // 8 / 2 = 4 - Middle
         // 4 - items = x
@@ -129,18 +131,6 @@ public class EditMenu extends Menu {
         inventory.setItem(14, redstoneBlock);
 
     }
-
-    public void fillWithBlack(){
-        for(int i=0; i<this.getSlots();i++) {
-            ItemStack blackPanel = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
-            ItemMeta bpMeta = blackPanel.getItemMeta();
-            TextComponent bpName = Component.text(" ");
-            bpMeta.displayName(bpName);
-            blackPanel.setItemMeta(bpMeta);
-            inventory.setItem(i, blackPanel);
-        }
-    }
-
 
     public PrivateWaystone getSelected() {
         return selected;

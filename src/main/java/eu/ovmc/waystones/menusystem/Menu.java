@@ -1,6 +1,9 @@
 package eu.ovmc.waystones.menusystem;
 
+import eu.ovmc.waystones.menusystem.items.ItemType;
+import eu.ovmc.waystones.menusystem.items.MenuItem;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -38,10 +41,8 @@ public abstract class Menu implements InventoryHolder {
     public void open(){
 //        System.out.println("Menu - Thread: "+ Thread.currentThread().getName()+"; "+Thread.currentThread().getName());
         inventory = Bukkit.createInventory(this, getSlots(), getMenuName());
-
-        this.setMenuItems();
-
         playerMenuUtility.updatePublicWaystones();
+        this.setMenuItems();
         playerMenuUtility.getPlayer().openInventory(inventory);
     }
 
@@ -75,6 +76,13 @@ public abstract class Menu implements InventoryHolder {
         item.setItemMeta(itemMeta);
 
         return item;
+    }
+
+    public void fillAllWithBlack(){
+        for(int i=0; i<this.getSlots();i++) {
+            MenuItem blackPanel = new MenuItem(Material.BLACK_STAINED_GLASS_PANE, ItemType.BLANK, " ");
+            inventory.setItem(i, blackPanel.getDisplayItem());
+        }
     }
 
 }

@@ -74,7 +74,7 @@ public class ChatInputHandler {
         selected.setName(e.getMessage());
 
         //If the waystone is still in the database e.g. player selects to change name but then destroys waystone.
-        if(jdbc.getWaystone(selected.getLocation()) != null){
+        if(jdbc. getWaystone(selected.getLocation()) != null){
             //Update the name in the database
             jdbc.updateWaystone(selected);
 

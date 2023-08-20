@@ -47,8 +47,8 @@ public abstract class PaginatedMenu extends Menu {
 
     public void addMenuBorder(){
         for(Integer blankSlot : blankSlots) {
-            MenuItem bkackPanel = new MenuItem(Material.BLACK_STAINED_GLASS_PANE, ItemType.BLANK, " ");
-            inventory.setItem(blankSlot, bkackPanel.getDisplayItem());
+            MenuItem blackPanel = new MenuItem(Material.BLACK_STAINED_GLASS_PANE, ItemType.BLANK, " ");
+            inventory.setItem(blankSlot, blackPanel.getDisplayItem());
         }
     }
 

@@ -19,14 +19,14 @@ public class PublicWaystoneEditMenu extends EditMenu {
 
     @Override
     public void setMenuItems(){
-        fillWithBlack();
+        fillAllWithBlack();
 
         ItemStack nameTag = new ItemStack(Material.NAME_TAG);
         ItemMeta nameTagMeta = nameTag.getItemMeta();
         TextComponent ntName = Component.text("Rename");
         nameTagMeta.displayName(ntName);
         nameTag.setItemMeta(nameTagMeta);
-        inventory.setItem(11, nameTag);
+        inventory.setItem(10, nameTag);
 
         ItemStack diamond = new ItemStack(Material.DIAMOND);
         ItemMeta dMeta = diamond.getItemMeta();
@@ -36,13 +36,20 @@ public class PublicWaystoneEditMenu extends EditMenu {
         loreArray.add(Component.text("Cost: "+ ((PublicWaystone)selected).getCost() + " Diamonds"));
         dMeta.lore(loreArray);
         diamond.setItemMeta(dMeta);
-        inventory.setItem(13, diamond);
+        inventory.setItem(12, diamond);
 
         ItemStack redstpmeBlock = new ItemStack(Material.REDSTONE_BLOCK);
         ItemMeta rbMeta = redstpmeBlock.getItemMeta();
         TextComponent rbName = Component.text("Remove");
         rbMeta.displayName(rbName);
         redstpmeBlock.setItemMeta(rbMeta);
-        inventory.setItem(15, redstpmeBlock);
+        inventory.setItem(14, redstpmeBlock);
+
+        ItemStack netheriteBlock = new ItemStack(Material.NETHERITE_BLOCK);
+        ItemMeta nbMeta = netheriteBlock.getItemMeta();
+        TextComponent nbName = Component.text("Category");
+        rbMeta.displayName(nbName);
+        netheriteBlock.setItemMeta(nbMeta);
+        inventory.setItem(16, netheriteBlock);
     }
 }

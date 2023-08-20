@@ -10,6 +10,7 @@ import eu.ovmc.waystones.menusystem.items.MIPublicWaystone;
 import eu.ovmc.waystones.menusystem.items.MenuItem;
 import eu.ovmc.waystones.menusystem.menues.interactive.PublicWaystoneEditMenu;
 import eu.ovmc.waystones.menusystem.menues.interactive.PublicWaystoneRateEditMenu;
+import eu.ovmc.waystones.waystones.PubWsCategory;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -127,17 +128,25 @@ public class PublicWsMenu extends PaginatedMenu {
 
             PublicWaystone ws = publicWaystones.get(indexPubWs);
             if (ws != null) {
-                MIPublicWaystone publicWs = new MIPublicWaystone(Material.NETHERITE_BLOCK, indexPubWs, ws, playerMenuUtility);
                 Block blockTop = ws.getParsedLocation(ws.getLocation()).getBlock();
                 Block blockUnder = ws.getParsedLocation(ws.getLocation()).subtract(0.0,1.0,0.0).getBlock();
                 boolean damagedWs = !(blockTop.getType().equals(Material.LODESTONE) && blockUnder.getType().equals(Material.NETHERITE_BLOCK));
 
+                //set the block based on the category assigned.
+                MIPublicWaystone publicWs;
+                if(ws.getCategory() !=null){
+                    publicWs = new MIPublicWaystone(PubWsCategory.valueOf(ws.getCategory()), indexPubWs, ws, playerMenuUtility);
+                }
+                else {
+                    publicWs = new MIPublicWaystone(PubWsCategory.DEFAULT, indexPubWs, ws, playerMenuUtility);
+                }
+
                 //Changes the Menu item type based on if it is damaged or the selected waystone
                 if(playerMenuUtility.getClickedOnWs() != null) {
                     if (ws.getLocation().equals(playerMenuUtility.getClickedOnWs().getLocation())) {
-                        publicWs = new MIPublicWaystone(Material.BLACK_CONCRETE, ItemType.OPENED_PUBLIC_WAYSTONE, indexPubWs, ws, playerMenuUtility);
+                        publicWs = new MIPublicWaystone(PubWsCategory.SELECTED, ItemType.OPENED_PUBLIC_WAYSTONE, indexPubWs, ws, playerMenuUtility);
                     } else if (damagedWs) {
-                        publicWs = new MIPublicWaystone(Material.CRACKED_STONE_BRICKS, ItemType.OPENED_PUBLIC_WAYSTONE, indexPubWs, ws, playerMenuUtility);
+                        publicWs = new MIPublicWaystone(PubWsCategory.BROKEN, ItemType.OPENED_PUBLIC_WAYSTONE, indexPubWs, ws, playerMenuUtility);
                     }
                 }
 
@@ -160,7 +169,5 @@ public class PublicWsMenu extends PaginatedMenu {
 
         MenuItem backPage = new MenuItem(Material.BARRIER, ItemType.PAGE_BACK, "Back");
         inventory.setItem(48, backPage.getDisplayItem());
-
-
     }
 }

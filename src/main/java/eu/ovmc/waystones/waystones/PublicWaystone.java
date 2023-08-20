@@ -50,9 +50,37 @@ public class PublicWaystone extends PrivateWaystone implements Comparable<Public
         this.rates = rates;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     @Override
     public int compareTo(@NotNull PublicWaystone o) {
-        return Double.compare(o.rating, this.rating);
+
+        if(this.category != null && o.category != null){//This category && other category == STAFF || HOME || Shop || ...
+            if(this.category.equals("STAFF") && o.category.equals("STAFF")){ // if this && other category == STAFF
+                return Double.compare(o.rating, rating);//arrange based on rating
+            }
+        }
+
+        if(this.category != null){//This category == STAFF || HOME || Shop || ...
+            if(this.category.equals("STAFF")){ //if STAFF
+                return -1; // this goes to front
+            }
+        }
+
+        if(o.category != null){//other category  == STAFF || HOME || Shop || ...
+            if(o.category.equals("STAFF")){ // if Other == STAFF
+                return 1; // this goes to the back
+            }
+        }
+
+        //anything else arrange based on rating
+        return Double.compare(o.rating, rating);
     }
 
 
