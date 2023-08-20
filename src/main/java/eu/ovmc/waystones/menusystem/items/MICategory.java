@@ -7,7 +7,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataType;
 
 public class MICategory extends MenuItem {
-
+    //Used in the category selection menu.
     private PubWsCategory category;
 
     public MICategory(ItemType menuItemType, String name, PubWsCategory category) {

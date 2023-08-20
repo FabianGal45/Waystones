@@ -48,9 +48,6 @@ public class CategoryMenu extends Menu {
             NamespacedKey namespacedKey = new NamespacedKey(WaystonesPlugin.getPlugin(), "item_category");
             PubWsCategory currentItemCategory = PubWsCategory.valueOf(Objects.requireNonNull(itemMeta.getPersistentDataContainer().get(namespacedKey, PersistentDataType.STRING)));
 
-            if(currentItemCategory == PubWsCategory.STAFF){
-
-            }
             //Set the current item Material and the Category to the Public Waystone object.
             selected.setCustomItem(e.getCurrentItem().getType().toString());
             selected.setCategory(currentItemCategory.toString());

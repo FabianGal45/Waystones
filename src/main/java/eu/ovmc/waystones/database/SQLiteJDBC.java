@@ -1,5 +1,6 @@
 package eu.ovmc.waystones.database;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
+import eu.ovmc.waystones.waystones.PubWsCategory;
 import eu.ovmc.waystones.waystones.PublicWaystone;
 import org.bukkit.entity.Player;
 
@@ -503,7 +504,18 @@ public class SQLiteJDBC {
                     ws_rates = count.getInt("count");
                 }
 
-                ws = new PublicWaystone(ws_id,ws_location,ws_user_id,ws_name,ws_tp_location,ws_priority,ws_custom_item,ws_rating,ws_rates,ws_cost,ws_category);
+                PublicWaystone pubWs = new PublicWaystone(ws_id,ws_location,ws_user_id,ws_name,ws_tp_location,ws_priority,ws_custom_item,ws_rating,ws_rates,ws_cost,ws_category);
+
+                //if category is null
+                if(ws_category == null){
+                    //Set the values to default and update the database
+                    pubWs.setCategory(PubWsCategory.DEFAULT.toString());
+                    pubWs.setCustomItem(PubWsCategory.DEFAULT.getMaterial().toString());
+                    updateWaystone(pubWs);
+                }
+
+                //set the result to the new updated public waystone
+                ws = pubWs;
             }
             stmt.close();
             stmt2.close();

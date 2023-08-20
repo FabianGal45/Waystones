@@ -52,12 +52,21 @@ public class MIPublicWaystone extends MenuItem{
         double rating = ws.getRating();
         int rates = ws.getRates();
         String formattedCost = econ.format(cost);
+        String category;
 
+        if(ws.getCategory()==null){
+            category = "Not Set";
+        }
+        else {
+            category = convertToTitleCase(ws.getCategory());
+        }
 
         Component locText = Component.text(worldName +": ", NamedTextColor.DARK_PURPLE)
                 .append(Component.text(location.getBlockX()+", "+ location.getBlockY()+", "+location.getBlockZ(), NamedTextColor.LIGHT_PURPLE));
         Component ownerText = Component.text("Owner: ", NamedTextColor.DARK_PURPLE)
                 .append(Component.text(userName, NamedTextColor.LIGHT_PURPLE));
+        Component categoryText = Component.text("Category: ", NamedTextColor.DARK_PURPLE)
+                .append(Component.text(category,NamedTextColor.LIGHT_PURPLE));
         Component ratingText = Component.text("Rating: ",NamedTextColor.DARK_PURPLE)
                 .append(Component.text(rating, NamedTextColor.LIGHT_PURPLE)
                         .append(Component.text("/",NamedTextColor.DARK_PURPLE))
@@ -69,6 +78,7 @@ public class MIPublicWaystone extends MenuItem{
 
         loreDescription.add(locText);
         loreDescription.add(ownerText);
+        loreDescription.add(categoryText);
         loreDescription.add(ratingText);
         loreDescription.add(ratesText);
         if(cost > 0) {
@@ -76,6 +86,27 @@ public class MIPublicWaystone extends MenuItem{
         }
         displayItemMeta.lore(loreDescription);
         displayItem.setItemMeta(displayItemMeta);
+    }
+
+    private static String convertToTitleCase(String input) {
+        StringBuilder result = new StringBuilder();
+        boolean capitalizeNext = true;
+
+        for (char c : input.toCharArray()) {
+            if (c == '_') {
+                result.append(' ');
+                capitalizeNext = true;
+            } else {
+                if (capitalizeNext) {
+                    result.append(Character.toUpperCase(c));
+                    capitalizeNext = false;
+                } else {
+                    result.append(Character.toLowerCase(c));
+                }
+            }
+        }
+
+        return result.toString();
     }
 
     private void setActionInfo(){
