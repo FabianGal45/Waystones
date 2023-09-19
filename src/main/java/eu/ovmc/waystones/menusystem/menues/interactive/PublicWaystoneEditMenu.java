@@ -48,7 +48,7 @@ public class PublicWaystoneEditMenu extends EditMenu {
         ItemStack netheriteBlock = new ItemStack(Material.NETHERITE_BLOCK);
         ItemMeta nbMeta = netheriteBlock.getItemMeta();
         TextComponent nbName = Component.text("Category");
-        rbMeta.displayName(nbName);
+        nbMeta.displayName(nbName);
         netheriteBlock.setItemMeta(nbMeta);
         inventory.setItem(16, netheriteBlock);
     }

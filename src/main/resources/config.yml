@@ -5,3 +5,4 @@ StartPrice: 32
 PriceMultiplier: 5
 MaxPrice: 2500000
 MaxDiscount: 95
+CompassCooldownSeconds: 5
