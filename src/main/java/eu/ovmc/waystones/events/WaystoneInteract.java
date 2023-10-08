@@ -71,16 +71,6 @@ public class WaystoneInteract implements Listener {
                     String loc = e.getClickedBlock().getLocation().toString();
                     PrivateWaystone ws = jdbc.getWaystone(loc);
 
-                    //Check if the user exists if not register him.
-                    User user = jdbc.getUserFromUuid(player.getUniqueId().toString());
-                    if(user == null){
-                        jdbc.regPlayer(player);
-                        user = jdbc.getUserFromUuid(player.getUniqueId().toString()); //gets the updated user with the ID
-                    }
-
-                    //TESTING
-//                User user = jdbc.getUserFromDB(player.getUniqueId().toString());
-//                System.out.println("Can place: "+user.canPlacePrivateWs());
 
                     //if waystone exists in the database
                     if(ws != null){
@@ -143,7 +133,6 @@ public class WaystoneInteract implements Listener {
                 PrivateWaystone ws = WaystonesPlugin.getPlugin().getJdbc().getWaystone(compassMeta.getLodestone().getBlock().getLocation().toString());
                 if(ws != null){// if the lodestone is a waystone
                     //if the player is not in the cooldown list OR the current time - the time of the last run action is higher than the set cooldown then TP
-                    System.out.println("Yo! "+ System.currentTimeMillis() +" - "+ cooldown.get(player.getUniqueId()) + " >= "+ compassCooldownMillis);
                     if(!cooldown.containsKey(player.getUniqueId()) || System.currentTimeMillis() - cooldown.get(player.getUniqueId()) >= compassCooldownMillis){
                         cooldown.put(player.getUniqueId(),System.currentTimeMillis());
 

@@ -2,6 +2,7 @@ package eu.ovmc.waystones.database;
 import eu.ovmc.waystones.waystones.PrivateWaystone;
 import eu.ovmc.waystones.waystones.PubWsCategory;
 import eu.ovmc.waystones.waystones.PublicWaystone;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -11,6 +12,7 @@ import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class SQLiteJDBC {
     private Connection con;
@@ -426,7 +428,15 @@ public class SQLiteJDBC {
     }
 
     public User getUserFromUuid(String uuid) {
-        return getUser(getUserIdFromUUid(uuid));
+        User user = getUser(getUserIdFromUUid(uuid));
+
+        //register the user if it doesn't exist
+        if(user == null){
+            regPlayer(Bukkit.getPlayer(UUID.fromString(uuid)));
+            user = getUser(getUserIdFromUUid(uuid));
+        }
+
+        return user;
     }
 
     public ArrayList<User> getAllUsersFromDB() {
