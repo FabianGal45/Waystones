@@ -50,9 +50,6 @@ public class WaystoneInteract implements Listener {
         boolean isActionRightClick = action.equals(Action.RIGHT_CLICK_BLOCK);
         boolean isPlayerSneaking = e.getPlayer().isSneaking();
 
-        //TEST
-        System.out.println("Action: " + action);
-
         //if item in hand is a compass set the meta
         if(mainHandItem.getItemMeta() instanceof CompassMeta){
             compassMeta = (CompassMeta) mainHandItem.getItemMeta();
