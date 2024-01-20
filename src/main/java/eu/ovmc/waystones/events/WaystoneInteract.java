@@ -39,96 +39,109 @@ public class WaystoneInteract implements Listener {
         Action action = e.getAction();
         Player player = e.getPlayer();
         PlayerMenuUtility playerMenuUtility = WaystonesPlugin.getPlayerMenuUtility(player);
-        ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
-        ItemMeta mainHandItemMeta = itemInMainHand.getItemMeta();
+        ItemStack mainHandItem = player.getInventory().getItemInMainHand();
+        ItemStack offHandItem = player.getInventory().getItemInOffHand();
         CompassMeta compassMeta = null;
-        boolean linkedCompass = false;
         long compassCooldownMillis = WaystonesPlugin.getPlugin().getConfig().getInt("CompassCooldownSeconds")* 1000L;
 
+        boolean isCompassLinked = false;
+        boolean isBlockClicked = e.getClickedBlock() != null;
+        boolean isBlockLodestone = isBlockClicked && e.getClickedBlock().getType().equals(Material.LODESTONE);
+        boolean isActionRightClick = action.equals(Action.RIGHT_CLICK_BLOCK);
+        boolean isPlayerSneaking = e.getPlayer().isSneaking();
 
-        //Cancels the action of the left hand. Without this the following code will trigger twice.  https://www.spigotmc.org/threads/playerinteractevent-fires-twice-for-right-clicking.301622/
-        if(e.getHand().equals(EquipmentSlot.OFF_HAND)) {
-            e.setCancelled(true);
-            return;
-        }
+        //TEST
+        System.out.println("Action: " + action);
 
         //if item in hand is a compass set the meta
-        if(mainHandItemMeta instanceof CompassMeta){
-            compassMeta = (CompassMeta) mainHandItemMeta;
+        if(mainHandItem.getItemMeta() instanceof CompassMeta){
+            compassMeta = (CompassMeta) mainHandItem.getItemMeta();
         }
 
-        // if the player clicked on a block https://www.spigotmc.org/threads/errors-with-playerinteractevent-and-nameable.390258/
-        if (e.getClickedBlock() != null){
-            //If right-clicked a LODESTONE while not sneaking open the menu
-            if(e.getClickedBlock().getType().equals(Material.LODESTONE) && action.equals(Action.RIGHT_CLICK_BLOCK) && !e.getPlayer().isSneaking()){
-//            System.out.println("WaystonesInteract - Thread: "+ Thread.currentThread().getName()+"; "+Thread.currentThread().getName());
-                linkedCompass = true;
-                Block blockUnder = e.getClickedBlock().getLocation().subtract(0.0,1.0,0.0).getBlock();
+        //If right-clicked a LODESTONE while not sneaking, open the menu. | https://www.spigotmc.org/threads/errors-with-playerinteractevent-and-nameable.390258/
+        if (isActionRightClick && isBlockLodestone && !isPlayerSneaking){
+            //Cancel Off-Hand event
+            if(e.getHand().equals(EquipmentSlot.OFF_HAND)) {
+                e.setCancelled(true);
+                return;
+            }
 
-                //if block under is EMERALD_BLOCK or NETHERITE_BLOCK
-                if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || blockUnder.getType().equals(Material.NETHERITE_BLOCK)) {
-                    SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
-                    String loc = e.getClickedBlock().getLocation().toString();
-                    PrivateWaystone ws = jdbc.getWaystone(loc);
+            //System.out.println("WaystonesInteract - Thread: "+ Thread.currentThread().getName()+"; "+Thread.currentThread().getName());
+            isCompassLinked = true;
+            Block blockUnder = e.getClickedBlock().getLocation().subtract(0.0,1.0,0.0).getBlock();
+
+            //if block under is EMERALD_BLOCK or NETHERITE_BLOCK
+            if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || blockUnder.getType().equals(Material.NETHERITE_BLOCK)) {
+                SQLiteJDBC jdbc = WaystonesPlugin.getPlugin().getJdbc();
+                String loc = e.getClickedBlock().getLocation().toString();
+                PrivateWaystone ws = jdbc.getWaystone(loc);
 
 
-                    //if waystone exists in the database
-                    if(ws != null){
-                        if(compassMeta != null){ //if the player has a compass set it up and skip opening the menu
-                            //Set the Compass name
-                            compassMeta.displayName(Component.text(ws.getName()));
+                //if waystone exists in the database
+                if(ws != null){
+                    if(compassMeta != null){ //if the player has a compass, set it up and skip opening the menu
+                        //Set the Compass name
+                        compassMeta.displayName(Component.text(ws.getName()));
 
-                            //Set the lore
-                            List<Component> loreList = new ArrayList<>();
-                            Location location = TeleportHandler.getParsedLocation(ws.getLocation());
-                            String shortWorldName;
-                            if(location.getWorld().getName().equals("world")){
-                                shortWorldName = "World";
-                            } else if(location.getWorld().getName().equals("world_nether")) {
-                                shortWorldName = "Nether";
-                            }
-                            else if(location.getWorld().getName().equals("world_the_end")){
-                                shortWorldName = "End";
-                            }
-                            else{
-                                shortWorldName = "Unknown";
-                            }
-
-                            Component locText = Component.text(shortWorldName +": ", NamedTextColor.DARK_PURPLE)
-                                    .append(Component.text(location.getBlockX()+", "+ location.getBlockY()+", "+location.getBlockZ(), NamedTextColor.LIGHT_PURPLE));
-
-                            loreList.add(locText);
-                            loreList.add(Component.text("Owner: ", NamedTextColor.DARK_PURPLE)
-                                    .append(Component.text(ws.getUser().getUserName(),NamedTextColor.LIGHT_PURPLE)));
-                            compassMeta.lore(loreList);
-                            itemInMainHand.setItemMeta(compassMeta);
+                        //Set the lore
+                        List<Component> loreList = new ArrayList<>();
+                        Location location = TeleportHandler.getParsedLocation(ws.getLocation());
+                        String shortWorldName;
+                        if(location.getWorld().getName().equals("world")){
+                            shortWorldName = "World";
+                        } else if(location.getWorld().getName().equals("world_nether")) {
+                            shortWorldName = "Nether";
                         }
-                        else{//continue opening the menu
-                            e.setCancelled(true);
-                            playerMenuUtility.updatePrivateWaystones();
-                            playerMenuUtility.setClickedOnWs(ws);
-
-                            if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || (blockUnder.getType().equals(Material.NETHERITE_BLOCK) && ws instanceof PublicWaystone)){
-//                        player.playSound(ws.getParsedLocation(ws.getLocation()), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 1, 2);
-                                new WaystonesSplitMenu(playerMenuUtility, 0).open();
-                            }
-                            else{
-                                if(ws instanceof PublicWaystone){
-                                    player.sendMessage("Chenge block under for Netherite Block");
-                                }
-                                else{
-                                    player.sendMessage("Change block under for Emerald Block");
-                                }
-                            }
+                        else if(location.getWorld().getName().equals("world_the_end")){
+                            shortWorldName = "End";
                         }
-                    }else{
-                        player.sendMessage(ChatColor.RED + "This waystone is inactive. Replace the Lodestone to activate.");
+                        else{
+                            shortWorldName = "Unknown";
+                        }
+
+                        Component locText = Component.text(shortWorldName +": ", NamedTextColor.DARK_PURPLE)
+                                .append(Component.text(location.getBlockX()+", "+ location.getBlockY()+", "+location.getBlockZ(), NamedTextColor.LIGHT_PURPLE));
+
+                        loreList.add(locText);
+                        loreList.add(Component.text("Owner: ", NamedTextColor.DARK_PURPLE)
+                                .append(Component.text(ws.getUser().getUserName(),NamedTextColor.LIGHT_PURPLE)));
+                        compassMeta.lore(loreList);
+                        mainHandItem.setItemMeta(compassMeta);
                     }
+                    else{//continue opening the menu
+                        e.setCancelled(true);
+                        playerMenuUtility.updatePrivateWaystones();
+                        playerMenuUtility.setClickedOnWs(ws);
+
+                        if(blockUnder.getType().equals(Material.EMERALD_BLOCK) || (blockUnder.getType().equals(Material.NETHERITE_BLOCK) && ws instanceof PublicWaystone)){
+//                        player.playSound(ws.getParsedLocation(ws.getLocation()), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 1, 2);
+                            new WaystonesSplitMenu(playerMenuUtility, 0).open();
+                        }
+                        else{
+                            if(ws instanceof PublicWaystone){
+                                player.sendMessage("Chenge block under for Netherite Block");
+                            }
+                            else{
+                                player.sendMessage("Change block under for Emerald Block");
+                            }
+                        }
+                    }
+                }else{
+                    player.sendMessage(ChatColor.RED + "This waystone is inactive. Replace the Lodestone to activate.");
                 }
             }
+
+
+
         }
 
-        if(compassMeta != null && !linkedCompass){ //if the compass was not linked with a waystone earlier then tp
+        if(compassMeta != null && !isCompassLinked){ //if the compass was not linked with a waystone earlier then tp
+            //Cancel Off-Hand event
+            if(e.getHand().equals(EquipmentSlot.OFF_HAND)) {
+                e.setCancelled(true);
+                return;
+            }
+
             if(compassMeta.hasLodestone()){
                 PrivateWaystone ws = WaystonesPlugin.getPlugin().getJdbc().getWaystone(compassMeta.getLodestone().getBlock().getLocation().toString());
                 if(ws != null){// if the lodestone is a waystone
@@ -144,7 +157,7 @@ public class WaystoneInteract implements Listener {
                         int seconds = (int) (millis/1000)+1;
                         player.sendMessage(Component.text("Your compass is on cooldown for: ", NamedTextColor.DARK_RED)
                                 .append(Component.text(seconds, NamedTextColor.RED)
-                                        .append(Component.text(" sec.", NamedTextColor.DARK_RED))));
+                                .append(Component.text(" sec.", NamedTextColor.DARK_RED))));
                     }
                 }
             }
