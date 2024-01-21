@@ -47,7 +47,7 @@ public class WaystoneInteract implements Listener {
         boolean isCompassLinked = false;
         boolean isBlockClicked = e.getClickedBlock() != null;
         boolean isBlockLodestone = isBlockClicked && e.getClickedBlock().getType().equals(Material.LODESTONE);
-        boolean isActionRightClick = action.equals(Action.RIGHT_CLICK_BLOCK);
+        boolean isActionRightClick = action.equals(Action.RIGHT_CLICK_AIR) || action.equals(Action.RIGHT_CLICK_BLOCK);
         boolean isPlayerSneaking = e.getPlayer().isSneaking();
 
         //if item in hand is a compass set the meta
@@ -132,7 +132,7 @@ public class WaystoneInteract implements Listener {
 
         }
 
-        if(compassMeta != null && !isCompassLinked){ //if the compass was not linked with a waystone earlier then tp
+        if(isActionRightClick && compassMeta != null && !isCompassLinked){ //if the compass was not linked with a waystone earlier then tp
             //Cancel Off-Hand event
             if(e.getHand().equals(EquipmentSlot.OFF_HAND)) {
                 e.setCancelled(true);
