@@ -2,7 +2,7 @@
 This plugin has been developed from the ground up where I had to work with the Spigot/Paper API which runs the server architecture. 
 
 The main features of this plugin are:
-- **Place a Private Waystone** - Lodestone block on top of Emerald block
+- **Place a Private Waystone** - Lodestone block on top of Emerald block. [Image]([https://www.google.com](https://cdn.discordapp.com/attachments/859895650900377610/1059539254885220433/image.png?ex=6626acd3&is=661437d3&hm=87ac0e3edd6153c8da1c2d32bb1916585663107e02b03eb59ce0e8c5b800ffae&) "Private Waystone")
 - **Place a Public Waystione** - Lodestone block on top of Netherite block
 - **Break a Waystone** - Break one either the lodestone, emerald or Netherite block or by external factors such as explosions or other players
 - **Interact with Waystone**  - Upon right-clicking the lodestone, a GUI will open.
