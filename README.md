@@ -20,4 +20,4 @@ This is the project I am most proud of. Most of the work done for this plugin wa
 The part I am most proud of is the modular pagination system and the class inheritance used to make the development easier.
 
 This project is also managed using Trello using multiple techniques to filter and manage my time efficiently.
-![Trello Project showcase](https://cdn.discordapp.com/attachments/859859839891406869/1227571126440427622/image.png?ex=6628e3b3&is=66166eb3&hm=f72712421284a2e62f7daad448fe3d077c265ad56a80c583ea3307dc35fc4a95& "Trello project showcase")
+![Trello Project showcase](https://drive.google.com/file/d/1P_aZAZlBYuMxFSuCxH5_YeNBdbfFET82/view "Trello project showcase")
