@@ -87,6 +87,10 @@ public class CategoryMenu extends Menu {
             MICategory staff = new MICategory(ItemType.CATEGORY, "Staff",PubWsCategory.STAFF);
             inventory.setItem(22, staff.getDisplayItem());
         }
+        else {
+            MICategory event = new MICategory(ItemType.CATEGORY, "Event",PubWsCategory.EVENT);
+            inventory.setItem(22, event.getDisplayItem());
+        }
 
     }
 }

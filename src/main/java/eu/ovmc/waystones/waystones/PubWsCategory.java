@@ -11,6 +11,7 @@ public enum PubWsCategory {
     PVP(Material.CRIMSON_HYPHAE),
     FUN(Material.NOTE_BLOCK),
     DEFAULT(Material.NETHERITE_BLOCK),
+    EVENT(Material.FLETCHING_TABLE),
     BROKEN(Material.CRACKED_STONE_BRICKS),
     SELECTED(Material.ENDER_EYE);
 
