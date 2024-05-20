@@ -33,7 +33,7 @@ public class CategoryMenu extends Menu {
 
     @Override
     public int getSlots() {
-        return 27;
+        return 36;
     }
 
     @Override
@@ -83,13 +83,12 @@ public class CategoryMenu extends Menu {
         MICategory fun = new MICategory(ItemType.CATEGORY, "Fun",PubWsCategory.FUN);
         inventory.setItem(16, fun.getDisplayItem());
 
+        MICategory event = new MICategory(ItemType.CATEGORY, "Event",PubWsCategory.EVENT);
+        inventory.setItem(22, event.getDisplayItem());
+
         if(playerMenuUtility.isAdmin()){
             MICategory staff = new MICategory(ItemType.CATEGORY, "Staff",PubWsCategory.STAFF);
-            inventory.setItem(22, staff.getDisplayItem());
-        }
-        else {
-            MICategory event = new MICategory(ItemType.CATEGORY, "Event",PubWsCategory.EVENT);
-            inventory.setItem(22, event.getDisplayItem());
+            inventory.setItem(31, staff.getDisplayItem());
         }
 
     }
