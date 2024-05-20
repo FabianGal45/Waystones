@@ -61,22 +61,32 @@ public class PublicWaystone extends PrivateWaystone implements Comparable<Public
     @Override
     public int compareTo(@NotNull PublicWaystone o) {
 
-        if(this.category != null && o.category != null){//This category && other category == STAFF || HOME || Shop || ...
-            if(this.category.equals("STAFF") && o.category.equals("STAFF")){ // if this && other category == STAFF
+        // if both this && other category == STAFF ||  if both this && other category == EVENT, sort them based on rating
+        if(this.category != null && o.category != null){//if both this and other have a category
+            if(this.category.equals(o.category)){ // if STAFF and STAFF || EVENT and EVENT || ..
                 return Double.compare(o.rating, rating);//arrange based on rating
             }
         }
 
-        if(this.category != null){//This category == STAFF || HOME || Shop || ...
-            if(this.category.equals("STAFF")){ //if STAFF
-                return -1; // this goes to front
-            }
+        // if this is STAFF, this goes to front
+        if(this.category != null && this.category.equals("STAFF")){ //if STAFF
+            return -1; // this goes to front
         }
 
-        if(o.category != null){//other category  == STAFF || HOME || Shop || ...
-            if(o.category.equals("STAFF")){ // if Other == STAFF
-                return 1; // this goes to the back
-            }
+        // if other is STAFF, this goes to back
+        if(o.category != null && o.category.equals("STAFF")){ // if Other == STAFF
+            return 1; // this goes to the back
+        }
+
+
+        // if this is EVENT, this goes to front
+        if(this.category != null && this.category.equals("EVENT")){ //if EVENT
+            return -1; // this goes to front
+        }
+
+        // if other is EVENT, this goes to back
+        if(o.category != null && o.category.equals("EVENT")){ // if Other == EVENT
+            return 1; // this goes to the back
         }
 
         //anything else arrange based on rating
