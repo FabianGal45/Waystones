@@ -4,8 +4,7 @@ main: eu.ovmc.waystones.WaystonesPlugin
 api-version: 1.19
 authors: [ Bambui_Zepelin ]
 description: This is a waystone plugin made to remove the use of commands when teleporting.
-depend:
-  - Vault
+depend: [ Vault ]
 commands:
   ws:
     description: Purchase a waystone.

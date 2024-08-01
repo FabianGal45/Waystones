@@ -53,7 +53,7 @@ public final class WaystonesPlugin extends JavaPlugin implements Listener {
         chatInputHandler = new ChatInputHandler();
 
         if (!setupEconomy() ) {
-            log.severe(String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
+            log.severe(String.format("[%s] - Disabled due to no economy plugin being found!", getDescription().getName()));
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
